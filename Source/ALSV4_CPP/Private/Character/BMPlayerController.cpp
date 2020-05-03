@@ -59,9 +59,9 @@ void ABMPlayerController::OnPossess(APawn* NewPawn)
 
 void ABMPlayerController::GetControlForwardRightVector(FVector& Forward, FVector& Right)
 {
-	const FVector ControlRot(0.0f, GetControlRotation().Yaw, 0.0f);
-	Forward = GetInputAxisValue("MoveForward/Backwards") * ControlRot.ForwardVector;
-	Right = GetInputAxisValue("MoveRight/Left") * ControlRot.RightVector;
+	const FRotator ControlRot(0.0f, GetControlRotation().Yaw, 0.0f);
+	Forward = GetInputAxisValue("MoveForward/Backwards") * UKismetMathLibrary::GetForwardVector(ControlRot);
+	Right = GetInputAxisValue("MoveRight/Left") * UKismetMathLibrary::GetRightVector(ControlRot);
 }
 
 FVector ABMPlayerController::GetPlayerMovementInput()
