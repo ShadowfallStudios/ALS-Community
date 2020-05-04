@@ -1,4 +1,4 @@
-/** Copyright (c) 2020 Doğa Can YANIKOĞLU */
+// Copyright (C) 2020, Doga Can Yanikoglu
 
 
 #include "Character/BMBaseCharacter.h"
