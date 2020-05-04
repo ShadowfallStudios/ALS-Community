@@ -321,7 +321,7 @@ void UBMCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableFo
 	}
 
 	// Step 3: If the Foot Lock curve equals 1, save the new lock location and rotation in component space.
-	if (CurFootLockAlpha > 0.99f)
+	if (CurFootLockAlpha >= 0.99f)
 	{
 		const FTransform& OwnerTransform =
 			GetOwningComponent()->GetSocketTransform(IKFootBone, ERelativeTransformSpace::RTS_Component);
@@ -339,7 +339,7 @@ void UBMCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableFo
 
 void UBMCharacterAnimInstance::SetFootLockOffsets(float DeltaSeconds, FVector& LocalLoc, FRotator& LocalRot)
 {
-	FRotator RotationDifference;
+	FRotator RotationDifference = FRotator::ZeroRotator;
 	// Use the delta between the current and last updated rotation to find how much the foot should be rotated
 	// to remain planted on the ground.
 	if (Character->GetCharacterMovement()->IsMovingOnGround())
@@ -358,8 +358,9 @@ void UBMCharacterAnimInstance::SetFootLockOffsets(float DeltaSeconds, FVector& L
 	LocalLoc = (LocalLoc - LocationDifference).RotateAngleAxis(RotationDifference.Yaw, FVector::DownVector);
 
 	// Subtract the Rotation Difference from the current Local Rotation to get the new local rotation.
-	LocalRot = LocalRot - RotationDifference;
-	LocalRot.Normalize();
+	FRotator Delta = LocalRot - RotationDifference;
+	Delta.Normalize();
+	LocalRot = Delta;
 }
 
 void UBMCharacterAnimInstance::SetPelvisIKOffset(float DeltaSeconds, FVector FootOffsetLTarget,
