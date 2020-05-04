@@ -345,15 +345,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mantle System")
 	UCurveFloat* MantleTimelineCurve;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Misc")
-	FName PelvisBoneName = TEXT("Pelvis");
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Misc")
-	FName RootBoneName = TEXT("Root");
-
-	UPROPERTY()
-	FName RagdollSnapshotName = TEXT("RagdollPose");
-
 	/** Components */
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")

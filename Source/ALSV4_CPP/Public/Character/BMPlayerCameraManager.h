@@ -48,7 +48,7 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FName CustomTag = TEXT("BM_Character");
+	FName CustomTag = FName(TEXT("BM_Character"));
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector RootLocation;

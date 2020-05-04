@@ -23,6 +23,9 @@ public:
 	USoundBase* Sound = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
+	FName AttachPointName = FName(TEXT("Root"));
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
 	EBMFootstepType FootstepType = EBMFootstepType::Step;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
@@ -32,14 +35,5 @@ public:
 	float PitchMultiplier = 1.0f;;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	FName AttachPointName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
 	bool bOverrideMaskCurve = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	FName FootstepMaskCurveName = TEXT("Mask_FootstepSound");
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	FName CueFootstepTypeParamName = TEXT("FootstepType");
 };

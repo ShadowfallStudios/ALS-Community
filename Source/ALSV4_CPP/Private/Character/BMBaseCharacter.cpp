@@ -16,7 +16,7 @@
 ABMBaseCharacter::ABMBaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("MantleTimeline"));
+	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(FName(TEXT("MantleTimeline")));
 	bUseControllerRotationYaw = 0;
 }
 
@@ -123,7 +123,7 @@ void ABMBaseCharacter::RagdollStart()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionObjectType(ECC_PhysicsBody);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GetMesh()->SetAllBodiesBelowSimulatePhysics(PelvisBoneName, true, true);
+	GetMesh()->SetAllBodiesBelowSimulatePhysics(FName(TEXT("Pelvis")), true, true);
 
 	// Step 3: Stop any active montages.
 	MainAnimInstance->Montage_Stop(0.2f);
@@ -137,7 +137,7 @@ void ABMBaseCharacter::RagdollEnd()
 	}
 
 	// Step 1: Save a snapshot of the current Ragdoll Pose for use in AnimGraph to blend out of the ragdoll
-	MainAnimInstance->SavePoseSnapshot(RagdollSnapshotName);
+	MainAnimInstance->SavePoseSnapshot(FName(TEXT("RagdollPose")));
 
 	// Step 2: If the ragdoll is on the ground, set the movement mode to walking and play a Get Up animation.
 	// If not, set the movement mode to falling and update teh character movement velocity to match the last ragdoll velocity.
@@ -361,7 +361,7 @@ FTransform ABMBaseCharacter::GetThirdPersonPivotTarget()
 
 FVector ABMBaseCharacter::GetFirstPersonCameraTarget()
 {
-	return GetMesh()->GetSocketLocation(TEXT("FP_Camera"));
+	return GetMesh()->GetSocketLocation(FName(TEXT("FP_Camera")));
 }
 
 void ABMBaseCharacter::GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bool& bRightShoulderOut)
@@ -374,7 +374,7 @@ void ABMBaseCharacter::GetCameraParameters(float& TPFOVOut, float& FPFOVOut, boo
 void ABMBaseCharacter::RagdollUpdate()
 {
 	// Set the Last Ragdoll Velocity.
-	LastRagdollVelocity = GetMesh()->GetPhysicsLinearVelocity(RootBoneName);
+	LastRagdollVelocity = GetMesh()->GetPhysicsLinearVelocity(FName(TEXT("Root")));
 
 	// Use the Ragdoll Velocity to scale the ragdoll's joint strength for physical animation.
 	const float SpringValue = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 1000.0f),
@@ -393,10 +393,10 @@ void ABMBaseCharacter::RagdollUpdate()
 void ABMBaseCharacter::SetActorLocationDuringRagdoll()
 {
 	// Set the pelvis as the target location.
-	const FVector TargetRagdollLocation = GetMesh()->GetSocketLocation(PelvisBoneName);
+	const FVector TargetRagdollLocation = GetMesh()->GetSocketLocation(FName(TEXT("Pelvis")));
 
 	// Determine wether the ragdoll is facing up or down and set the target rotation accordingly.
-	const FRotator PelvisRot = GetMesh()->GetSocketRotation(PelvisBoneName);
+	const FRotator PelvisRot = GetMesh()->GetSocketRotation(FName(TEXT("Pelvis")));
 
 	bRagdollFaceUp = PelvisRot.Roll < 0.0f;
 
@@ -854,7 +854,7 @@ void ABMBaseCharacter::MantleStart(float MantleHeight, const FBMComponentAndTran
 bool ABMBaseCharacter::MantleCheck(const FBMMantleTraceSettings& TraceSettings, EDrawDebugTrace::Type DebugType)
 {
 	// Step 1: Trace forward to find a wall / object the character cannot walk on.
-	const FVector CapsuleBaseLocation = GetCapsuleBaseLocation(2.0f, GetCapsuleComponent());
+	const FVector& CapsuleBaseLocation = GetCapsuleBaseLocation(2.0f, GetCapsuleComponent());
 	FVector TraceStart = CapsuleBaseLocation + GetPlayerMovementInput() * -30.0f;
 	TraceStart.Z += (TraceSettings.MaxLedgeHeight + TraceSettings.MinLedgeHeight) / 2.0f;
 	const FVector TraceEnd = TraceStart + (GetPlayerMovementInput() * TraceSettings.ReachDistance);
@@ -890,6 +890,7 @@ bool ABMBaseCharacter::MantleCheck(const FBMMantleTraceSettings& TraceSettings, 
 	World->SweepSingleByChannel(HitResult, DownwardTraceStart, DownwardTraceEnd, FQuat::Identity,
 	                            ECC_GameTraceChannel2, FCollisionShape::MakeSphere(TraceSettings.DownwardTraceRadius), Params);
 
+
 	if (!GetCharacterMovement()->IsWalkable(HitResult))
 	{
 		// Not a valid surface to mantle
@@ -901,7 +902,7 @@ bool ABMBaseCharacter::MantleCheck(const FBMMantleTraceSettings& TraceSettings, 
 
 	// Step 3: Check if the capsule has room to stand at the downward trace's location.
 	// If so, set that location as the Target Transform and calculate the mantle height.
-	const FVector CapsuleLocationFBase = GetCapsuleLocationFromBase(DownTraceLocation, 2.0f, GetCapsuleComponent());
+	const FVector& CapsuleLocationFBase = GetCapsuleLocationFromBase(DownTraceLocation, 2.0f, GetCapsuleComponent());
 	const bool bCapsuleHasRoom = CapsuleHasRoomCheck(GetCapsuleComponent(), CapsuleLocationFBase, 0.0f,
 	                                                 0.0f, DebugType);
 
@@ -919,7 +920,7 @@ bool ABMBaseCharacter::MantleCheck(const FBMMantleTraceSettings& TraceSettings, 
 	const float MantleHeight = (CapsuleLocationFBase - GetActorLocation()).Z;
 
 	// Step 4: Determine the Mantle Type by checking the movement mode and Mantle Height.
-	EBMMantleType MantleType = EBMMantleType::LowMantle;
+	EBMMantleType MantleType;
 	if (MovementState == EBMMovementState::InAir)
 	{
 		MantleType = EBMMantleType::FallingCatch;
@@ -1019,9 +1020,7 @@ bool ABMBaseCharacter::CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector T
 	const UWorld* World = GetWorld();
 	check(World);
 
-	static const FName SphereTraceSingleName(TEXT("SphereTraceSingleByProfile"));
 	FCollisionQueryParams Params;
-	Params.TraceTag = SphereTraceSingleName;
 	Params.AddIgnoredActor(this);
 
 	FHitResult HitResult;

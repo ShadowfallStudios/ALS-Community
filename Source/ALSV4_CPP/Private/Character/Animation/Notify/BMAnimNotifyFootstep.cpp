@@ -14,7 +14,7 @@ void UBMAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 		return;
 	}
 
-	const float MaskCurveValue = MeshComp->GetAnimInstance()->GetCurveValue(FootstepMaskCurveName);
+	const float MaskCurveValue = MeshComp->GetAnimInstance()->GetCurveValue(FName(TEXT("Mask_FootstepSound")));
 	const float FinalVolMult = bOverrideMaskCurve ? VolumeMultiplier : VolumeMultiplier * (1.0f - MaskCurveValue);
 
 	if (Sound)
@@ -25,7 +25,7 @@ void UBMAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 		                                                                     true, FinalVolMult, PitchMultiplier);
 		if (SpawnedAudio)
 		{
-			SpawnedAudio->SetIntParameter(CueFootstepTypeParamName, static_cast<int32>(FootstepType));
+			SpawnedAudio->SetIntParameter(FName(TEXT("FootstepType")), static_cast<int32>(FootstepType));
 		}
 	}
 }

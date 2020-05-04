@@ -9,7 +9,7 @@
 
 ABMPlayerCameraManager::ABMPlayerCameraManager()
 {
-	CameraBehavior = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CameraBehavior"));
+	CameraBehavior = CreateDefaultSubobject<USkeletalMeshComponent>(FName(TEXT("CameraBehavior")));
 	CameraBehavior->SetupAttachment(GetRootComponent());
 	CameraBehavior->bHiddenInGame = true;
 }
@@ -91,16 +91,16 @@ bool ABMPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loca
 	// Step 2: Calculate Target Camera Rotation. Use the Control Rotation and interpolate for smooth camera rotation.
 	const FRotator& InterpResult = FMath::RInterpTo(GetCameraRotation(),
 	                                                GetOwningPlayerController()->GetControlRotation(), DeltaTime,
-	                                                GetCameraBehaviorParam(TEXT("RotationLagSpeed")));
+	                                                GetCameraBehaviorParam(FName(TEXT("RotationLagSpeed"))));
 
 	TargetCameraRotation = UKismetMathLibrary::RLerp(InterpResult, DebugViewRotation,
 	                                                 GetCameraBehaviorParam(TEXT("Override_Debug")), true);
 
 	// Step 3: Calculate the Smoothed Pivot Target (Orange Sphere).
 	// Get the 3P Pivot Target (Green Sphere) and interpolate using axis independent lag for maximum control.
-	const FVector LagSpd(GetCameraBehaviorParam(TEXT("PivotLagSpeed_X")),
-	                     GetCameraBehaviorParam(TEXT("PivotLagSpeed_Y")),
-	                     GetCameraBehaviorParam(TEXT("PivotLagSpeed_Z")));
+	const FVector LagSpd(GetCameraBehaviorParam(FName(TEXT("PivotLagSpeed_X"))),
+	                     GetCameraBehaviorParam(FName(TEXT("PivotLagSpeed_Y"))),
+	                     GetCameraBehaviorParam(FName(TEXT("PivotLagSpeed_Z"))));
 
 	const FVector& AxisIndpLag = CalculateAxisIndependentLag(SmoothedPivotTarget.GetLocation(),
 	                                                         PivotTarget.GetLocation(), TargetCameraRotation, LagSpd, DeltaTime);
@@ -113,18 +113,18 @@ bool ABMPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loca
 	// Pivot Target and apply local offsets for further camera control.
 	PivotLocation =
 		SmoothedPivotTarget.GetLocation() +
-		UKismetMathLibrary::GetForwardVector(SmoothedPivotTarget.Rotator()) * GetCameraBehaviorParam(TEXT("PivotOffset_X")) +
-		UKismetMathLibrary::GetRightVector(SmoothedPivotTarget.Rotator()) * GetCameraBehaviorParam(TEXT("PivotOffset_Y")) +
-		UKismetMathLibrary::GetUpVector(SmoothedPivotTarget.Rotator()) * GetCameraBehaviorParam(TEXT("PivotOffset_Z"));
+		UKismetMathLibrary::GetForwardVector(SmoothedPivotTarget.Rotator()) * GetCameraBehaviorParam(FName(TEXT("PivotOffset_X"))) +
+		UKismetMathLibrary::GetRightVector(SmoothedPivotTarget.Rotator()) * GetCameraBehaviorParam(FName(TEXT("PivotOffset_Y"))) +
+		UKismetMathLibrary::GetUpVector(SmoothedPivotTarget.Rotator()) * GetCameraBehaviorParam(FName(TEXT("PivotOffset_Z")));
 
 	// Step 5: Calculate Target Camera Location. Get the Pivot location and apply camera relative offsets.
 	TargetCameraLocation = UKismetMathLibrary::VLerp(
 		PivotLocation +
-		UKismetMathLibrary::GetForwardVector(TargetCameraRotation) * GetCameraBehaviorParam(TEXT("CameraOffset_X")) +
-		UKismetMathLibrary::GetRightVector(TargetCameraRotation) * GetCameraBehaviorParam(TEXT("CameraOffset_Y")) +
-		UKismetMathLibrary::GetUpVector(TargetCameraRotation) * GetCameraBehaviorParam(TEXT("CameraOffset_Z")),
+		UKismetMathLibrary::GetForwardVector(TargetCameraRotation) * GetCameraBehaviorParam(FName(TEXT("CameraOffset_X"))) +
+		UKismetMathLibrary::GetRightVector(TargetCameraRotation) * GetCameraBehaviorParam(FName(TEXT("CameraOffset_Y"))) +
+		UKismetMathLibrary::GetUpVector(TargetCameraRotation) * GetCameraBehaviorParam(FName(TEXT("CameraOffset_Z"))),
 		PivotTarget.GetLocation() + DebugViewOffset,
-		GetCameraBehaviorParam(TEXT("Override_Debug")));
+		GetCameraBehaviorParam(FName(TEXT("Override_Debug"))));
 
 	// Step 6: Trace for an object between the camera and character to apply a corrective offset.
 	// Trace origins are set within the Character BP via the Camera Interface.
@@ -156,15 +156,15 @@ bool ABMPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loca
 	FTransform FPTargetCameraTransform(TargetCameraRotation, FPTarget, FVector::OneVector);
 
 	const FTransform& MixedTransform = UKismetMathLibrary::TLerp(TargetCameraTransform, FPTargetCameraTransform,
-	                                                             GetCameraBehaviorParam(TEXT("Weight_FirstPerson")));
+	                                                             GetCameraBehaviorParam(FName(TEXT("Weight_FirstPerson"))));
 
 	const FTransform& TargetTransform = UKismetMathLibrary::TLerp(MixedTransform,
 	                                                              FTransform(DebugViewRotation, TargetCameraLocation, FVector::OneVector),
-	                                                              GetCameraBehaviorParam(TEXT("Override_Debug")));
+	                                                              GetCameraBehaviorParam(FName(TEXT("Override_Debug"))));
 
 	Location = TargetTransform.GetLocation();
 	Rotation = TargetTransform.Rotator();
-	FOV = FMath::Lerp(TPFOV, FPFOV, GetCameraBehaviorParam(TEXT("Weight_FirstPerson")));
+	FOV = FMath::Lerp(TPFOV, FPFOV, GetCameraBehaviorParam(FName(TEXT("Weight_FirstPerson"))));
 
 	return true;
 }
