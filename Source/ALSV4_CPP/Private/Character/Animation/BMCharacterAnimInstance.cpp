@@ -734,7 +734,7 @@ float UBMCharacterAnimInstance::CalculateLandPrediction()
 	World->SweepSingleByProfile(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity, TEXT("ALS_Character"),
 	                            Character->GetCapsuleComponent()->GetCollisionShape(), Params);
 
-	if (HitResult.bBlockingHit && Character->GetCharacterMovement()->IsWalkable(HitResult))
+	if (Character->GetCharacterMovement()->IsWalkable(HitResult))
 	{
 		return FMath::Lerp(LandPredictionCurve->GetFloatValue(HitResult.Time), 0.0f, GetCurveValue(TEXT("Mask_LandPrediction")));
 	}

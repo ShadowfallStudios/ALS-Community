@@ -885,12 +885,12 @@ bool ABMBaseCharacter::MantleCheck(const FBMMantleTraceSettings& TraceSettings, 
 	DownwardTraceEnd.Z = CapsuleBaseLocation.Z;
 	DownwardTraceEnd += InitialTraceNormal * -15.0f;
 	FVector DownwardTraceStart = DownwardTraceEnd;
-	DownwardTraceStart.Z = TraceSettings.MaxLedgeHeight + TraceSettings.DownwardTraceRadius + 1.0f;
+	DownwardTraceStart.Z += TraceSettings.MaxLedgeHeight + TraceSettings.DownwardTraceRadius + 1.0f;
 
 	World->SweepSingleByChannel(HitResult, DownwardTraceStart, DownwardTraceEnd, FQuat::Identity,
 	                            ECC_GameTraceChannel2, FCollisionShape::MakeSphere(TraceSettings.DownwardTraceRadius), Params);
 
-	if (!HitResult.bBlockingHit || !GetCharacterMovement()->IsWalkable(HitResult))
+	if (!GetCharacterMovement()->IsWalkable(HitResult))
 	{
 		// Not a valid surface to mantle
 		return false;
