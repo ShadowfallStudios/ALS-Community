@@ -23,7 +23,7 @@ ABMBaseCharacter::ABMBaseCharacter()
 void ABMBaseCharacter::PreInitializeComponents()
 {
 	Super::PreInitializeComponents();
-	
+
 	// Set Reference to the Main Anim Instance.
 	check(GetMesh()->GetAnimInstance());
 	MainAnimInstance = Cast<UBMCharacterAnimInstance>(GetMesh()->GetAnimInstance());
@@ -47,6 +47,13 @@ void ABMBaseCharacter::PostInitializeComponents()
 
 	// Set the Movement Model
 	SetMovementModel();
+
+	// Once, force set variables in anim bp. This ensures anim instance & character starts synchronized
+	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
+	AnimData.Gait = DesiredGait;
+	AnimData.RotationMode = DesiredRotationMode;
+	AnimData.ViewMode = ViewMode;
+	AnimData.OverlayState = OverlayState;
 
 	// Update states to use the initial desired values.
 	SetGait(DesiredGait);
