@@ -35,8 +35,6 @@ public:
 
 	virtual void PreInitializeComponents() override;
 
-	virtual void PostInitializeComponents() override;
-
 	virtual void Restart() override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;

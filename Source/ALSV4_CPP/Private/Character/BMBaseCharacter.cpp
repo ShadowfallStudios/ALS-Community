@@ -20,48 +20,6 @@ ABMBaseCharacter::ABMBaseCharacter()
 	bUseControllerRotationYaw = 0;
 }
 
-void ABMBaseCharacter::PreInitializeComponents()
-{
-	Super::PreInitializeComponents();
-
-	// Set Reference to the Main Anim Instance.
-	check(GetMesh()->GetAnimInstance());
-	MainAnimInstance = Cast<UBMCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-}
-
-void ABMBaseCharacter::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	FOnTimelineFloat TimelineUpdated;
-	FOnTimelineEvent TimelineFinished;
-	TimelineUpdated.BindUFunction(this, FName(TEXT("OnTimeLineUpdated")));
-	TimelineFinished.BindUFunction(this, FName(TEXT("OnTimeLineFinished")));
-	MantleTimeline->SetTimelineFinishedFunc(TimelineFinished);
-	MantleTimeline->SetLooping(false);
-	MantleTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
-	MantleTimeline->AddInterpFloat(MantleTimelineCurve, TimelineUpdated);
-
-	// Make sure the mesh and animbp update after the CharacterBP to ensure it gets the most recent values.
-	GetMesh()->AddTickPrerequisiteActor(this);
-
-	// Set the Movement Model
-	SetMovementModel();
-
-	// Once, force set variables in anim bp. This ensures anim instance & character starts synchronized
-	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
-	AnimData.Gait = DesiredGait;
-	AnimData.RotationMode = DesiredRotationMode;
-	AnimData.ViewMode = ViewMode;
-	AnimData.OverlayState = OverlayState;
-
-	// Update states to use the initial desired values.
-	SetGait(DesiredGait);
-	SetRotationMode(DesiredRotationMode);
-	SetViewMode(ViewMode);
-	SetOverlayState(OverlayState);
-}
-
 void ABMBaseCharacter::Restart()
 {
 	Super::Restart();
@@ -111,6 +69,36 @@ void ABMBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FOnTimelineFloat TimelineUpdated;
+	FOnTimelineEvent TimelineFinished;
+	TimelineUpdated.BindUFunction(this, FName(TEXT("OnTimeLineUpdated")));
+	TimelineFinished.BindUFunction(this, FName(TEXT("OnTimeLineFinished")));
+	MantleTimeline->SetTimelineFinishedFunc(TimelineFinished);
+	MantleTimeline->SetLooping(false);
+	MantleTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
+	MantleTimeline->AddInterpFloat(MantleTimelineCurve, TimelineUpdated);
+
+	// Make sure the mesh and animbp update after the CharacterBP to ensure it gets the most recent values.
+	GetMesh()->AddTickPrerequisiteActor(this);
+
+	// Set the Movement Model
+	SetMovementModel();
+
+	// Once, force set variables in anim bp. This ensures anim instance & character starts synchronized
+	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
+	AnimData.Gait = DesiredGait;
+	AnimData.RotationMode = DesiredRotationMode;
+	AnimData.ViewMode = ViewMode;
+	AnimData.OverlayState = OverlayState;
+	AnimData.PrevMovementState = PrevMovementState;
+	AnimData.MovementState = MovementState;
+
+	// Update states to use the initial desired values.
+	SetGait(DesiredGait);
+	SetRotationMode(DesiredRotationMode);
+	SetViewMode(ViewMode);
+	SetOverlayState(OverlayState);
+
 	if (Stance == EBMStance::Standing)
 	{
 		UnCrouch();
@@ -126,11 +114,19 @@ void ABMBaseCharacter::BeginPlay()
 	LastMovementInputRotation = TargetRotation;
 }
 
+void ABMBaseCharacter::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
+
+	MainAnimInstance = Cast<UBMCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+
+	// TODO: Check null for MainAnimInstance if that's not editor object
+}
+
 void ABMBaseCharacter::SetAimYawRate(float NewAimYawRate)
 {
-	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 	AimYawRate = NewAimYawRate;
-	AnimData.AimYawRate = AimYawRate;
+	MainAnimInstance->GetCharacterInformationMutable().AimYawRate = AimYawRate;
 }
 
 void ABMBaseCharacter::Tick(float DeltaTime)
@@ -185,7 +181,7 @@ void ABMBaseCharacter::RagdollStart()
 
 void ABMBaseCharacter::RagdollEnd()
 {
-	if (!IsValid(MainAnimInstance))
+	if (!MainAnimInstance)
 	{
 		return;
 	}
@@ -218,9 +214,9 @@ void ABMBaseCharacter::SetMovementState(const EBMMovementState NewState)
 {
 	if (MovementState != NewState)
 	{
-		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		PrevMovementState = MovementState;
 		MovementState = NewState;
+		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		AnimData.PrevMovementState = PrevMovementState;
 		AnimData.MovementState = MovementState;
 		OnMovementStateChanged(PrevMovementState);
@@ -231,10 +227,9 @@ void ABMBaseCharacter::SetMovementAction(const EBMMovementAction NewAction)
 {
 	if (MovementAction != NewAction)
 	{
-		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		EBMMovementAction Prev = MovementAction;
 		MovementAction = NewAction;
-		AnimData.MovementAction = MovementAction;
+		MainAnimInstance->GetCharacterInformationMutable().MovementAction = MovementAction;
 		OnMovementActionChanged(Prev);
 	}
 }
@@ -243,10 +238,9 @@ void ABMBaseCharacter::SetStance(const EBMStance NewStance)
 {
 	if (Stance != NewStance)
 	{
-		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		EBMStance Prev = Stance;
 		Stance = NewStance;
-		AnimData.Stance = Stance;
+		MainAnimInstance->GetCharacterInformationMutable().Stance = Stance;
 		OnStanceChanged(Prev);
 	}
 }
@@ -255,10 +249,9 @@ void ABMBaseCharacter::SetRotationMode(const EBMRotationMode NewRotationMode)
 {
 	if (RotationMode != NewRotationMode)
 	{
-		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		EBMRotationMode Prev = RotationMode;
 		RotationMode = NewRotationMode;
-		AnimData.RotationMode = RotationMode;
+		MainAnimInstance->GetCharacterInformationMutable().RotationMode = RotationMode;
 		OnRotationModeChanged(Prev);
 	}
 }
@@ -267,10 +260,9 @@ void ABMBaseCharacter::SetGait(const EBMGait NewGait)
 {
 	if (Gait != NewGait)
 	{
-		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		EBMGait Prev = Gait;
 		Gait = NewGait;
-		AnimData.Gait = Gait;
+		MainAnimInstance->GetCharacterInformationMutable().Gait = Gait;
 		OnGaitChanged(Prev);
 	}
 }
@@ -279,10 +271,9 @@ void ABMBaseCharacter::SetViewMode(const EBMViewMode NewViewMode)
 {
 	if (ViewMode != NewViewMode)
 	{
-		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		EBMViewMode Prev = ViewMode;
 		ViewMode = NewViewMode;
-		AnimData.ViewMode = ViewMode;
+		MainAnimInstance->GetCharacterInformationMutable().ViewMode = ViewMode;
 		OnViewModeChanged(Prev);
 	}
 }
@@ -291,10 +282,9 @@ void ABMBaseCharacter::SetOverlayState(const EBMOverlayState NewState)
 {
 	if (OverlayState != NewState)
 	{
-		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		EBMOverlayState Prev = OverlayState;
 		OverlayState = NewState;
-		AnimData.OverlayState = OverlayState;
+		MainAnimInstance->GetCharacterInformationMutable().OverlayState = OverlayState;
 		OnOverlayStateChanged(Prev);
 	}
 }
@@ -326,9 +316,8 @@ void ABMBaseCharacter::SetMovementModel()
 
 void ABMBaseCharacter::SetHasMovementInput(bool bNewHasMovementInput)
 {
-	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 	bHasMovementInput = bNewHasMovementInput;
-	AnimData.bHasMovementInput = bHasMovementInput;
+	MainAnimInstance->GetCharacterInformationMutable().bHasMovementInput = bHasMovementInput;
 }
 
 FBMMovementSettings ABMBaseCharacter::GetTargetMovementSettings()
@@ -403,9 +392,8 @@ bool ABMBaseCharacter::CanSprint()
 
 void ABMBaseCharacter::SetIsMoving(bool bNewIsMoving)
 {
-	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 	bIsMoving = bNewIsMoving;
-	AnimData.bIsMoving = bIsMoving;
+	MainAnimInstance->GetCharacterInformationMutable().bIsMoving = bIsMoving;
 }
 
 FVector ABMBaseCharacter::GetMovementInput()
@@ -415,16 +403,14 @@ FVector ABMBaseCharacter::GetMovementInput()
 
 void ABMBaseCharacter::SetMovementInputAmount(float NewMovementInputAmount)
 {
-	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 	MovementInputAmount = NewMovementInputAmount;
-	AnimData.MovementInputAmount = MovementInputAmount;
+	MainAnimInstance->GetCharacterInformationMutable().MovementInputAmount = MovementInputAmount;
 }
 
 void ABMBaseCharacter::SetSpeed(float NewSpeed)
 {
-	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 	Speed = NewSpeed;
-	AnimData.Speed = Speed;
+	MainAnimInstance->GetCharacterInformationMutable().Speed = Speed;
 }
 
 float ABMBaseCharacter::GetAnimCurveValue(FName CurveName)
@@ -463,9 +449,8 @@ void ABMBaseCharacter::GetCameraParameters(float& TPFOVOut, float& FPFOVOut, boo
 
 void ABMBaseCharacter::SetAcceleration(const FVector& NewAcceleration)
 {
-	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 	Acceleration = NewAcceleration;
-	AnimData.Acceleration = Acceleration;
+	MainAnimInstance->GetCharacterInformationMutable().Acceleration = Acceleration;
 }
 
 void ABMBaseCharacter::RagdollUpdate()
