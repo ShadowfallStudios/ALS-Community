@@ -29,3 +29,10 @@ void UBMAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 		}
 	}
 }
+
+FString UBMAnimNotifyFootstep::GetNotifyName_Implementation() const
+{
+	FString Name(TEXT("Footstep Type: "));
+	Name.Append(GetEnumerationToString(FootstepType));
+	return Name;
+}
