@@ -26,6 +26,6 @@ void UBMNotifyStateMovementAction::NotifyEnd(USkeletalMeshComponent* MeshComp, U
 FString UBMNotifyStateMovementAction::GetNotifyName_Implementation() const
 {
 	FString Name(TEXT("Movement Action: "));
-	Name.Append(*GetEnumerationToString(MovementAction));
+	Name.Append(GetEnumerationToString(MovementAction));
 	return Name;
 }
