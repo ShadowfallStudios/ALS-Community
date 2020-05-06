@@ -69,8 +69,31 @@ void ABMBaseCharacter::Restart()
 	ABMPlayerController* NewController = Cast<ABMPlayerController>(GetController());
 	if (NewController)
 	{
-		NewController->OnPawnRestart(this);
+		NewController->OnRestartPawn(this);
 	}
+}
+
+void ABMBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	InputComponent->BindAxis("MoveForward/Backwards", this, &ABMBaseCharacter::PlayerForwardMovementInput);
+	InputComponent->BindAxis("MoveRight/Left", this, &ABMBaseCharacter::PlayerRightMovementInput);
+	InputComponent->BindAxis("LookUp/Down", this, &ABMBaseCharacter::PlayerCameraUpInput);
+	InputComponent->BindAxis("LookLeft/Right", this, &ABMBaseCharacter::PlayerCameraRightInput);
+	InputComponent->BindAction("JumpAction", IE_Pressed, this, &ABMBaseCharacter::JumpPressedAction);
+	InputComponent->BindAction("JumpAction", IE_Released, this, &ABMBaseCharacter::JumpReleasedAction);
+	InputComponent->BindAction("StanceAction", IE_Pressed, this, &ABMBaseCharacter::StancePressedAction);
+	InputComponent->BindAction("WalkAction", IE_Pressed, this, &ABMBaseCharacter::WalkPressedAction);
+	InputComponent->BindAction("RagdollAction", IE_Pressed, this, &ABMBaseCharacter::RagdollPressedAction);
+	InputComponent->BindAction("SelectRotationMode_1", IE_Pressed, this, &ABMBaseCharacter::VelocityDirectionPressedAction);
+	InputComponent->BindAction("SelectRotationMode_2", IE_Pressed, this, &ABMBaseCharacter::LookingDirectionPressedAction);
+	InputComponent->BindAction("SprintAction", IE_Pressed, this, &ABMBaseCharacter::SprintPressedAction);
+	InputComponent->BindAction("SprintAction", IE_Released, this, &ABMBaseCharacter::SprintReleasedAction);
+	InputComponent->BindAction("AimAction", IE_Pressed, this, &ABMBaseCharacter::AimPressedAction);
+	InputComponent->BindAction("AimAction", IE_Released, this, &ABMBaseCharacter::AimReleasedAction);
+	InputComponent->BindAction("CameraAction", IE_Pressed, this, &ABMBaseCharacter::CameraPressedAction);
+	InputComponent->BindAction("CameraAction", IE_Released, this, &ABMBaseCharacter::CameraReleasedAction);
 }
 
 void ABMBaseCharacter::OnBreakfall_Implementation()
@@ -376,13 +399,6 @@ bool ABMBaseCharacter::CanSprint()
 	}
 
 	return false;
-}
-
-FVector ABMBaseCharacter::GetPlayerMovementInput()
-{
-	ABMPlayerController* PlayerController = Cast<ABMPlayerController>(GetController());
-	check(PlayerController);
-	return PlayerController->GetPlayerMovementInput();
 }
 
 void ABMBaseCharacter::SetIsMoving(bool bNewIsMoving)
@@ -1224,4 +1240,260 @@ void ABMBaseCharacter::LimitRotation(float AimYawMin, float AimYawMax, float Int
 		SmoothCharacterRotation(FRotator(0.0f, TargetYaw, 0.0f),
 		                        0.0f, InterpSpeed, DeltaTime);
 	}
+}
+
+void ABMBaseCharacter::GetControlForwardRightVector(FVector& Forward, FVector& Right)
+{
+	const FRotator ControlRot(0.0f, GetControlRotation().Yaw, 0.0f);
+	Forward = GetInputAxisValue("MoveForward/Backwards") * UKismetMathLibrary::GetForwardVector(ControlRot);
+	Right = GetInputAxisValue("MoveRight/Left") * UKismetMathLibrary::GetRightVector(ControlRot);
+}
+
+FVector ABMBaseCharacter::GetPlayerMovementInput()
+{
+	FVector Forward;
+	FVector Right;
+	GetControlForwardRightVector(Forward, Right);
+	return (Forward + Right).GetSafeNormal();
+}
+
+static TPair<float, float> FixDiagonalGamepadValues(const float Y, const float X)
+{
+	float ResultY = Y * FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 0.6f),
+	                                                      FVector2D(1.0f, 1.2f), FMath::Abs(X));
+	ResultY = FMath::Clamp(ResultY, -1.0f, 1.0f);
+	float ResultX = X * FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 0.6f),
+	                                                      FVector2D(1.0f, 1.2f), FMath::Abs(Y));
+	ResultX = FMath::Clamp(ResultX, -1.0f, 1.0f);
+	return TPair<float, float>(ResultY, ResultX);
+}
+
+void ABMBaseCharacter::PlayerForwardMovementInput(float Value)
+{
+	if (MovementState == EBMMovementState::Grounded || MovementState == EBMMovementState::InAir)
+	{
+		// Default camera relative movement behavior
+		const float Scale = FixDiagonalGamepadValues(Value, GetInputAxisValue("MoveRight/Left")).Key;
+		const FRotator DirRotator(0.0f, GetControlRotation().Yaw, 0.0f);
+		AddMovementInput(UKismetMathLibrary::GetForwardVector(DirRotator), Scale);
+	}
+}
+
+void ABMBaseCharacter::PlayerRightMovementInput(float Value)
+{
+	if (MovementState == EBMMovementState::Grounded || MovementState == EBMMovementState::InAir)
+	{
+		// Default camera relative movement behavior
+		const float Scale = FixDiagonalGamepadValues(GetInputAxisValue("MoveForward/Backwards"), Value).Value;
+		const FRotator DirRotator(0.0f, GetControlRotation().Yaw, 0.0f);
+		AddMovementInput(UKismetMathLibrary::GetRightVector(DirRotator), Scale);
+	}
+}
+
+void ABMBaseCharacter::PlayerCameraUpInput(float Value)
+{
+	AddControllerPitchInput(LookUpDownRate * Value);
+}
+
+void ABMBaseCharacter::PlayerCameraRightInput(float Value)
+{
+	AddControllerYawInput(LookLeftRightRate * Value);
+}
+
+void ABMBaseCharacter::JumpPressedAction()
+{
+	// Jump Action: Press "Jump Action" to end the ragdoll if ragdolling, check for a mantle if grounded or in air,
+	// stand up if crouching, or jump if standing.
+
+	if (MovementAction == EBMMovementAction::None)
+	{
+		if (MovementState == EBMMovementState::Grounded)
+		{
+			if (bHasMovementInput)
+			{
+				if (MantleCheckGrounded())
+				{
+					return;
+				}
+			}
+			if (Stance == EBMStance::Standing)
+			{
+				Jump();
+			}
+			else if (Stance == EBMStance::Crouching)
+			{
+				UnCrouch();
+			}
+		}
+		else if (MovementState == EBMMovementState::InAir)
+		{
+			MantleCheckFalling();
+		}
+		else if (MovementState == EBMMovementState::Ragdoll)
+		{
+			RagdollEnd();
+		}
+	}
+}
+
+void ABMBaseCharacter::JumpReleasedAction()
+{
+	StopJumping();
+}
+
+void ABMBaseCharacter::SprintPressedAction()
+{
+	SetDesiredGait(EBMGait::Sprinting);
+}
+
+void ABMBaseCharacter::SprintReleasedAction()
+{
+	SetDesiredGait(EBMGait::Running);
+}
+
+void ABMBaseCharacter::AimPressedAction()
+{
+	// AimAction: Hold "AimAction" to enter the aiming mode, release to revert back the desired rotation mode.
+	SetRotationMode(EBMRotationMode::Aiming);
+}
+
+void ABMBaseCharacter::AimReleasedAction()
+{
+	if (ViewMode == EBMViewMode::ThirdPerson)
+	{
+		SetRotationMode(DesiredRotationMode);
+	}
+	else if (ViewMode == EBMViewMode::FirstPerson)
+	{
+		SetRotationMode(EBMRotationMode::LookingDirection);
+	}
+}
+
+void ABMBaseCharacter::CameraPressedAction()
+{
+	UWorld* World = GetWorld();
+	check(World);
+	CameraActionPressedTime = World->GetTimeSeconds();
+	GetWorldTimerManager().SetTimer(OnCameraModeSwapTimer, this,
+	                                &ABMBaseCharacter::OnSwitchCameraMode, ViewModeSwitchHoldTime, false);
+}
+
+void ABMBaseCharacter::CameraReleasedAction()
+{
+	if (ViewMode == EBMViewMode::FirstPerson)
+	{
+		// Don't swap shoulders on first person mode
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	check(World);
+	if (World->GetTimeSeconds() - CameraActionPressedTime < ViewModeSwitchHoldTime)
+	{
+		// Switch shoulders
+		SetRightShoulder(!bRightShoulder);
+		GetWorldTimerManager().ClearTimer(OnCameraModeSwapTimer); // Prevent mode change
+	}
+}
+
+void ABMBaseCharacter::OnSwitchCameraMode()
+{
+	// Switch camera mode
+	if (ViewMode == EBMViewMode::FirstPerson)
+	{
+		SetViewMode(EBMViewMode::ThirdPerson);
+	}
+	else if (ViewMode == EBMViewMode::ThirdPerson)
+	{
+		SetViewMode(EBMViewMode::FirstPerson);
+	}
+}
+
+
+void ABMBaseCharacter::StancePressedAction()
+{
+	// Stance Action: Press "Stance Action" to toggle Standing / Crouching, double tap to Roll.
+
+	if (MovementAction != EBMMovementAction::None)
+	{
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	check(World);
+
+	const float PrevStanceInputTime = LastStanceInputTime;
+	LastStanceInputTime = World->GetTimeSeconds();
+
+	if (LastStanceInputTime - PrevStanceInputTime <= RollDoubleTapTimeout)
+	{
+		// Roll
+		OnRoll();
+
+		if (Stance == EBMStance::Standing)
+		{
+			SetDesiredStance(EBMStance::Crouching);
+		}
+		else if (Stance == EBMStance::Crouching)
+		{
+			SetDesiredStance(EBMStance::Standing);
+		}
+		return;
+	}
+
+	if (MovementState == EBMMovementState::Grounded)
+	{
+		if (Stance == EBMStance::Standing)
+		{
+			SetDesiredStance(EBMStance::Crouching);
+			Crouch();
+		}
+		else if (Stance == EBMStance::Crouching)
+		{
+			SetDesiredStance(EBMStance::Standing);
+			UnCrouch();
+		}
+	}
+
+	// Notice: MovementState == EBMMovementState::InAir case is removed
+}
+
+void ABMBaseCharacter::WalkPressedAction()
+{
+	if (DesiredGait == EBMGait::Walking)
+	{
+		SetDesiredGait(EBMGait::Running);
+	}
+	else if (DesiredGait == EBMGait::Running)
+	{
+		SetDesiredGait(EBMGait::Walking);
+	}
+}
+
+void ABMBaseCharacter::RagdollPressedAction()
+{
+	// Ragdoll Action: Press "Ragdoll Action" to toggle the ragdoll state on or off.
+
+	if (GetMovementState() == EBMMovementState::Ragdoll)
+	{
+		RagdollEnd();
+	}
+	else
+	{
+		RagdollStart();
+	}
+}
+
+void ABMBaseCharacter::VelocityDirectionPressedAction()
+{
+	// Select Rotation Mode: Switch the desired (default) rotation mode to Velocity or Looking Direction.
+	// This will be the mode the character reverts back to when un-aiming
+	SetDesiredRotationMode(EBMRotationMode::VelocityDirection);
+	SetRotationMode(EBMRotationMode::VelocityDirection);
+}
+
+void ABMBaseCharacter::LookingDirectionPressedAction()
+{
+	SetDesiredRotationMode(EBMRotationMode::LookingDirection);
+	SetRotationMode(EBMRotationMode::LookingDirection);
 }

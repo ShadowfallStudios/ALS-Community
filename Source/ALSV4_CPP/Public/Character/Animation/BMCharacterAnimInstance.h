@@ -98,8 +98,6 @@ private:
 
 	/** Update Values */
 
-	void UpdateCharacterInfo();
-
 	void UpdateAimingValues(float DeltaSeconds);
 
 	void UpdateLayerValues();

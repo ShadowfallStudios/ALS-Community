@@ -29,11 +29,17 @@ class ALSV4_CPP_API ABMBaseCharacter : public ACharacter
 public:
 	ABMBaseCharacter();
 
-	void PreInitializeComponents() override;
+	virtual void Tick(float DeltaTime) override;
 
-	void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
 
-	void Restart() override;
+	virtual void PreInitializeComponents() override;
+
+	virtual void PostInitializeComponents() override;
+
+	virtual void Restart() override;
+
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	/** Ragdoll System */
 
@@ -200,7 +206,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Camera System")
 	void GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bool& bRightShoulderOut);
 
-	/** Essential Information Getters */
+	/** Essential Information Getters/Setters */
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
 	FVector GetAcceleration() { return Acceleration; }
@@ -238,11 +244,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	void SetAimYawRate(float NewAimYawRate);
 
+	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	void GetControlForwardRightVector(FVector& Forward, FVector& Right);
+
 protected:
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void BeginPlay() override;
-
 	/** Ragdoll System */
 
 	void RagdollUpdate();
@@ -319,6 +324,44 @@ protected:
 
 	void SetMovementModel();
 
+	/** Input */
+
+	void PlayerForwardMovementInput(float Value);
+
+	void PlayerRightMovementInput(float Value);
+
+	void PlayerCameraUpInput(float Value);
+
+	void PlayerCameraRightInput(float Value);
+
+	void JumpPressedAction();
+
+	void JumpReleasedAction();
+
+	void SprintPressedAction();
+
+	void SprintReleasedAction();
+
+	void AimPressedAction();
+
+	void AimReleasedAction();
+
+	void CameraPressedAction();
+
+	void CameraReleasedAction();
+
+	void OnSwitchCameraMode();
+
+	void StancePressedAction();
+
+	void WalkPressedAction();
+
+	void RagdollPressedAction();
+
+	void VelocityDirectionPressedAction();
+
+	void LookingDirectionPressedAction();
+
 protected:
 	/** Input */
 
@@ -330,6 +373,27 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Input")
 	EBMStance DesiredStance = EBMStance::Standing;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input", BlueprintReadOnly)
+	float LookUpDownRate = 1.25f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input", BlueprintReadOnly)
+	float LookLeftRightRate = 1.25f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input", BlueprintReadOnly)
+	float RollDoubleTapTimeout = 0.3f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input", BlueprintReadOnly)
+	float ViewModeSwitchHoldTime = 0.2f;
+
+	UPROPERTY(Category = "Input", BlueprintReadOnly)
+	int32 TimesPressedStance = 0;
+
+	UPROPERTY(Category = "Input", BlueprintReadOnly)
+	bool bBreakFall = false;
+
+	UPROPERTY(Category = "Input", BlueprintReadOnly)
+	bool bSprintHeld = false;
 
 	/** Camera System */
 
@@ -373,11 +437,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UTimelineComponent* MantleTimeline = nullptr;
-
-	/** References */
-
-	UPROPERTY()
-	UBMCharacterAnimInstance* MainAnimInstance = nullptr;
 
 	/** Essential Information */
 
@@ -474,11 +533,20 @@ protected:
 
 	/** Cached Variables */
 
-	UPROPERTY(BlueprintReadOnly, Category = "Cached Variables")
 	FVector PreviousVelocity;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Cached Variables")
 	float PreviousAimYaw = 0.0f;
+
+	UBMCharacterAnimInstance* MainAnimInstance = nullptr;
+
+	/** Last time the 'first' crouch/roll button is pressed */
+	float LastStanceInputTime = 0.0f;
+
+	/** Last time the camera action button is pressed */
+	float CameraActionPressedTime = 0.0f;
+
+	/* Timer to manage camera mode swap action */
+	FTimerHandle OnCameraModeSwapTimer;
 
 	/* Timer to manage reset of braking friction factor after on landed event */
 	FTimerHandle OnLandedFrictionResetTimer;
