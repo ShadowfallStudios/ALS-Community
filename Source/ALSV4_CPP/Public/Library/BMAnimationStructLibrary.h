@@ -90,6 +90,9 @@ struct FBMAnimCharacterInformation
 	FRotator AimingRotation;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	FRotator CharacterActorRotation;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	FVector Velocity;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)

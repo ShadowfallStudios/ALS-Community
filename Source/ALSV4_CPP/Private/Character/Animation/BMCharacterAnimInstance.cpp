@@ -30,6 +30,7 @@ void UBMCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	CharacterInformation.Velocity = Character->GetCharacterMovement()->Velocity;
 	CharacterInformation.MovementInput = Character->GetMovementInput();
 	CharacterInformation.AimingRotation = Character->GetAimingRotation();
+	CharacterInformation.CharacterActorRotation = Character->GetActorRotation();
 
 	UpdateAimingValues(DeltaSeconds);
 	UpdateLayerValues();
@@ -175,12 +176,12 @@ void UBMCharacterAnimInstance::UpdateAimingValues(float DeltaSeconds)
 
 	// Calculate the Aiming angle and Smoothed Aiming Angle by getting
 	// the delta between the aiming rotation and the actor rotation.
-	FRotator Delta = CharacterInformation.AimingRotation - Character->GetActorRotation();
+	FRotator Delta = CharacterInformation.AimingRotation - CharacterInformation.CharacterActorRotation;
 	Delta.Normalize();
 	AimingValues.AimingAngle.X = Delta.Yaw;
 	AimingValues.AimingAngle.Y = Delta.Pitch;
 
-	Delta = AimingValues.SmoothedAimingRotation - Character->GetActorRotation();
+	Delta = AimingValues.SmoothedAimingRotation - CharacterInformation.CharacterActorRotation;
 	Delta.Normalize();
 	AimingValues.SmoothedAimingAngle.X = Delta.Yaw;
 	AimingValues.SmoothedAimingAngle.Y = Delta.Pitch;
@@ -202,7 +203,7 @@ void UBMCharacterAnimInstance::UpdateAimingValues(float DeltaSeconds)
 	{
 		// Get the delta between the Movement Input rotation and Actor rotation and map it to a range of 0-1.
 		// This value is used in the aim offset behavior to make the character look toward the Movement Input.
-		Delta = CharacterInformation.MovementInput.ToOrientationRotator() - Character->GetActorRotation();
+		Delta = CharacterInformation.MovementInput.ToOrientationRotator() - CharacterInformation.CharacterActorRotation;
 		Delta.Normalize();
 		const float InterpTarget = FMath::GetMappedRangeValueClamped(FVector2D(-180.0f, 180.0f),
 		                                                             FVector2D(0.0f, 1.0f), Delta.Yaw);
@@ -326,7 +327,7 @@ void UBMCharacterAnimInstance::SetFootLockOffsets(float DeltaSeconds, FVector& L
 	// to remain planted on the ground.
 	if (Character->GetCharacterMovement()->IsMovingOnGround())
 	{
-		RotationDifference = Character->GetActorRotation() - Character->GetCharacterMovement()->GetLastUpdateRotation();
+		RotationDifference = CharacterInformation.CharacterActorRotation - Character->GetCharacterMovement()->GetLastUpdateRotation();
 		RotationDifference.Normalize();
 	}
 
@@ -605,7 +606,7 @@ FBMVelocityBlend UBMCharacterAnimInstance::CalculateVelocityBlend()
 	// diagonals equal .5 for each direction), and is used in a BlendMulti node to produce better
 	// directional blending than a standard blendspace.
 	const FVector LocRelativeVelocityDir =
-		Character->GetActorRotation().UnrotateVector(CharacterInformation.Velocity.GetSafeNormal(0.1f));
+		CharacterInformation.CharacterActorRotation.UnrotateVector(CharacterInformation.Velocity.GetSafeNormal(0.1f));
 	const float Sum = FMath::Abs(LocRelativeVelocityDir.X) + FMath::Abs(LocRelativeVelocityDir.Y) +
 		FMath::Abs(LocRelativeVelocityDir.Z);
 	const FVector RelativeDir = LocRelativeVelocityDir / Sum;
@@ -625,12 +626,12 @@ FVector UBMCharacterAnimInstance::CalculateRelativeAccelerationAmount()
 	if (FVector::DotProduct(CharacterInformation.Acceleration, CharacterInformation.Velocity) > 0.0f)
 	{
 		const float MaxAcc = Character->GetCharacterMovement()->GetMaxAcceleration();
-		return Character->GetActorRotation().UnrotateVector(CharacterInformation.Acceleration.GetClampedToMaxSize(MaxAcc) / MaxAcc);
+		return CharacterInformation.CharacterActorRotation.UnrotateVector(CharacterInformation.Acceleration.GetClampedToMaxSize(MaxAcc) / MaxAcc);
 	}
 
 	const float MaxBrakingDec = Character->GetCharacterMovement()->GetMaxBrakingDeceleration();
 	return
-		Character->GetActorRotation().UnrotateVector(CharacterInformation.Acceleration.GetClampedToMaxSize(MaxBrakingDec) / MaxBrakingDec);
+		CharacterInformation.CharacterActorRotation.UnrotateVector(CharacterInformation.Acceleration.GetClampedToMaxSize(MaxBrakingDec) / MaxBrakingDec);
 }
 
 float UBMCharacterAnimInstance::CalculateStrideBlend()
@@ -730,7 +731,7 @@ FBMLeanAmount UBMCharacterAnimInstance::CalculateAirLeanAmount()
 	// The Lean In Air curve gets the Fall Speed and is used as a multiplier to smoothly reverse the leaning direction
 	// when transitioning from moving upwards to moving downwards.
 	FBMLeanAmount LeanAmount;
-	const FVector& UnrotatedVel = Character->GetActorRotation().UnrotateVector(CharacterInformation.Velocity) / 350.0f;
+	const FVector& UnrotatedVel = CharacterInformation.CharacterActorRotation.UnrotateVector(CharacterInformation.Velocity) / 350.0f;
 	FVector2D InversedVect(UnrotatedVel.Y, UnrotatedVel.X);
 	InversedVect *= LeanInAirCurve->GetFloatValue(InAir.FallSpeed);
 	LeanAmount.LR = InversedVect.X;
@@ -792,7 +793,7 @@ void UBMCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayRa
                                            bool OverrideCurrent)
 {
 	// Step 1: Set Turn Angle
-	FRotator Delta = TargetRotation - Character->GetActorRotation();
+	FRotator Delta = TargetRotation - CharacterInformation.CharacterActorRotation;
 	Delta.Normalize();
 	const float TurnAngle = Delta.Yaw;
 
