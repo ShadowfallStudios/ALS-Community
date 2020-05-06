@@ -119,9 +119,11 @@ void UBMCharacterAnimInstance::PlayDynamicTransition(float ReTriggerDelay, FBMDy
 		                                  Parameters.BlendInTime, Parameters.BlendOutTime, Parameters.PlayRate, 1,
 		                                  0.0f, Parameters.StartTime);
 
-		Character->GetWorldTimerManager().SetTimer(PlayDynamicTransitionTimer, this,
-		                                           &UBMCharacterAnimInstance::PlayDynamicTransitionDelay,
-		                                           ReTriggerDelay, false);
+		UWorld* World = GetWorld();
+		check(World);
+		World->GetTimerManager().SetTimer(PlayDynamicTransitionTimer, this,
+		                                  &UBMCharacterAnimInstance::PlayDynamicTransitionDelay,
+		                                  ReTriggerDelay, false);
 	}
 }
 
@@ -561,7 +563,7 @@ void UBMCharacterAnimInstance::UpdateRotationValues()
 	// Set the Yaw Offsets. These values influence the "YawOffset" curve in the animgraph and are used to offset
 	// the characters rotation for more natural movement. The curves allow for fine control over how the offset
 	// behaves for each movement direction.
-	FRotator Delta = CharacterInformation.Velocity.ToOrientationRotator() - Character->GetControlRotation();
+	FRotator Delta = CharacterInformation.Velocity.ToOrientationRotator() - CharacterInformation.AimingRotation;
 	Delta.Normalize();
 	const FVector& FBOffset = YawOffset_FB->GetVectorValue(Delta.Yaw);
 	Grounded.FYaw = FBOffset.X;
@@ -626,12 +628,14 @@ FVector UBMCharacterAnimInstance::CalculateRelativeAccelerationAmount()
 	if (FVector::DotProduct(CharacterInformation.Acceleration, CharacterInformation.Velocity) > 0.0f)
 	{
 		const float MaxAcc = Character->GetCharacterMovement()->GetMaxAcceleration();
-		return CharacterInformation.CharacterActorRotation.UnrotateVector(CharacterInformation.Acceleration.GetClampedToMaxSize(MaxAcc) / MaxAcc);
+		return CharacterInformation.CharacterActorRotation.UnrotateVector(
+			CharacterInformation.Acceleration.GetClampedToMaxSize(MaxAcc) / MaxAcc);
 	}
 
 	const float MaxBrakingDec = Character->GetCharacterMovement()->GetMaxBrakingDeceleration();
 	return
-		CharacterInformation.CharacterActorRotation.UnrotateVector(CharacterInformation.Acceleration.GetClampedToMaxSize(MaxBrakingDec) / MaxBrakingDec);
+		CharacterInformation.CharacterActorRotation.UnrotateVector(
+			CharacterInformation.Acceleration.GetClampedToMaxSize(MaxBrakingDec) / MaxBrakingDec);
 }
 
 float UBMCharacterAnimInstance::CalculateStrideBlend()
@@ -855,13 +859,17 @@ void UBMCharacterAnimInstance::OnJumped()
 	InAir.JumpPlayRate = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 600.0f),
 	                                                       FVector2D(1.2f, 1.5f), CharacterInformation.Speed);
 
-	Character->GetWorldTimerManager().SetTimer(OnJumpedTimer, this,
-	                                           &UBMCharacterAnimInstance::OnJumpedDelay, 0.1f, false);
+	UWorld* World = GetWorld();
+	check(World);
+	World->GetTimerManager().SetTimer(OnJumpedTimer, this,
+	                                  &UBMCharacterAnimInstance::OnJumpedDelay, 0.1f, false);
 }
 
 void UBMCharacterAnimInstance::OnPivot()
 {
 	Grounded.bPivot = CharacterInformation.Speed < Config.TriggerPivotSpeedLimit;
-	Character->GetWorldTimerManager().SetTimer(OnPivotTimer, this,
-	                                           &UBMCharacterAnimInstance::OnPivotDelay, 0.1f, false);
+	UWorld* World = GetWorld();
+	check(World);
+	World->GetTimerManager().SetTimer(OnPivotTimer, this,
+	                                  &UBMCharacterAnimInstance::OnPivotDelay, 0.1f, false);
 }
