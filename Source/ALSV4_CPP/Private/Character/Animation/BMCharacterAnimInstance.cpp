@@ -26,7 +26,11 @@ void UBMCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		return;
 	}
 
-	UpdateCharacterInfo();
+	// Update rest of character information. Others are reflected into anim bp when they're set inside character class
+	CharacterInformation.Velocity = Character->GetCharacterMovement()->Velocity;
+	CharacterInformation.MovementInput = Character->GetMovementInput();
+	CharacterInformation.AimingRotation = Character->GetAimingRotation();
+
 	UpdateAimingValues(DeltaSeconds);
 	UpdateLayerValues();
 	UpdateFootIK(DeltaSeconds);
@@ -157,28 +161,6 @@ void UBMCharacterAnimInstance::OnJumpedDelay()
 void UBMCharacterAnimInstance::OnPivotDelay()
 {
 	Grounded.bPivot = false;
-}
-
-void UBMCharacterAnimInstance::UpdateCharacterInfo()
-{
-	// TODO: Maybe access those directly from character?
-	CharacterInformation.Velocity = Character->GetVelocity();
-	CharacterInformation.Acceleration = Character->GetCurrentAcceleration();
-	CharacterInformation.MovementInput = Character->GetMovementInput();
-	CharacterInformation.bIsMoving = Character->IsMoving();
-	CharacterInformation.bHasMovementInput = Character->HasMovementInput();
-	CharacterInformation.Speed = Character->GetSpeed();
-	CharacterInformation.MovementInputAmount = Character->GetMovementInputAmount();
-	CharacterInformation.AimingRotation = Character->GetAimingRotation();
-	CharacterInformation.AimYawRate = Character->GetAimYawRate();
-	CharacterInformation.MovementState = Character->GetMovementState();
-	CharacterInformation.PrevMovementState = Character->GetPrevMovementState();
-	CharacterInformation.MovementAction = Character->GetMovementAction();
-	CharacterInformation.RotationMode = Character->GetRotationMode();
-	CharacterInformation.Gait = Character->GetGait();
-	CharacterInformation.Stance = Character->GetStance();
-	CharacterInformation.ViewMode = Character->GetViewMode();
-	CharacterInformation.OverlayState = Character->GetOverlayState();
 }
 
 void UBMCharacterAnimInstance::UpdateAimingValues(float DeltaSeconds)

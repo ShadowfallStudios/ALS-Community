@@ -83,6 +83,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Grounded")
 	bool CanDynamicTransition();
 
+	/** Return mutable reference of character information to edit them easily inside character class */
+	FBMAnimCharacterInformation& GetCharacterInformationMutable()
+	{
+		return CharacterInformation;
+	}
+
 private:
 	void PlayDynamicTransitionDelay();
 

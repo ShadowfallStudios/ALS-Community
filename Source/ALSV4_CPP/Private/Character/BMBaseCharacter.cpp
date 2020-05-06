@@ -20,22 +20,18 @@ ABMBaseCharacter::ABMBaseCharacter()
 	bUseControllerRotationYaw = 0;
 }
 
-void ABMBaseCharacter::OnBreakfall_Implementation()
+void ABMBaseCharacter::PreInitializeComponents()
 {
-	check(MainAnimInstance);
-	MainAnimInstance->Montage_Play(GetRollAnimation(), 1.35f);
+	Super::PreInitializeComponents();
+	
+	// Set Reference to the Main Anim Instance.
+	check(GetMesh()->GetAnimInstance());
+	MainAnimInstance = Cast<UBMCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
-void ABMBaseCharacter::OnRoll_Implementation()
+void ABMBaseCharacter::PostInitializeComponents()
 {
-	// Roll: Simply play a Root Motion Montage.
-	check(MainAnimInstance);
-	MainAnimInstance->Montage_Play(GetRollAnimation(), 1.15f);
-}
-
-void ABMBaseCharacter::BeginPlay()
-{
-	Super::BeginPlay();
+	Super::PostInitializeComponents();
 
 	FOnTimelineFloat TimelineUpdated;
 	FOnTimelineEvent TimelineFinished;
@@ -49,12 +45,6 @@ void ABMBaseCharacter::BeginPlay()
 	// Make sure the mesh and animbp update after the CharacterBP to ensure it gets the most recent values.
 	GetMesh()->AddTickPrerequisiteActor(this);
 
-	// Set Reference to the Main Anim Instance.
-	if (IsValid(GetMesh()->GetAnimInstance()))
-	{
-		MainAnimInstance = Cast<UBMCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-	}
-
 	// Set the Movement Model
 	SetMovementModel();
 
@@ -63,6 +53,22 @@ void ABMBaseCharacter::BeginPlay()
 	SetRotationMode(DesiredRotationMode);
 	SetViewMode(ViewMode);
 	SetOverlayState(OverlayState);
+}
+
+void ABMBaseCharacter::OnBreakfall_Implementation()
+{
+	MainAnimInstance->Montage_Play(GetRollAnimation(), 1.35f);
+}
+
+void ABMBaseCharacter::OnRoll_Implementation()
+{
+	// Roll: Simply play a Root Motion Montage.
+	MainAnimInstance->Montage_Play(GetRollAnimation(), 1.15f);
+}
+
+void ABMBaseCharacter::BeginPlay()
+{
+	Super::BeginPlay();
 
 	if (Stance == EBMStance::Standing)
 	{
@@ -77,6 +83,13 @@ void ABMBaseCharacter::BeginPlay()
 	TargetRotation = GetActorRotation();
 	LastVelocityRotation = TargetRotation;
 	LastMovementInputRotation = TargetRotation;
+}
+
+void ABMBaseCharacter::SetAimYawRate(float NewAimYawRate)
+{
+	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
+	AimYawRate = NewAimYawRate;
+	AnimData.AimYawRate = AimYawRate;
 }
 
 void ABMBaseCharacter::Tick(float DeltaTime)
@@ -164,8 +177,11 @@ void ABMBaseCharacter::SetMovementState(const EBMMovementState NewState)
 {
 	if (MovementState != NewState)
 	{
+		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		PrevMovementState = MovementState;
 		MovementState = NewState;
+		AnimData.PrevMovementState = PrevMovementState;
+		AnimData.MovementState = MovementState;
 		OnMovementStateChanged(PrevMovementState);
 	}
 }
@@ -174,8 +190,10 @@ void ABMBaseCharacter::SetMovementAction(const EBMMovementAction NewAction)
 {
 	if (MovementAction != NewAction)
 	{
+		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		EBMMovementAction Prev = MovementAction;
 		MovementAction = NewAction;
+		AnimData.MovementAction = MovementAction;
 		OnMovementActionChanged(Prev);
 	}
 }
@@ -184,8 +202,10 @@ void ABMBaseCharacter::SetStance(const EBMStance NewStance)
 {
 	if (Stance != NewStance)
 	{
+		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		EBMStance Prev = Stance;
 		Stance = NewStance;
+		AnimData.Stance = Stance;
 		OnStanceChanged(Prev);
 	}
 }
@@ -194,8 +214,10 @@ void ABMBaseCharacter::SetRotationMode(const EBMRotationMode NewRotationMode)
 {
 	if (RotationMode != NewRotationMode)
 	{
+		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		EBMRotationMode Prev = RotationMode;
 		RotationMode = NewRotationMode;
+		AnimData.RotationMode = RotationMode;
 		OnRotationModeChanged(Prev);
 	}
 }
@@ -204,8 +226,10 @@ void ABMBaseCharacter::SetGait(const EBMGait NewGait)
 {
 	if (Gait != NewGait)
 	{
+		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		EBMGait Prev = Gait;
 		Gait = NewGait;
+		AnimData.Gait = Gait;
 		OnGaitChanged(Prev);
 	}
 }
@@ -214,8 +238,10 @@ void ABMBaseCharacter::SetViewMode(const EBMViewMode NewViewMode)
 {
 	if (ViewMode != NewViewMode)
 	{
+		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		EBMViewMode Prev = ViewMode;
 		ViewMode = NewViewMode;
+		AnimData.ViewMode = ViewMode;
 		OnViewModeChanged(Prev);
 	}
 }
@@ -224,8 +250,10 @@ void ABMBaseCharacter::SetOverlayState(const EBMOverlayState NewState)
 {
 	if (OverlayState != NewState)
 	{
+		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		EBMOverlayState Prev = OverlayState;
 		OverlayState = NewState;
+		AnimData.OverlayState = OverlayState;
 		OnOverlayStateChanged(Prev);
 	}
 }
@@ -253,6 +281,13 @@ void ABMBaseCharacter::SetMovementModel()
 		MovementModel.DataTable->FindRow<FBMMovementStateSettings>(MovementModel.RowName, ContextString);
 	check(OutRow);
 	MovementData = *OutRow;
+}
+
+void ABMBaseCharacter::SetHasMovementInput(bool bNewHasMovementInput)
+{
+	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
+	bHasMovementInput = bNewHasMovementInput;
+	AnimData.bHasMovementInput = bHasMovementInput;
 }
 
 FBMMovementSettings ABMBaseCharacter::GetTargetMovementSettings()
@@ -332,9 +367,30 @@ FVector ABMBaseCharacter::GetPlayerMovementInput()
 	return PlayerController->GetPlayerMovementInput();
 }
 
+void ABMBaseCharacter::SetIsMoving(bool bNewIsMoving)
+{
+	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
+	bIsMoving = bNewIsMoving;
+	AnimData.bIsMoving = bIsMoving;
+}
+
 FVector ABMBaseCharacter::GetMovementInput()
 {
 	return GetCharacterMovement()->GetCurrentAcceleration();
+}
+
+void ABMBaseCharacter::SetMovementInputAmount(float NewMovementInputAmount)
+{
+	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
+	MovementInputAmount = NewMovementInputAmount;
+	AnimData.MovementInputAmount = MovementInputAmount;
+}
+
+void ABMBaseCharacter::SetSpeed(float NewSpeed)
+{
+	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
+	Speed = NewSpeed;
+	AnimData.Speed = Speed;
 }
 
 float ABMBaseCharacter::GetAnimCurveValue(FName CurveName)
@@ -369,6 +425,13 @@ void ABMBaseCharacter::GetCameraParameters(float& TPFOVOut, float& FPFOVOut, boo
 	TPFOVOut = ThirdPersonFOV;
 	FPFOVOut = FirstPersonFOV;
 	bRightShoulderOut = bRightShoulder;
+}
+
+void ABMBaseCharacter::SetAcceleration(const FVector& NewAcceleration)
+{
+	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
+	Acceleration = NewAcceleration;
+	AnimData.Acceleration = Acceleration;
 }
 
 void ABMBaseCharacter::RagdollUpdate()
@@ -551,8 +614,6 @@ void ABMBaseCharacter::OnJumped_Implementation()
 {
 	Super::OnJumped_Implementation();
 
-	check(MainAnimInstance);
-
 	// Set the new In Air Rotation to the velocity rotation if speed is greater than 100.
 	InAirRotation = Speed > 100.0f ? LastVelocityRotation : GetActorRotation();
 	MainAnimInstance->OnJumped();
@@ -607,14 +668,14 @@ void ABMBaseCharacter::SetEssentialValues(float DeltaTime)
 	const FVector CurrentVel = GetVelocity();
 
 	// Set the amount of Acceleration.
-	Acceleration = (CurrentVel - PreviousVelocity) / DeltaTime;
+	SetAcceleration((CurrentVel - PreviousVelocity) / DeltaTime);
 
 	// Determine if the character is moving by getting it's speed. The Speed equals the length of the horizontal (x y)
 	// velocity, so it does not take vertical movement into account. If the character is moving, update the last
 	// velocity rotation. This value is saved because it might be useful to know the last orientation of movement
 	// even after the character has stopped.
-	Speed = CurrentVel.Size2D();
-	bIsMoving = Speed > 1.0f;
+	SetSpeed(CurrentVel.Size2D());
+	SetIsMoving(Speed > 1.0f);
 	if (bIsMoving)
 	{
 		LastVelocityRotation = CurrentVel.ToOrientationRotator();
@@ -625,8 +686,8 @@ void ABMBaseCharacter::SetEssentialValues(float DeltaTime)
 	// it has a range of 0-1, 1 being the maximum possible amount of input, and 0 beiung none.
 	// If the character has movement input, update the Last Movement Input Rotation.
 	FVector CurAcc = GetCharacterMovement()->GetCurrentAcceleration();
-	MovementInputAmount = CurAcc.Size() / GetCharacterMovement()->GetMaxAcceleration();
-	bHasMovementInput = MovementInputAmount > 0.0f;
+	SetMovementInputAmount(CurAcc.Size() / GetCharacterMovement()->GetMaxAcceleration());
+	SetHasMovementInput(MovementInputAmount > 0.0f);
 	if (bHasMovementInput)
 	{
 		LastMovementInputRotation = CurAcc.ToOrientationRotator();
@@ -634,7 +695,7 @@ void ABMBaseCharacter::SetEssentialValues(float DeltaTime)
 
 	// Set the Aim Yaw rate by comparing the current and previous Aim Yaw value, divided by Delta Seconds.
 	// This represents the speed the camera is rotating left to right.
-	AimYawRate = FMath::Abs((GetControlRotation().Yaw - PreviousAimYaw) / DeltaTime);
+	SetAimYawRate(FMath::Abs((GetControlRotation().Yaw - PreviousAimYaw) / DeltaTime));
 }
 
 void ABMBaseCharacter::UpdateCharacterMovement()
@@ -697,7 +758,6 @@ void ABMBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 				else
 				{
 					// Walking or Running..
-					check(MainAnimInstance);
 					const float YawOffsetCurveVal = MainAnimInstance->GetCurveValue(FName(TEXT("YawOffset")));
 					YawValue = GetControlRotation().Yaw + YawOffsetCurveVal;
 				}
@@ -725,7 +785,6 @@ void ABMBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 			// The Rotation Amount curve defines how much rotation should be applied each frame,
 			// and is calculated for animations that are animated at 30fps.
 
-			check(MainAnimInstance);
 			const float RotAmountCurve = MainAnimInstance->GetCurveValue(FName(TEXT("RotationAmount")));
 
 			if (FMath::Abs(RotAmountCurve) > 0.001f)
@@ -840,7 +899,6 @@ void ABMBaseCharacter::MantleStart(float MantleHeight, const FBMComponentAndTran
 	// Step 7: Play the Anim Montaget if valid.
 	if (IsValid(MantleParams.AnimMontage))
 	{
-		check(MainAnimInstance);
 		MainAnimInstance->Montage_Play(MantleParams.AnimMontage, MantleParams.PlayRate,
 		                               EMontagePlayReturnType::MontageLength, MantleParams.StartingPosition, false);
 	}

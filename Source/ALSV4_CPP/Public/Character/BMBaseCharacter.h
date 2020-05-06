@@ -29,6 +29,10 @@ class ALSV4_CPP_API ABMBaseCharacter : public ACharacter
 public:
 	ABMBaseCharacter();
 
+	void PreInitializeComponents() override;
+
+	void PostInitializeComponents() override;
+
 	/** Ragdoll System */
 
 	/** Implement on BP to get required get up animation according to character's state */
@@ -137,6 +141,9 @@ public:
 	bool HasMovementInput() { return bHasMovementInput; }
 
 	UFUNCTION(BlueprintCallable, Category = "Movement System")
+	void SetHasMovementInput(bool bNewHasMovementInput);
+
+	UFUNCTION(BlueprintCallable, Category = "Movement System")
 	FBMMovementSettings GetTargetMovementSettings();
 
 	UFUNCTION(BlueprintCallable, Category = "Movement System")
@@ -194,10 +201,16 @@ public:
 	/** Essential Information Getters */
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
-	FVector GetCurrentAcceleration() { return Acceleration; }
+	FVector GetAcceleration() { return Acceleration; }
+
+	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	void SetAcceleration(const FVector& NewAcceleration);
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
 	bool IsMoving() { return bIsMoving; }
+
+	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	void SetIsMoving(bool bNewIsMoving);
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	FVector GetMovementInput();
@@ -205,14 +218,23 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
 	float GetMovementInputAmount() { return MovementInputAmount; }
 
+	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	void SetMovementInputAmount(float NewMovementInputAmount);
+
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
 	float GetSpeed() { return Speed; }
+
+	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	void SetSpeed(float NewSpeed);
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	FRotator GetAimingRotation() { return GetControlRotation(); }
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
 	float GetAimYawRate() { return AimYawRate; }
+
+	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	void SetAimYawRate(float NewAimYawRate);
 
 protected:
 	virtual void Tick(float DeltaTime) override;
