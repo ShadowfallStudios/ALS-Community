@@ -35,23 +35,23 @@ void ABMBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	InputComponent->BindAxis("MoveForward/Backwards", this, &ABMBaseCharacter::PlayerForwardMovementInput);
-	InputComponent->BindAxis("MoveRight/Left", this, &ABMBaseCharacter::PlayerRightMovementInput);
-	InputComponent->BindAxis("LookUp/Down", this, &ABMBaseCharacter::PlayerCameraUpInput);
-	InputComponent->BindAxis("LookLeft/Right", this, &ABMBaseCharacter::PlayerCameraRightInput);
-	InputComponent->BindAction("JumpAction", IE_Pressed, this, &ABMBaseCharacter::JumpPressedAction);
-	InputComponent->BindAction("JumpAction", IE_Released, this, &ABMBaseCharacter::JumpReleasedAction);
-	InputComponent->BindAction("StanceAction", IE_Pressed, this, &ABMBaseCharacter::StancePressedAction);
-	InputComponent->BindAction("WalkAction", IE_Pressed, this, &ABMBaseCharacter::WalkPressedAction);
-	InputComponent->BindAction("RagdollAction", IE_Pressed, this, &ABMBaseCharacter::RagdollPressedAction);
-	InputComponent->BindAction("SelectRotationMode_1", IE_Pressed, this, &ABMBaseCharacter::VelocityDirectionPressedAction);
-	InputComponent->BindAction("SelectRotationMode_2", IE_Pressed, this, &ABMBaseCharacter::LookingDirectionPressedAction);
-	InputComponent->BindAction("SprintAction", IE_Pressed, this, &ABMBaseCharacter::SprintPressedAction);
-	InputComponent->BindAction("SprintAction", IE_Released, this, &ABMBaseCharacter::SprintReleasedAction);
-	InputComponent->BindAction("AimAction", IE_Pressed, this, &ABMBaseCharacter::AimPressedAction);
-	InputComponent->BindAction("AimAction", IE_Released, this, &ABMBaseCharacter::AimReleasedAction);
-	InputComponent->BindAction("CameraAction", IE_Pressed, this, &ABMBaseCharacter::CameraPressedAction);
-	InputComponent->BindAction("CameraAction", IE_Released, this, &ABMBaseCharacter::CameraReleasedAction);
+	PlayerInputComponent->BindAxis("MoveForward/Backwards", this, &ABMBaseCharacter::PlayerForwardMovementInput);
+	PlayerInputComponent->BindAxis("MoveRight/Left", this, &ABMBaseCharacter::PlayerRightMovementInput);
+	PlayerInputComponent->BindAxis("LookUp/Down", this, &ABMBaseCharacter::PlayerCameraUpInput);
+	PlayerInputComponent->BindAxis("LookLeft/Right", this, &ABMBaseCharacter::PlayerCameraRightInput);
+	PlayerInputComponent->BindAction("JumpAction", IE_Pressed, this, &ABMBaseCharacter::JumpPressedAction);
+	PlayerInputComponent->BindAction("JumpAction", IE_Released, this, &ABMBaseCharacter::JumpReleasedAction);
+	PlayerInputComponent->BindAction("StanceAction", IE_Pressed, this, &ABMBaseCharacter::StancePressedAction);
+	PlayerInputComponent->BindAction("WalkAction", IE_Pressed, this, &ABMBaseCharacter::WalkPressedAction);
+	PlayerInputComponent->BindAction("RagdollAction", IE_Pressed, this, &ABMBaseCharacter::RagdollPressedAction);
+	PlayerInputComponent->BindAction("SelectRotationMode_1", IE_Pressed, this, &ABMBaseCharacter::VelocityDirectionPressedAction);
+	PlayerInputComponent->BindAction("SelectRotationMode_2", IE_Pressed, this, &ABMBaseCharacter::LookingDirectionPressedAction);
+	PlayerInputComponent->BindAction("SprintAction", IE_Pressed, this, &ABMBaseCharacter::SprintPressedAction);
+	PlayerInputComponent->BindAction("SprintAction", IE_Released, this, &ABMBaseCharacter::SprintReleasedAction);
+	PlayerInputComponent->BindAction("AimAction", IE_Pressed, this, &ABMBaseCharacter::AimPressedAction);
+	PlayerInputComponent->BindAction("AimAction", IE_Released, this, &ABMBaseCharacter::AimReleasedAction);
+	PlayerInputComponent->BindAction("CameraAction", IE_Pressed, this, &ABMBaseCharacter::CameraPressedAction);
+	PlayerInputComponent->BindAction("CameraAction", IE_Released, this, &ABMBaseCharacter::CameraReleasedAction);
 }
 
 void ABMBaseCharacter::OnBreakfall_Implementation()
