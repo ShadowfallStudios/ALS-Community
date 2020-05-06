@@ -139,22 +139,3 @@ enum class EBMMovementDirection : uint8
 	Left,
 	Backward
 };
-
-#if WITH_EDITOR
-static TMap<int32, FString> OverlayOverrideStateMap
-{
-	TPair<int32, FString>(0, "Default"),
-	TPair<int32, FString>(1, "Masculine"),
-	TPair<int32, FString>(2, "Feminine"),
-	TPair<int32, FString>(3, "Injured"),
-	TPair<int32, FString>(4, "Hands Tied"),
-	TPair<int32, FString>(5, "Rifle"),
-	TPair<int32, FString>(6, "Pistol 1H"),
-	TPair<int32, FString>(7, "Pistol 2H"),
-	TPair<int32, FString>(8, "Bow"),
-	TPair<int32, FString>(9, "Torch"),
-	TPair<int32, FString>(10, "Binoculars"),
-	TPair<int32, FString>(11, "Box"),
-	TPair<int32, FString>(12, "Barrel")
-};
-#endif
