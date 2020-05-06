@@ -33,6 +33,8 @@ public:
 
 	void PostInitializeComponents() override;
 
+	void Restart() override;
+
 	/** Ragdoll System */
 
 	/** Implement on BP to get required get up animation according to character's state */

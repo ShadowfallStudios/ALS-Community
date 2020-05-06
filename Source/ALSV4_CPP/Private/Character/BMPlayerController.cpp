@@ -42,10 +42,8 @@ void ABMPlayerController::SetupInputComponent()
 	InputComponent->BindAction("CameraAction", IE_Released, this, &ABMPlayerController::CameraReleasedAction);
 }
 
-void ABMPlayerController::OnPossess(APawn* NewPawn)
+void ABMPlayerController::OnPawnRestart(APawn* NewPawn)
 {
-	Super::OnPossess(NewPawn);
-
 	PossessedCharacter = Cast<ABMBaseCharacter>(NewPawn);
 	check(PossessedCharacter);
 
@@ -74,6 +72,11 @@ FVector ABMPlayerController::GetPlayerMovementInput()
 
 void ABMPlayerController::PlayerForwardMovementInput(float Value)
 {
+	if (!PossessedCharacter)
+	{
+		return;
+	}
+	
 	EBMMovementState MovementState = PossessedCharacter->GetMovementState();
 	if (MovementState == EBMMovementState::Grounded || MovementState == EBMMovementState::InAir)
 	{
@@ -86,6 +89,11 @@ void ABMPlayerController::PlayerForwardMovementInput(float Value)
 
 void ABMPlayerController::PlayerRightMovementInput(float Value)
 {
+	if (!PossessedCharacter)
+	{
+		return;
+	}
+	
 	EBMMovementState MovementState = PossessedCharacter->GetMovementState();
 	if (MovementState == EBMMovementState::Grounded || MovementState == EBMMovementState::InAir)
 	{

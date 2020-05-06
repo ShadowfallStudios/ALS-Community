@@ -55,6 +55,17 @@ void ABMBaseCharacter::PostInitializeComponents()
 	SetOverlayState(OverlayState);
 }
 
+void ABMBaseCharacter::Restart()
+{
+	Super::Restart();
+
+	ABMPlayerController* NewController = Cast<ABMPlayerController>(GetController());
+	if (NewController)
+	{
+		NewController->OnPawnRestart(this);
+	}
+}
+
 void ABMBaseCharacter::OnBreakfall_Implementation()
 {
 	MainAnimInstance->Montage_Play(GetRollAnimation(), 1.35f);

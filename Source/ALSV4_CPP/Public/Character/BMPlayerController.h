@@ -17,15 +17,15 @@ class ALSV4_CPP_API ABMPlayerController : public APlayerController
 	GENERATED_BODY()
 
 	void SetupInputComponent() override;
-
-	void OnPossess(APawn* NewPawn) override;
-
 public:
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	void GetControlForwardRightVector(FVector& Forward, FVector& Right);
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	FVector GetPlayerMovementInput();
+
+	UFUNCTION(BlueprintCallable)
+	void OnPawnRestart(APawn* NewPawn);
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input", BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

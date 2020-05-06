@@ -80,6 +80,11 @@ FVector ABMPlayerCameraManager::CalculateAxisIndependentLag(FVector CurrentLocat
 
 bool ABMPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Location, FRotator& Rotation, float& FOV)
 {
+	if (!ControlledCharacter)
+	{
+		return false;
+	}
+	
 	// Step 1: Get Camera Parameters from CharacterBP via the Camera Interface
 	const FTransform& PivotTarget = ControlledCharacter->GetThirdPersonPivotTarget();
 	const FVector& FPTarget = ControlledCharacter->GetFirstPersonCameraTarget();
