@@ -71,8 +71,8 @@ void ABMBaseCharacter::BeginPlay()
 
 	FOnTimelineFloat TimelineUpdated;
 	FOnTimelineEvent TimelineFinished;
-	TimelineUpdated.BindUFunction(this, FName(TEXT("OnTimeLineUpdated")));
-	TimelineFinished.BindUFunction(this, FName(TEXT("OnTimeLineFinished")));
+	TimelineUpdated.BindUFunction(this, FName(TEXT("MantleUpdate")));
+	TimelineFinished.BindUFunction(this, FName(TEXT("MantleEnd")));
 	MantleTimeline->SetTimelineFinishedFunc(TimelineFinished);
 	MantleTimeline->SetLooping(false);
 	MantleTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
@@ -666,16 +666,6 @@ void ABMBaseCharacter::OnLandFrictionReset()
 {
 	// Reset the braking friction
 	GetCharacterMovement()->BrakingFrictionFactor = 0.0f;
-}
-
-void ABMBaseCharacter::OnTimelineUpdated(float BlendIn)
-{
-	MantleUpdate(BlendIn);
-}
-
-void ABMBaseCharacter::OnTimelineFinished()
-{
-	MantleEnd();
 }
 
 void ABMBaseCharacter::SetEssentialValues(float DeltaTime)

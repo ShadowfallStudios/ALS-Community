@@ -280,12 +280,6 @@ protected:
 
 	void OnLandFrictionReset();
 
-	UFUNCTION()
-	void OnTimelineUpdated(float BlendIn);
-
-	UFUNCTION()
-	void OnTimelineFinished();
-
 	void SetEssentialValues(float DeltaTime);
 
 	void UpdateCharacterMovement();
@@ -303,8 +297,10 @@ protected:
 	virtual bool MantleCheck(const FBMMantleTraceSettings& TraceSettings,
 	                         EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::ForOneFrame);
 
+	UFUNCTION()
 	virtual void MantleUpdate(float BlendIn);
-
+	
+	UFUNCTION()
 	virtual void MantleEnd();
 
 	bool CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector TargetLocation,
