@@ -8,7 +8,7 @@
 
 void UBMPlayerCameraBehavior::NativeUpdateAnimation(float DeltaSeconds)
 {
-	if (IsValid(ControlledPawn))
+	if (ControlledPawn)
 	{
 		MovementState = ControlledPawn->GetMovementState();
 		MovementAction = ControlledPawn->GetMovementAction();
