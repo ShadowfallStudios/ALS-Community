@@ -17,6 +17,6 @@ void UBMAnimNotifyGroundedEntryState::Notify(USkeletalMeshComponent* MeshComp, U
 FString UBMAnimNotifyGroundedEntryState::GetNotifyName_Implementation() const
 {
 	FString Name(TEXT("Grounded Entry State: "));
-	Name.Append(*GroundedEntryStateMap.Find(GroundedEntryState));
+	Name.Append(GetEnumerationToString(GroundedEntryState));
 	return Name;
 }

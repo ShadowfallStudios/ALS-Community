@@ -26,6 +26,10 @@ void UBMNotifyStateOverlayOverride::NotifyEnd(USkeletalMeshComponent* MeshComp, 
 FString UBMNotifyStateOverlayOverride::GetNotifyName_Implementation() const
 {
 	FString Name(TEXT("Overlay Override State: "));
+#if WITH_EDITOR
 	Name.Append(*OverlayOverrideStateMap.Find(OverlayOverrideState));
+#else
+	Name.AppendInt(static_cast<int32>(OverlayOverrideState));
+#endif
 	return Name;
 }

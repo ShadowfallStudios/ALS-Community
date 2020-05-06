@@ -5,6 +5,21 @@
 #include "CoreMinimal.h"
 #include "BMCharacterEnumLibrary.generated.h"
 
+/* Returns the enumeration index. */
+template <typename Enumeration>
+static FORCEINLINE int32 GetEnumerationIndex(const Enumeration InValue)
+{
+	return StaticEnum<Enumeration>()->GetIndexByValue(static_cast<int64>(InValue));
+}
+
+/* Returns the enumeration value as string. */
+template <typename Enumeration>
+static FORCEINLINE FString GetEnumerationToString(const Enumeration InValue)
+{
+	return StaticEnum<Enumeration>()->GetNameStringByValue(static_cast<int64>(InValue));
+}
+
+
 UENUM(BlueprintType)
 enum class EBMGait : uint8
 {
@@ -126,8 +141,6 @@ enum class EBMMovementDirection : uint8
 };
 
 #if WITH_EDITOR
-// TODO: Use those values also in HUD
-/** Fill enumeration string correspondings here to utilize them in C++ code. Note that they're only accessible editor only */
 static TMap<int32, FString> OverlayOverrideStateMap
 {
 	TPair<int32, FString>(0, "Default"),
@@ -143,20 +156,5 @@ static TMap<int32, FString> OverlayOverrideStateMap
 	TPair<int32, FString>(10, "Binoculars"),
 	TPair<int32, FString>(11, "Box"),
 	TPair<int32, FString>(12, "Barrel")
-};
-
-static TMap<EBMMovementAction, FString> MovementActionMap
-{
-	TPair<EBMMovementAction, FString>(EBMMovementAction::None, "None"),
-	TPair<EBMMovementAction, FString>(EBMMovementAction::Rolling, "Rolling"),
-	TPair<EBMMovementAction, FString>(EBMMovementAction::GettingUp, "Getting Up"),
-	TPair<EBMMovementAction, FString>(EBMMovementAction::HighMantle, "High Mantle"),
-	TPair<EBMMovementAction, FString>(EBMMovementAction::LowMantle, "Low Mantle")
-};
-
-static TMap<EBMGroundedEntryState, FString> GroundedEntryStateMap
-{
-	TPair<EBMGroundedEntryState, FString>(EBMGroundedEntryState::None, "None"),
-	TPair<EBMGroundedEntryState, FString>(EBMGroundedEntryState::Roll, "Roll")
 };
 #endif
