@@ -109,11 +109,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetGait(EBMGait NewGait);
 
-	// UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Character States")
-	// void Server_SetGait(EBMGait NewGait);
-	//
-	// UFUNCTION(BlueprintCallable, NetMulticast, Unreliable, Category = "Character States")
-	// void Multicast_SetGait(EBMGait NewGait);
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Character States")
+	void Server_SetGait(EBMGait NewGait);
+	
+	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable, Category = "Character States")
+	void Multicast_SetGait(EBMGait NewGait);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMGait GetGait() { return Gait; }
@@ -296,7 +296,7 @@ public:
 	void SetSpeed(float NewSpeed);
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
-	FRotator GetAimingRotation() { return ReplicatedControlRot; }
+	FRotator GetAimingRotation() { return CachedControlRotation; }
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
 	float GetAimYawRate() { return AimYawRate; }
@@ -417,6 +417,10 @@ protected:
 	void VelocityDirectionPressedAction();
 
 	void LookingDirectionPressedAction();
+
+	/** Replication */
+	UFUNCTION(Server, Unreliable)
+	void Server_SetReplicatedControlRot(FRotator Rot);
 
 protected:
 	/** Input */
@@ -593,14 +597,8 @@ protected:
 
 	float PreviousAimYaw = 0.0f;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ReplicatedControlRot)
-	FRotator ReplicatedControlRot;
-
-	UFUNCTION(Server, Reliable)
-	void Server_SetReplicatedControlRot(FRotator Rot);
-
-	UFUNCTION()
-	void OnRep_ReplicatedControlRot();
+	UPROPERTY(Replicated)
+	FRotator CachedControlRotation;
 
 	UBMCharacterAnimInstance* MainAnimInstance = nullptr;
 
