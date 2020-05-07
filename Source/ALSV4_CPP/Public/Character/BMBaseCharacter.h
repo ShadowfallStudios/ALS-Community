@@ -39,6 +39,8 @@ public:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	/** Ragdoll System */
 
 	/** Implement on BP to get required get up animation according to character's state */
@@ -56,6 +58,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetMovementState(EBMMovementState NewState);
 
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Character States")
+	void Server_SetMovementState(EBMMovementState NewState);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable, Category = "Character States")
+	void Multicast_SetMovementState(EBMMovementState NewState);
+
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMMovementState GetMovementState() { return MovementState; }
 
@@ -65,11 +73,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetMovementAction(EBMMovementAction NewAction);
 
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Character States")
+	void Server_SetMovementAction(EBMMovementAction NewAction);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable, Category = "Character States")
+	void Multicast_SetMovementAction(EBMMovementAction NewAction);
+
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMMovementAction GetMovementAction() { return MovementAction; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetStance(EBMStance NewStance);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Character States")
+	void Server_SetStance(EBMStance NewStance);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable, Category = "Character States")
+	void Multicast_SetStance(EBMStance NewStance);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMStance GetStance() { return Stance; }
@@ -77,11 +97,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetRotationMode(EBMRotationMode NewRotationMode);
 
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Character States")
+	void Server_SetRotationMode(EBMRotationMode NewRotationMode);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable, Category = "Character States")
+	void Multicast_SetRotationMode(EBMRotationMode NewRotationMode);
+
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMRotationMode GetRotationMode() { return RotationMode; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetGait(EBMGait NewGait);
+
+	// UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Character States")
+	// void Server_SetGait(EBMGait NewGait);
+	//
+	// UFUNCTION(BlueprintCallable, NetMulticast, Unreliable, Category = "Character States")
+	// void Multicast_SetGait(EBMGait NewGait);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMGait GetGait() { return Gait; }
@@ -89,11 +121,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetViewMode(EBMViewMode NewViewMode);
 
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Character States")
+	void Server_SetViewMode(EBMViewMode NewViewMode);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable, Category = "Character States")
+	void Multicast_SetViewMode(EBMViewMode NewViewMode);
+
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMViewMode GetViewMode() { return ViewMode; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetOverlayState(EBMOverlayState NewState);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Character States")
+	void Server_SetOverlayState(EBMOverlayState NewState);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable, Category = "Character States")
+	void Multicast_SetOverlayState(EBMOverlayState NewState);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMOverlayState GetOverlayState() { return OverlayState; }
@@ -107,19 +151,37 @@ public:
 	EBMStance GetDesiredStance() { return DesiredStance; }
 
 	UFUNCTION(BlueprintSetter, Category = "Input")
-	void SetDesiredStance(EBMStance NewStance) { DesiredStance = NewStance; }
+	void SetDesiredStance(EBMStance NewStance);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Input")
+	void Server_SetDesiredStance(EBMStance NewStance);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable, Category = "Input")
+	void Multicast_SetDesiredStance(EBMStance NewStance);
 
 	UFUNCTION(BlueprintGetter, Category = "Input")
 	EBMGait GetDesiredGait() { return DesiredGait; }
 
 	UFUNCTION(BlueprintSetter, Category = "Input")
-	void SetDesiredGait(EBMGait NewGait) { DesiredGait = NewGait; }
+	void SetDesiredGait(EBMGait NewGait);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Input")
+	void Server_SetDesiredGait(EBMGait NewGait);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable, Category = "Input")
+	void Multicast_SetDesiredGait(EBMGait NewGait);
 
 	UFUNCTION(BlueprintGetter, Category = "Input")
 	EBMRotationMode GetDesiredRotationMode() { return DesiredRotationMode; }
 
 	UFUNCTION(BlueprintSetter, Category = "Input")
-	void SetDesiredRotationMode(EBMRotationMode NewRotMode) { DesiredRotationMode = NewRotMode; }
+	void SetDesiredRotationMode(EBMRotationMode NewRotMode);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Input")
+	void Server_SetDesiredRotationMode(EBMRotationMode NewRotMode);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Unreliable, Category = "Input")
+	void Multicast_SetDesiredRotationMode(EBMRotationMode NewRotMode);
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	FVector GetPlayerMovementInput();
@@ -234,7 +296,7 @@ public:
 	void SetSpeed(float NewSpeed);
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
-	FRotator GetAimingRotation() { return GetControlRotation(); }
+	FRotator GetAimingRotation() { return ReplicatedControlRot; }
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
 	float GetAimYawRate() { return AimYawRate; }
@@ -299,7 +361,7 @@ protected:
 
 	UFUNCTION()
 	virtual void MantleUpdate(float BlendIn);
-	
+
 	UFUNCTION()
 	virtual void MantleEnd();
 
@@ -530,6 +592,15 @@ protected:
 	FVector PreviousVelocity;
 
 	float PreviousAimYaw = 0.0f;
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ReplicatedControlRot)
+	FRotator ReplicatedControlRot;
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetReplicatedControlRot(FRotator Rot);
+
+	UFUNCTION()
+	void OnRep_ReplicatedControlRot();
 
 	UBMCharacterAnimInstance* MainAnimInstance = nullptr;
 

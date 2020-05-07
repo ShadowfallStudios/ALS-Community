@@ -11,13 +11,17 @@
 #include "Curves/CurveVector.h"
 #include "Curves/CurveFloat.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 ABMBaseCharacter::ABMBaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(FName(TEXT("MantleTimeline")));
 	bUseControllerRotationYaw = 0;
+	SetReplicates(true);
+	SetReplicatingMovement(true);
 }
 
 void ABMBaseCharacter::Restart()
@@ -52,6 +56,13 @@ void ABMBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("AimAction", IE_Released, this, &ABMBaseCharacter::AimReleasedAction);
 	PlayerInputComponent->BindAction("CameraAction", IE_Pressed, this, &ABMBaseCharacter::CameraPressedAction);
 	PlayerInputComponent->BindAction("CameraAction", IE_Released, this, &ABMBaseCharacter::CameraReleasedAction);
+}
+
+void ABMBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABMBaseCharacter, ReplicatedControlRot);
 }
 
 void ABMBaseCharacter::OnBreakfall_Implementation()
@@ -137,7 +148,14 @@ void ABMBaseCharacter::Tick(float DeltaTime)
 
 	// Cache values
 	PreviousVelocity = GetVelocity();
-	PreviousAimYaw = GetControlRotation().Yaw;
+	if (IsLocallyControlled())
+	{
+		ReplicatedControlRot = GetControlRotation();
+		Server_SetReplicatedControlRot(ReplicatedControlRot);
+	}
+	PreviousAimYaw = ReplicatedControlRot.Yaw;
+
+	// UE_LOG(LogTemp, Warning, TEXT("%s: %s"), *GetName(), *ReplicatedControlRot.ToString());
 
 	if (MovementState == EBMMovementState::Grounded)
 	{
@@ -213,26 +231,25 @@ void ABMBaseCharacter::SetMovementState(const EBMMovementState NewState)
 {
 	if (MovementState != NewState)
 	{
-		PrevMovementState = MovementState;
-		MovementState = NewState;
-		MainAnimInstance->PrevMovementState = PrevMovementState;
-		MainAnimInstance->MovementState = MovementState;
-		OnMovementStateChanged(PrevMovementState);
+		Server_SetMovementState(NewState);
 	}
 }
 
-void ABMBaseCharacter::SetMovementAction(const EBMMovementAction NewAction)
+void ABMBaseCharacter::Multicast_SetMovementState_Implementation(EBMMovementState NewState)
 {
-	if (MovementAction != NewAction)
-	{
-		EBMMovementAction Prev = MovementAction;
-		MovementAction = NewAction;
-		MainAnimInstance->MovementAction = MovementAction;
-		OnMovementActionChanged(Prev);
-	}
+	PrevMovementState = MovementState;
+	MovementState = NewState;
+	MainAnimInstance->PrevMovementState = PrevMovementState;
+	MainAnimInstance->MovementState = MovementState;
+	OnMovementStateChanged(PrevMovementState);
 }
 
-void ABMBaseCharacter::SetStance(const EBMStance NewStance)
+void ABMBaseCharacter::Server_SetMovementState_Implementation(EBMMovementState NewState)
+{
+	Multicast_SetMovementState(NewState);
+}
+
+void ABMBaseCharacter::Multicast_SetStance_Implementation(EBMStance NewStance)
 {
 	if (Stance != NewStance)
 	{
@@ -243,15 +260,59 @@ void ABMBaseCharacter::SetStance(const EBMStance NewStance)
 	}
 }
 
+void ABMBaseCharacter::Server_SetStance_Implementation(EBMStance NewStance)
+{
+	Multicast_SetStance(NewStance);
+}
+
+void ABMBaseCharacter::SetStance(const EBMStance NewStance)
+{
+	if (Stance != NewStance)
+	{
+		Server_SetStance(NewStance);
+	}
+}
+
+void ABMBaseCharacter::SetMovementAction(const EBMMovementAction NewAction)
+{
+	if (MovementAction != NewAction)
+	{
+		Server_SetMovementAction(NewAction);
+	}
+}
+
+void ABMBaseCharacter::Server_SetMovementAction_Implementation(EBMMovementAction NewAction)
+{
+	Multicast_SetMovementAction(NewAction);
+}
+
+void ABMBaseCharacter::Multicast_SetMovementAction_Implementation(EBMMovementAction NewAction)
+{
+	EBMMovementAction Prev = MovementAction;
+	MovementAction = NewAction;
+	MainAnimInstance->MovementAction = MovementAction;
+	OnMovementActionChanged(Prev);
+}
+
 void ABMBaseCharacter::SetRotationMode(const EBMRotationMode NewRotationMode)
 {
 	if (RotationMode != NewRotationMode)
 	{
-		EBMRotationMode Prev = RotationMode;
-		RotationMode = NewRotationMode;
-		MainAnimInstance->RotationMode = RotationMode;
-		OnRotationModeChanged(Prev);
+		Server_SetRotationMode(NewRotationMode);
 	}
+}
+
+void ABMBaseCharacter::Multicast_SetRotationMode_Implementation(EBMRotationMode NewRotationMode)
+{
+	EBMRotationMode Prev = RotationMode;
+	RotationMode = NewRotationMode;
+	MainAnimInstance->RotationMode = RotationMode;
+	OnRotationModeChanged(Prev);
+}
+
+void ABMBaseCharacter::Server_SetRotationMode_Implementation(EBMRotationMode NewRotationMode)
+{
+	Multicast_SetRotationMode(NewRotationMode);
 }
 
 void ABMBaseCharacter::SetGait(const EBMGait NewGait)
@@ -265,26 +326,74 @@ void ABMBaseCharacter::SetGait(const EBMGait NewGait)
 	}
 }
 
+// void ABMBaseCharacter::Multicast_SetGait_Implementation(EBMGait NewGait)
+// {
+// 	EBMGait Prev = Gait;
+// 	Gait = NewGait;
+// 	MainAnimInstance->Gait = Gait;
+// 	OnGaitChanged(Prev);
+// }
+//
+// void ABMBaseCharacter::Server_SetGait_Implementation(EBMGait NewGait)
+// {
+// 	Multicast_SetGait(NewGait);
+// }
+
 void ABMBaseCharacter::SetViewMode(const EBMViewMode NewViewMode)
 {
 	if (ViewMode != NewViewMode)
 	{
-		EBMViewMode Prev = ViewMode;
-		ViewMode = NewViewMode;
-		MainAnimInstance->ViewMode = ViewMode;
-		OnViewModeChanged(Prev);
+		Server_SetViewMode(NewViewMode);
 	}
+}
+
+void ABMBaseCharacter::Multicast_SetViewMode_Implementation(EBMViewMode NewViewMode)
+{
+	EBMViewMode Prev = ViewMode;
+	ViewMode = NewViewMode;
+	MainAnimInstance->ViewMode = ViewMode;
+	OnViewModeChanged(Prev);
+}
+
+void ABMBaseCharacter::Server_SetViewMode_Implementation(EBMViewMode NewViewMode)
+{
+	Multicast_SetViewMode(NewViewMode);
 }
 
 void ABMBaseCharacter::SetOverlayState(const EBMOverlayState NewState)
 {
 	if (OverlayState != NewState)
 	{
-		EBMOverlayState Prev = OverlayState;
-		OverlayState = NewState;
-		MainAnimInstance->OverlayState = OverlayState;
-		OnOverlayStateChanged(Prev);
+		Server_SetOverlayState(NewState);
 	}
+}
+
+void ABMBaseCharacter::Server_SetOverlayState_Implementation(EBMOverlayState NewState)
+{
+	Multicast_SetOverlayState(NewState);
+}
+
+void ABMBaseCharacter::Multicast_SetOverlayState_Implementation(EBMOverlayState NewState)
+{
+	EBMOverlayState Prev = OverlayState;
+	OverlayState = NewState;
+	MainAnimInstance->OverlayState = OverlayState;
+	OnOverlayStateChanged(Prev);
+}
+
+void ABMBaseCharacter::SetDesiredStance(EBMStance NewStance)
+{
+	Server_SetDesiredStance(NewStance);
+}
+
+void ABMBaseCharacter::Multicast_SetDesiredStance_Implementation(EBMStance NewStance)
+{
+	DesiredStance = NewStance;
+}
+
+void ABMBaseCharacter::Server_SetDesiredStance_Implementation(EBMStance NewStance)
+{
+	Multicast_SetDesiredStance(NewStance);
 }
 
 void ABMBaseCharacter::SetActorLocationAndTargetRotation(FVector NewLocation, FRotator NewRotation)
@@ -379,7 +488,7 @@ bool ABMBaseCharacter::CanSprint()
 	if (RotationMode == EBMRotationMode::LookingDirection)
 	{
 		const FRotator AccRot = GetCharacterMovement()->GetCurrentAcceleration().ToOrientationRotator();
-		FRotator Delta = AccRot - GetControlRotation();
+		FRotator Delta = AccRot - ReplicatedControlRot;
 		Delta.Normalize();
 
 		return bValidInputAmount && FMath::Abs(Delta.Yaw) < 50.0f;
@@ -702,7 +811,7 @@ void ABMBaseCharacter::SetEssentialValues(float DeltaTime)
 
 	// Set the Aim Yaw rate by comparing the current and previous Aim Yaw value, divided by Delta Seconds.
 	// This represents the speed the camera is rotating left to right.
-	SetAimYawRate(FMath::Abs((GetControlRotation().Yaw - PreviousAimYaw) / DeltaTime));
+	SetAimYawRate(FMath::Abs((ReplicatedControlRot.Yaw - PreviousAimYaw) / DeltaTime));
 }
 
 void ABMBaseCharacter::UpdateCharacterMovement()
@@ -766,14 +875,14 @@ void ABMBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 				{
 					// Walking or Running..
 					const float YawOffsetCurveVal = MainAnimInstance->GetCurveValue(FName(TEXT("YawOffset")));
-					YawValue = GetControlRotation().Yaw + YawOffsetCurveVal;
+					YawValue = ReplicatedControlRot.Yaw + YawOffsetCurveVal;
 				}
 				SmoothCharacterRotation(FRotator(0.0f, YawValue, 0.0f),
 				                        500.0f, GroundedRotationRate, DeltaTime);
 			}
 			else if (RotationMode == EBMRotationMode::Aiming)
 			{
-				const float ControlYaw = GetControlRotation().Yaw;
+				const float ControlYaw = ReplicatedControlRot.Yaw;
 				SmoothCharacterRotation(FRotator(0.0f, ControlYaw, 0.0f),
 				                        1000.0f, 20.0f, DeltaTime);
 			}
@@ -827,7 +936,7 @@ void ABMBaseCharacter::UpdateInAirRotation(float DeltaTime)
 	else if (RotationMode == EBMRotationMode::Aiming)
 	{
 		// Aiming Rotation
-		SmoothCharacterRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f),
+		SmoothCharacterRotation(FRotator(0.0f, ReplicatedControlRot.Yaw, 0.0f),
 		                        0.0f, 15.0f, DeltaTime);
 		InAirRotation = GetActorRotation();
 	}
@@ -1202,13 +1311,13 @@ float ABMBaseCharacter::CalculateGroundedRotationRate()
 void ABMBaseCharacter::LimitRotation(float AimYawMin, float AimYawMax, float InterpSpeed, float DeltaTime)
 {
 	// Prevent the character from rotating past a certain angle.
-	FRotator Delta = GetControlRotation() - GetActorRotation();
+	FRotator Delta = ReplicatedControlRot - GetActorRotation();
 	Delta.Normalize();
 	const float RangeVal = Delta.Yaw;
 
 	if (RangeVal < AimYawMin || RangeVal > AimYawMax)
 	{
-		const float ControlRotYaw = GetControlRotation().Yaw;
+		const float ControlRotYaw = ReplicatedControlRot.Yaw;
 		const float TargetYaw = ControlRotYaw + (RangeVal > 0.0f ? AimYawMin : AimYawMax);
 		SmoothCharacterRotation(FRotator(0.0f, TargetYaw, 0.0f),
 		                        0.0f, InterpSpeed, DeltaTime);
@@ -1217,9 +1326,39 @@ void ABMBaseCharacter::LimitRotation(float AimYawMin, float AimYawMax, float Int
 
 void ABMBaseCharacter::GetControlForwardRightVector(FVector& Forward, FVector& Right)
 {
-	const FRotator ControlRot(0.0f, GetControlRotation().Yaw, 0.0f);
+	const FRotator ControlRot(0.0f, ReplicatedControlRot.Yaw, 0.0f);
 	Forward = GetInputAxisValue("MoveForward/Backwards") * UKismetMathLibrary::GetForwardVector(ControlRot);
 	Right = GetInputAxisValue("MoveRight/Left") * UKismetMathLibrary::GetRightVector(ControlRot);
+}
+
+void ABMBaseCharacter::SetDesiredGait(EBMGait NewGait)
+{
+	Server_SetDesiredGait(NewGait);
+}
+
+void ABMBaseCharacter::Multicast_SetDesiredGait_Implementation(EBMGait NewGait)
+{
+	DesiredGait = NewGait;
+}
+
+void ABMBaseCharacter::Server_SetDesiredGait_Implementation(EBMGait NewGait)
+{
+	Multicast_SetDesiredGait(NewGait);
+}
+
+void ABMBaseCharacter::SetDesiredRotationMode(EBMRotationMode NewRotMode)
+{
+	Server_SetDesiredRotationMode(NewRotMode);
+}
+
+void ABMBaseCharacter::Server_SetDesiredRotationMode_Implementation(EBMRotationMode NewRotMode)
+{
+	Multicast_SetDesiredRotationMode(NewRotMode);
+}
+
+void ABMBaseCharacter::Multicast_SetDesiredRotationMode_Implementation(EBMRotationMode NewRotMode)
+{
+	RotationMode = NewRotMode;
 }
 
 FVector ABMBaseCharacter::GetPlayerMovementInput()
@@ -1247,7 +1386,7 @@ void ABMBaseCharacter::PlayerForwardMovementInput(float Value)
 	{
 		// Default camera relative movement behavior
 		const float Scale = FixDiagonalGamepadValues(Value, GetInputAxisValue("MoveRight/Left")).Key;
-		const FRotator DirRotator(0.0f, GetControlRotation().Yaw, 0.0f);
+		const FRotator DirRotator(0.0f, ReplicatedControlRot.Yaw, 0.0f);
 		AddMovementInput(UKismetMathLibrary::GetForwardVector(DirRotator), Scale);
 	}
 }
@@ -1258,7 +1397,7 @@ void ABMBaseCharacter::PlayerRightMovementInput(float Value)
 	{
 		// Default camera relative movement behavior
 		const float Scale = FixDiagonalGamepadValues(GetInputAxisValue("MoveForward/Backwards"), Value).Value;
-		const FRotator DirRotator(0.0f, GetControlRotation().Yaw, 0.0f);
+		const FRotator DirRotator(0.0f, ReplicatedControlRot.Yaw, 0.0f);
 		AddMovementInput(UKismetMathLibrary::GetRightVector(DirRotator), Scale);
 	}
 }
@@ -1469,4 +1608,14 @@ void ABMBaseCharacter::LookingDirectionPressedAction()
 {
 	SetDesiredRotationMode(EBMRotationMode::LookingDirection);
 	SetRotationMode(EBMRotationMode::LookingDirection);
+}
+
+void ABMBaseCharacter::Server_SetReplicatedControlRot_Implementation(FRotator Rot)
+{
+	ReplicatedControlRot = Rot;
+}
+
+void ABMBaseCharacter::OnRep_ReplicatedControlRot()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *ReplicatedControlRot.ToString());
 }
