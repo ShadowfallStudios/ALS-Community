@@ -10,7 +10,7 @@ void UBMNotifyStateOverlayOverride::NotifyBegin(USkeletalMeshComponent* MeshComp
 	UBMCharacterAnimInstance* AnimInst = Cast<UBMCharacterAnimInstance>(MeshComp->GetAnimInstance());
 	if (AnimInst)
 	{
-		AnimInst->SetOverlayOverrideState(OverlayOverrideState);
+		AnimInst->OverlayOverrideState = OverlayOverrideState;
 	}
 }
 
@@ -19,7 +19,7 @@ void UBMNotifyStateOverlayOverride::NotifyEnd(USkeletalMeshComponent* MeshComp, 
 	UBMCharacterAnimInstance* AnimInst = Cast<UBMCharacterAnimInstance>(MeshComp->GetAnimInstance());
 	if (AnimInst)
 	{
-		AnimInst->SetOverlayOverrideState(0);
+		AnimInst->OverlayOverrideState = 0;
 	}
 }
 

@@ -20,37 +20,37 @@ void UBMCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (!Character || DeltaSeconds == 0.0f)
 	{
 		// Fix character looking right on editor
-		CharacterInformation.RotationMode = EBMRotationMode::VelocityDirection;
+		RotationMode = EBMRotationMode::VelocityDirection;
 
 		// Don't run in editor
 		return;
 	}
 
 	// Update rest of character information. Others are reflected into anim bp when they're set inside character class
-	CharacterInformation.Velocity = Character->GetCharacterMovement()->Velocity;
-	CharacterInformation.MovementInput = Character->GetMovementInput();
-	CharacterInformation.AimingRotation = Character->GetAimingRotation();
-	CharacterInformation.CharacterActorRotation = Character->GetActorRotation();
+	Velocity = Character->GetCharacterMovement()->Velocity;
+	MovementInput = Character->GetMovementInput();
+	AimingRotation = Character->GetAimingRotation();
+	CharacterActorRotation = Character->GetActorRotation();
 
 	UpdateAimingValues(DeltaSeconds);
 	UpdateLayerValues();
 	UpdateFootIK(DeltaSeconds);
 
-	if (CharacterInformation.MovementState == EBMMovementState::Grounded)
+	if (MovementState == EBMMovementState::Grounded)
 	{
 		// Check If Moving Or Not & Enable Movement Animations if IsMoving and HasMovementInput, or if the Speed is greater than 150.
-		const bool prevShouldMove = Grounded.bShouldMove;
-		Grounded.bShouldMove = ShouldMoveCheck();
+		const bool prevShouldMove = bShouldMove;
+		bShouldMove = ShouldMoveCheck();
 
-		if (prevShouldMove == false && Grounded.bShouldMove)
+		if (prevShouldMove == false && bShouldMove)
 		{
 			// Do When Starting To Move
-			TurnInPlaceValues.ElapsedDelayTime = 0.0f;
-			Grounded.bRotateL = false;
-			Grounded.bRotateR = false;
+			ElapsedDelayTime = 0.0f;
+			bRotateL = false;
+			bRotateR = false;
 		}
 
-		if (Grounded.bShouldMove)
+		if (bShouldMove)
 		{
 			// Do While Moving
 			UpdateMovementValues(DeltaSeconds);
@@ -65,8 +65,8 @@ void UBMCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			}
 			else
 			{
-				Grounded.bRotateL = false;
-				Grounded.bRotateR = false;
+				bRotateL = false;
+				bRotateR = false;
 			}
 			if (CanTurnInPlace())
 			{
@@ -74,7 +74,7 @@ void UBMCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			}
 			else
 			{
-				TurnInPlaceValues.ElapsedDelayTime = 0.0f;
+				ElapsedDelayTime = 0.0f;
 			}
 			if (CanDynamicTransition())
 			{
@@ -82,12 +82,12 @@ void UBMCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			}
 		}
 	}
-	else if (CharacterInformation.MovementState == EBMMovementState::InAir)
+	else if (MovementState == EBMMovementState::InAir)
 	{
 		// Do While InAir
 		UpdateInAirValues(DeltaSeconds);
 	}
-	else if (CharacterInformation.MovementState == EBMMovementState::Ragdoll)
+	else if (MovementState == EBMMovementState::Ragdoll)
 	{
 		// Do While Ragdolling
 		UpdateRagdollValues();
@@ -103,7 +103,7 @@ void UBMCharacterAnimInstance::PlayTransition(const FBMDynamicMontageParams& Par
 
 void UBMCharacterAnimInstance::PlayTransitionChecked(const FBMDynamicMontageParams& Parameters)
 {
-	if (CharacterInformation.Stance == EBMStance::Standing && !Grounded.bShouldMove)
+	if (Stance == EBMStance::Standing && !bShouldMove)
 	{
 		PlayTransition(Parameters);
 	}
@@ -129,20 +129,20 @@ void UBMCharacterAnimInstance::PlayDynamicTransition(float ReTriggerDelay, FBMDy
 
 bool UBMCharacterAnimInstance::ShouldMoveCheck()
 {
-	return (CharacterInformation.bIsMoving && CharacterInformation.bHasMovementInput) ||
-		CharacterInformation.Speed > 150.0f;
+	return (bIsMoving && bHasMovementInput) ||
+		Speed > 150.0f;
 }
 
 bool UBMCharacterAnimInstance::CanRotateInPlace()
 {
-	return CharacterInformation.RotationMode == EBMRotationMode::Aiming ||
-		CharacterInformation.ViewMode == EBMViewMode::FirstPerson;
+	return RotationMode == EBMRotationMode::Aiming ||
+		ViewMode == EBMViewMode::FirstPerson;
 }
 
 bool UBMCharacterAnimInstance::CanTurnInPlace()
 {
-	return CharacterInformation.RotationMode == EBMRotationMode::LookingDirection &&
-		CharacterInformation.ViewMode == EBMViewMode::ThirdPerson &&
+	return RotationMode == EBMRotationMode::LookingDirection &&
+		ViewMode == EBMViewMode::ThirdPerson &&
 		GetCurveValue(FName(TEXT("Enable_Transition"))) > 0.99f;
 }
 
@@ -158,12 +158,12 @@ void UBMCharacterAnimInstance::PlayDynamicTransitionDelay()
 
 void UBMCharacterAnimInstance::OnJumpedDelay()
 {
-	InAir.bJumped = false;
+	bJumped = false;
 }
 
 void UBMCharacterAnimInstance::OnPivotDelay()
 {
-	Grounded.bPivot = false;
+	bPivot = false;
 }
 
 void UBMCharacterAnimInstance::UpdateAimingValues(float DeltaSeconds)
@@ -172,101 +172,101 @@ void UBMCharacterAnimInstance::UpdateAimingValues(float DeltaSeconds)
 	// Interpolating the rotation before calculating the angle ensures the value is not affected by changes
 	// in actor rotation, allowing slow aiming rotation changes with fast actor rotation changes.
 
-	AimingValues.SmoothedAimingRotation = FMath::RInterpTo(AimingValues.SmoothedAimingRotation,
-	                                                       CharacterInformation.AimingRotation, DeltaSeconds,
-	                                                       Config.SmoothedAimingRotationInterpSpeed);
+	SmoothedAimingRotation = FMath::RInterpTo(SmoothedAimingRotation,
+	                                          AimingRotation, DeltaSeconds,
+	                                          SmoothedAimingRotationInterpSpeed);
 
 	// Calculate the Aiming angle and Smoothed Aiming Angle by getting
 	// the delta between the aiming rotation and the actor rotation.
-	FRotator Delta = CharacterInformation.AimingRotation - CharacterInformation.CharacterActorRotation;
+	FRotator Delta = AimingRotation - CharacterActorRotation;
 	Delta.Normalize();
-	AimingValues.AimingAngle.X = Delta.Yaw;
-	AimingValues.AimingAngle.Y = Delta.Pitch;
+	AimingAngle.X = Delta.Yaw;
+	AimingAngle.Y = Delta.Pitch;
 
-	Delta = AimingValues.SmoothedAimingRotation - CharacterInformation.CharacterActorRotation;
+	Delta = SmoothedAimingRotation - CharacterActorRotation;
 	Delta.Normalize();
-	AimingValues.SmoothedAimingAngle.X = Delta.Yaw;
-	AimingValues.SmoothedAimingAngle.Y = Delta.Pitch;
+	SmoothedAimingAngle.X = Delta.Yaw;
+	SmoothedAimingAngle.Y = Delta.Pitch;
 
-	if (CharacterInformation.RotationMode != EBMRotationMode::VelocityDirection)
+	if (RotationMode != EBMRotationMode::VelocityDirection)
 	{
 		// Clamp the Aiming Pitch Angle to a range of 1 to 0 for use in the vertical aim sweeps.
-		AimingValues.AimSweepTime = FMath::GetMappedRangeValueClamped(FVector2D(-90.0f, 90.0f),
-		                                                              FVector2D(1.0f, 0.0f),
-		                                                              AimingValues.AimingAngle.Y);
+		AimSweepTime = FMath::GetMappedRangeValueClamped(FVector2D(-90.0f, 90.0f),
+		                                                 FVector2D(1.0f, 0.0f),
+		                                                 AimingAngle.Y);
 
 		// Use the Aiming Yaw Angle divided by the number of spine+pelvis bones to get the amount of spine rotation
 		// needed to remain facing the camera direction.
-		AimingValues.SpineRotation.Roll = 0.0f;
-		AimingValues.SpineRotation.Pitch = 0.0f;
-		AimingValues.SpineRotation.Yaw = AimingValues.AimingAngle.X / 4.0f;
+		SpineRotation.Roll = 0.0f;
+		SpineRotation.Pitch = 0.0f;
+		SpineRotation.Yaw = AimingAngle.X / 4.0f;
 	}
-	else if (CharacterInformation.bHasMovementInput)
+	else if (bHasMovementInput)
 	{
 		// Get the delta between the Movement Input rotation and Actor rotation and map it to a range of 0-1.
 		// This value is used in the aim offset behavior to make the character look toward the Movement Input.
-		Delta = CharacterInformation.MovementInput.ToOrientationRotator() - CharacterInformation.CharacterActorRotation;
+		Delta = MovementInput.ToOrientationRotator() - CharacterActorRotation;
 		Delta.Normalize();
 		const float InterpTarget = FMath::GetMappedRangeValueClamped(FVector2D(-180.0f, 180.0f),
 		                                                             FVector2D(0.0f, 1.0f), Delta.Yaw);
 
-		AimingValues.InputYawOffsetTime = FMath::FInterpTo(AimingValues.InputYawOffsetTime, InterpTarget,
-		                                                   DeltaSeconds, Config.InputYawOffsetInterpSpeed);
+		InputYawOffsetTime = FMath::FInterpTo(InputYawOffsetTime, InterpTarget,
+		                                      DeltaSeconds, InputYawOffsetInterpSpeed);
 	}
 
 	// Separate the Aiming Yaw Angle into 3 separate Yaw Times. These 3 values are used in the Aim Offset behavior
 	// to improve the blending of the aim offset when rotating completely around the character.
 	// This allows you to keep the aiming responsive but still smoothly blend from left to right or right to left.
-	AimingValues.LeftYawTime = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 180.0f),
-	                                                             FVector2D(0.5f, 0.0f),
-	                                                             FMath::Abs(AimingValues.SmoothedAimingAngle.X));
-	AimingValues.RightYawTime = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 180.0f),
-	                                                              FVector2D(0.5f, 1.0f),
-	                                                              FMath::Abs(AimingValues.SmoothedAimingAngle.X));
-	AimingValues.ForwardYawTime = FMath::GetMappedRangeValueClamped(FVector2D(-180.0f, 180.0f),
-	                                                                FVector2D(0.0f, 1.0f),
-	                                                                AimingValues.SmoothedAimingAngle.X);
+	LeftYawTime = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 180.0f),
+	                                                FVector2D(0.5f, 0.0f),
+	                                                FMath::Abs(SmoothedAimingAngle.X));
+	RightYawTime = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 180.0f),
+	                                                 FVector2D(0.5f, 1.0f),
+	                                                 FMath::Abs(SmoothedAimingAngle.X));
+	ForwardYawTime = FMath::GetMappedRangeValueClamped(FVector2D(-180.0f, 180.0f),
+	                                                   FVector2D(0.0f, 1.0f),
+	                                                   SmoothedAimingAngle.X);
 }
 
 void UBMCharacterAnimInstance::UpdateLayerValues()
 {
 	// Get the Aim Offset weight by getting the opposite of the Aim Offset Mask.
-	LayerBlendingValues.EnableAimOffset = FMath::Lerp(1.0f, 0.0f, GetCurveValue(FName(TEXT("Mask_AimOffset"))));
+	EnableAimOffset = FMath::Lerp(1.0f, 0.0f, GetCurveValue(FName(TEXT("Mask_AimOffset"))));
 	// Set the Base Pose weights
-	LayerBlendingValues.BasePose_N = GetCurveValue(FName(TEXT("BasePose_N")));
-	LayerBlendingValues.BasePose_CLF = GetCurveValue(FName(TEXT("BasePose_CLF")));
+	BasePose_N = GetCurveValue(FName(TEXT("BasePose_N")));
+	BasePose_CLF = GetCurveValue(FName(TEXT("BasePose_CLF")));
 	// Set the Additive amount weights for each body part
-	LayerBlendingValues.Spine_Add = GetCurveValue(FName(TEXT("Layering_Spine_Add")));
-	LayerBlendingValues.Head_Add = GetCurveValue(FName(TEXT("Layering_Head_Add")));
-	LayerBlendingValues.Arm_L_Add = GetCurveValue(FName(TEXT("Layering_Arm_L_Add")));
-	LayerBlendingValues.Arm_R_Add = GetCurveValue(FName(TEXT("Layering_Arm_R_Add")));
+	Spine_Add = GetCurveValue(FName(TEXT("Layering_Spine_Add")));
+	Head_Add = GetCurveValue(FName(TEXT("Layering_Head_Add")));
+	Arm_L_Add = GetCurveValue(FName(TEXT("Layering_Arm_L_Add")));
+	Arm_R_Add = GetCurveValue(FName(TEXT("Layering_Arm_R_Add")));
 	// Set the Hand Override weights
-	LayerBlendingValues.Hand_R = GetCurveValue(FName(TEXT("Layering_Hand_R")));
-	LayerBlendingValues.Hand_L = GetCurveValue(FName(TEXT("Layering_Hand_L")));
+	Hand_R = GetCurveValue(FName(TEXT("Layering_Hand_R")));
+	Hand_L = GetCurveValue(FName(TEXT("Layering_Hand_L")));
 	// Blend and set the Hand IK weights to ensure they only are weighted if allowed by the Arm layers.
-	LayerBlendingValues.EnableHandIK_L = FMath::Lerp(0.0f, GetCurveValue(FName(TEXT("Enable_HandIK_L"))),
-	                                                 GetCurveValue(FName(TEXT("Layering_Arm_L"))));
-	LayerBlendingValues.EnableHandIK_R = FMath::Lerp(0.0f, GetCurveValue(FName(TEXT("Enable_HandIK_R"))),
-	                                                 GetCurveValue(FName(TEXT("Layering_Arm_R"))));
+	EnableHandIK_L = FMath::Lerp(0.0f, GetCurveValue(FName(TEXT("Enable_HandIK_L"))),
+	                             GetCurveValue(FName(TEXT("Layering_Arm_L"))));
+	EnableHandIK_R = FMath::Lerp(0.0f, GetCurveValue(FName(TEXT("Enable_HandIK_R"))),
+	                             GetCurveValue(FName(TEXT("Layering_Arm_R"))));
 	// Set whether the arms should blend in mesh space or local space.
 	// The Mesh space weight will always be 1 unless the Local Space (LS) curve is fully weighted.
-	LayerBlendingValues.Arm_L_LS = GetCurveValue(FName(TEXT("Layering_Arm_L_LS")));
-	LayerBlendingValues.Arm_L_MS = static_cast<float>(1 - FMath::FloorToInt(LayerBlendingValues.Arm_L_LS));
-	LayerBlendingValues.Arm_R_LS = GetCurveValue(FName(TEXT("Layering_Arm_R_LS")));
-	LayerBlendingValues.Arm_R_MS = static_cast<float>(1 - FMath::FloorToInt(LayerBlendingValues.Arm_R_LS));
+	Arm_L_LS = GetCurveValue(FName(TEXT("Layering_Arm_L_LS")));
+	Arm_L_MS = static_cast<float>(1 - FMath::FloorToInt(Arm_L_LS));
+	Arm_R_LS = GetCurveValue(FName(TEXT("Layering_Arm_R_LS")));
+	Arm_R_MS = static_cast<float>(1 - FMath::FloorToInt(Arm_R_LS));
 }
 
 void UBMCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 {
 	// Update Foot Locking values.
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("FootLock_L")),
-	               FName(TEXT("ik_foot_l")), FootIKValues.FootLock_L_Alpha,
-	               FootIKValues.FootLock_L_Location, FootIKValues.FootLock_L_Rotation);
+	               FName(TEXT("ik_foot_l")), FootLock_L_Alpha,
+	               FootLock_L_Location, FootLock_L_Rotation);
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("FootLock_R")),
-	               FName(TEXT("ik_foot_r")), FootIKValues.FootLock_R_Alpha,
-	               FootIKValues.FootLock_R_Location, FootIKValues.FootLock_R_Rotation);
+	               FName(TEXT("ik_foot_r")), FootLock_R_Alpha,
+	               FootLock_R_Location, FootLock_R_Rotation);
 
-	if (CharacterInformation.MovementState == EBMMovementState::InAir)
+	if (MovementState == EBMMovementState::InAir)
 	{
 		// Reset IK Offsets if In Air
 		SetPelvisIKOffset(DeltaSeconds, FVector::ZeroVector, FVector::ZeroVector);
@@ -278,9 +278,9 @@ void UBMCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 		FVector FootOffsetLTarget;
 		FVector FootOffsetRTarget;
 		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("ik_foot_l")), FName(TEXT("Root")), FootOffsetLTarget,
-		               FootIKValues.FootOffset_L_Location, FootIKValues.FootOffset_L_Rotation);
+		               FootOffset_L_Location, FootOffset_L_Rotation);
 		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("ik_foot_r")), FName(TEXT("Root")), FootOffsetRTarget,
-		               FootIKValues.FootOffset_R_Location, FootIKValues.FootOffset_R_Rotation);
+		               FootOffset_R_Location, FootOffset_R_Rotation);
 		SetPelvisIKOffset(DeltaSeconds, FootOffsetLTarget, FootOffsetRTarget);
 	}
 }
@@ -329,14 +329,14 @@ void UBMCharacterAnimInstance::SetFootLockOffsets(float DeltaSeconds, FVector& L
 	// to remain planted on the ground.
 	if (Character->GetCharacterMovement()->IsMovingOnGround())
 	{
-		RotationDifference = CharacterInformation.CharacterActorRotation - Character->GetCharacterMovement()->GetLastUpdateRotation();
+		RotationDifference = CharacterActorRotation - Character->GetCharacterMovement()->GetLastUpdateRotation();
 		RotationDifference.Normalize();
 	}
 
 	// Get the distance traveled between frames relative to the mesh rotation
 	// to find how much the foot should be offset to remain planted on the ground.
 	const FVector& LocationDifference = GetOwningComponent()->GetComponentRotation().UnrotateVector(
-		CharacterInformation.Velocity * DeltaSeconds);
+		Velocity * DeltaSeconds);
 
 	// Subtract the location difference from the current local location and rotate
 	// it by the rotation difference to keep the foot planted in component space.
@@ -352,37 +352,37 @@ void UBMCharacterAnimInstance::SetPelvisIKOffset(float DeltaSeconds, FVector Foo
                                                  FVector FootOffsetRTarget)
 {
 	// Calculate the Pelvis Alpha by finding the average Foot IK weight. If the alpha is 0, clear the offset.
-	FootIKValues.PelvisAlpha =
+	PelvisAlpha =
 		(GetCurveValue(FName(TEXT("Enable_FootIK_L"))) + GetCurveValue(FName(TEXT("Enable_FootIK_R")))) / 2.0f;
 
-	if (FootIKValues.PelvisAlpha > 0.0f)
+	if (PelvisAlpha > 0.0f)
 	{
 		// Step 1: Set the new Pelvis Target to be the lowest Foot Offset
 		const FVector PelvisTarget = FootOffsetLTarget.Z < FootOffsetRTarget.Z ? FootOffsetLTarget : FootOffsetRTarget;
 
 		// Step 2: Interp the Current Pelvis Offset to the new target value.
 		//Interpolate at different speeds based on whether the new target is above or below the current one.
-		const float InterpSpeed = PelvisTarget.Z > FootIKValues.PelvisOffset.Z ? 10.0f : 15.0f;
-		FootIKValues.PelvisOffset =
-			FMath::VInterpTo(FootIKValues.PelvisOffset, PelvisTarget, DeltaSeconds, InterpSpeed);
+		const float InterpSpeed = PelvisTarget.Z > PelvisOffset.Z ? 10.0f : 15.0f;
+		PelvisOffset =
+			FMath::VInterpTo(PelvisOffset, PelvisTarget, DeltaSeconds, InterpSpeed);
 	}
 	else
 	{
-		FootIKValues.PelvisOffset = FVector::ZeroVector;
+		PelvisOffset = FVector::ZeroVector;
 	}
 }
 
 void UBMCharacterAnimInstance::ResetIKOffsets(float DeltaSeconds)
 {
 	// Interp Foot IK offsets back to 0
-	FootIKValues.FootOffset_L_Location = FMath::VInterpTo(FootIKValues.FootOffset_L_Location,
-	                                                      FVector::ZeroVector, DeltaSeconds, 15.0f);
-	FootIKValues.FootOffset_R_Location = FMath::VInterpTo(FootIKValues.FootOffset_R_Location,
-	                                                      FVector::ZeroVector, DeltaSeconds, 15.0f);
-	FootIKValues.FootOffset_L_Rotation = FMath::RInterpTo(FootIKValues.FootOffset_L_Rotation,
-	                                                      FRotator::ZeroRotator, DeltaSeconds, 15.0f);
-	FootIKValues.FootOffset_R_Rotation = FMath::RInterpTo(FootIKValues.FootOffset_R_Rotation,
-	                                                      FRotator::ZeroRotator, DeltaSeconds, 15.0f);
+	FootOffset_L_Location = FMath::VInterpTo(FootOffset_L_Location,
+	                                         FVector::ZeroVector, DeltaSeconds, 15.0f);
+	FootOffset_R_Location = FMath::VInterpTo(FootOffset_R_Location,
+	                                         FVector::ZeroVector, DeltaSeconds, 15.0f);
+	FootOffset_L_Rotation = FMath::RInterpTo(FootOffset_L_Rotation,
+	                                         FRotator::ZeroRotator, DeltaSeconds, 15.0f);
+	FootOffset_R_Rotation = FMath::RInterpTo(FootOffset_R_Rotation,
+	                                         FRotator::ZeroRotator, DeltaSeconds, 15.0f);
 }
 
 void UBMCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableFootIKCurve, FName IKFootBone,
@@ -411,8 +411,8 @@ void UBMCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableFo
 
 	FHitResult HitResult;
 	World->LineTraceSingleByChannel(HitResult,
-	                                IKFootFloorLoc + FVector(0.0, 0.0, Config.IK_TraceDistanceAboveFoot),
-	                                IKFootFloorLoc - FVector(0.0, 0.0, Config.IK_TraceDistanceBelowFoot),
+	                                IKFootFloorLoc + FVector(0.0, 0.0, IK_TraceDistanceAboveFoot),
+	                                IKFootFloorLoc - FVector(0.0, 0.0, IK_TraceDistanceBelowFoot),
 	                                ECollisionChannel::ECC_Visibility, Params);
 
 	FRotator TargetRotOffset = FRotator::ZeroRotator;
@@ -424,8 +424,8 @@ void UBMCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableFo
 		// Step 1.1: Find the difference in location from the Impact point and the expected (flat) floor location.
 		// These values are offset by the nomrmal multiplied by the
 		// foot height to get better behavior on angled surfaces.
-		CurLocationTarget = (ImpactPoint + ImpactNormal * Config.FootHeight) -
-			(IKFootFloorLoc + FVector::UpVector * Config.FootHeight);
+		CurLocationTarget = (ImpactPoint + ImpactNormal * FootHeight) -
+			(IKFootFloorLoc + FVector::UpVector * FootHeight);
 
 		// Step 1.2: Calculate the Rotation offset by getting the Atan2 of the Impact Normal.
 		TargetRotOffset.Pitch = -FMath::Atan2(ImpactNormal.X, ImpactNormal.Z);
@@ -445,16 +445,16 @@ void UBMCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableFo
 void UBMCharacterAnimInstance::RotateInPlaceCheck()
 {
 	// Step 1: Check if the character should rotate left or right by checking if the Aiming Angle exceeds the threshold.
-	Grounded.bRotateL = AimingValues.AimingAngle.X < RotateInPlace.RotateMinThreshold;
-	Grounded.bRotateR = AimingValues.AimingAngle.X > RotateInPlace.RotateMaxThreshold;
+	bRotateL = AimingAngle.X < RotateMinThreshold;
+	bRotateR = AimingAngle.X > RotateMaxThreshold;
 
 	// Step 2: If the character should be rotating, set the Rotate Rate to scale with the Aim Yaw Rate.
 	// This makes the character rotate faster when moving the camera faster.
-	if (Grounded.bRotateL || Grounded.bRotateR)
+	if (bRotateL || bRotateR)
 	{
-		Grounded.RotateRate = FMath::GetMappedRangeValueClamped(
-			FVector2D(RotateInPlace.AimYawRateMinRange, RotateInPlace.AimYawRateMaxRange),
-			FVector2D(RotateInPlace.MinPlayRate, RotateInPlace.MaxPlayRate), CharacterInformation.AimYawRate);
+		RotateRate = FMath::GetMappedRangeValueClamped(
+			FVector2D(AimYawRateMinRange, AimYawRateMaxRange),
+			FVector2D(MinPlayRate, MaxPlayRate), AimYawRate);
 	}
 }
 
@@ -463,23 +463,23 @@ void UBMCharacterAnimInstance::TurnInPlaceCheck(float DeltaSeconds)
 	// Step 1: Check if Aiming angle is outside of the Turn Check Min Angle, and if the Aim Yaw Rate is below the Aim Yaw Rate Limit.
 	// If so, begin counting the Elapsed Delay Time. If not, reset the Elapsed Delay Time.
 	// This ensures the conditions remain true for a sustained peroid of time before turning in place.
-	if (FMath::Abs(AimingValues.AimingAngle.X) <= TurnInPlaceValues.TurnCheckMinAngle ||
-		CharacterInformation.AimYawRate >= TurnInPlaceValues.AimYawRateLimit)
+	if (FMath::Abs(AimingAngle.X) <= TurnCheckMinAngle ||
+		AimYawRate >= AimYawRateLimit)
 	{
-		TurnInPlaceValues.ElapsedDelayTime = 0.0f;
+		ElapsedDelayTime = 0.0f;
 		return;
 	}
 
-	TurnInPlaceValues.ElapsedDelayTime += DeltaSeconds;
+	ElapsedDelayTime += DeltaSeconds;
 	const float ClampedAimAngle = FMath::GetMappedRangeValueClamped(
-		FVector2D(TurnInPlaceValues.TurnCheckMinAngle, 180.0f),
-		FVector2D(TurnInPlaceValues.MinAngleDelay, TurnInPlaceValues.MaxAngleDelay),
-		AimingValues.AimingAngle.X);
+		FVector2D(TurnCheckMinAngle, 180.0f),
+		FVector2D(MinAngleDelay, MaxAngleDelay),
+		AimingAngle.X);
 
 	// Step 2: Check if the Elapsed Delay time exceeds the set delay (mapped to the turn angle range). If so, trigger a Turn In Place.
-	if (TurnInPlaceValues.ElapsedDelayTime > ClampedAimAngle)
+	if (ElapsedDelayTime > ClampedAimAngle)
 	{
-		FRotator TurnInPlaceYawRot = CharacterInformation.AimingRotation;
+		FRotator TurnInPlaceYawRot = AimingRotation;
 		TurnInPlaceYawRot.Roll = 0.0f;
 		TurnInPlaceYawRot.Pitch = 0.0f;
 		TurnInPlace(TurnInPlaceYawRot, 1.0f, 0.0f, false);
@@ -525,69 +525,69 @@ void UBMCharacterAnimInstance::UpdateMovementValues(float DeltaSeconds)
 {
 	// Interp and set the Velocity Blend.
 	const FBMVelocityBlend& TargetBlend = CalculateVelocityBlend();
-	Grounded.VelocityBlend.F =
-		FMath::FInterpTo(Grounded.VelocityBlend.F, TargetBlend.F, DeltaSeconds, Config.VelocityBlendInterpSpeed);
-	Grounded.VelocityBlend.B =
-		FMath::FInterpTo(Grounded.VelocityBlend.B, TargetBlend.B, DeltaSeconds, Config.VelocityBlendInterpSpeed);
-	Grounded.VelocityBlend.L =
-		FMath::FInterpTo(Grounded.VelocityBlend.L, TargetBlend.L, DeltaSeconds, Config.VelocityBlendInterpSpeed);
-	Grounded.VelocityBlend.R =
-		FMath::FInterpTo(Grounded.VelocityBlend.R, TargetBlend.R, DeltaSeconds, Config.VelocityBlendInterpSpeed);
+	VelocityBlend.F =
+		FMath::FInterpTo(VelocityBlend.F, TargetBlend.F, DeltaSeconds, VelocityBlendInterpSpeed);
+	VelocityBlend.B =
+		FMath::FInterpTo(VelocityBlend.B, TargetBlend.B, DeltaSeconds, VelocityBlendInterpSpeed);
+	VelocityBlend.L =
+		FMath::FInterpTo(VelocityBlend.L, TargetBlend.L, DeltaSeconds, VelocityBlendInterpSpeed);
+	VelocityBlend.R =
+		FMath::FInterpTo(VelocityBlend.R, TargetBlend.R, DeltaSeconds, VelocityBlendInterpSpeed);
 
 	// Set the Diagnal Scale Amount.
-	Grounded.DiagonalScaleAmount = CalculateDiagonalScaleAmount();
+	DiagonalScaleAmount = CalculateDiagonalScaleAmount();
 
 	// Set the Relative Acceleration Amount and Interp the Lean Amount.
-	Grounded.RelativeAccelerationAmount = CalculateRelativeAccelerationAmount();
-	Grounded.LeanAmount.LR = FMath::FInterpTo(Grounded.LeanAmount.LR, Grounded.RelativeAccelerationAmount.Y,
-	                                          DeltaSeconds, Config.GroundedLeanInterpSpeed);
-	Grounded.LeanAmount.FB = FMath::FInterpTo(Grounded.LeanAmount.FB, Grounded.RelativeAccelerationAmount.X,
-	                                          DeltaSeconds, Config.GroundedLeanInterpSpeed);
+	RelativeAccelerationAmount = CalculateRelativeAccelerationAmount();
+	LeanAmount.LR = FMath::FInterpTo(LeanAmount.LR, RelativeAccelerationAmount.Y,
+	                                 DeltaSeconds, GroundedLeanInterpSpeed);
+	LeanAmount.FB = FMath::FInterpTo(LeanAmount.FB, RelativeAccelerationAmount.X,
+	                                 DeltaSeconds, GroundedLeanInterpSpeed);
 
 	// Set the Walk Run Blend
-	Grounded.WalkRunBlend = CalculateWalkRunBlend();
+	WalkRunBlend = CalculateWalkRunBlend();
 
 	// Set the Stride Blend
-	Grounded.StrideBlend = CalculateStrideBlend();
+	StrideBlend = CalculateStrideBlend();
 
 	// Set the Standing and Crouching Play Rates
-	Grounded.StandingPlayRate = CalculateStandingPlayRate();
-	Grounded.CrouchingPlayRate = CalculateCrouchingPlayRate();
+	StandingPlayRate = CalculateStandingPlayRate();
+	CrouchingPlayRate = CalculateCrouchingPlayRate();
 }
 
 void UBMCharacterAnimInstance::UpdateRotationValues()
 {
 	// Set the Movement Direction
-	Grounded.MovementDirection = CalculateMovementDirection();
+	MovementDirection = CalculateMovementDirection();
 
 	// Set the Yaw Offsets. These values influence the "YawOffset" curve in the animgraph and are used to offset
 	// the characters rotation for more natural movement. The curves allow for fine control over how the offset
 	// behaves for each movement direction.
-	FRotator Delta = CharacterInformation.Velocity.ToOrientationRotator() - CharacterInformation.AimingRotation;
+	FRotator Delta = Velocity.ToOrientationRotator() - AimingRotation;
 	Delta.Normalize();
 	const FVector& FBOffset = YawOffset_FB->GetVectorValue(Delta.Yaw);
-	Grounded.FYaw = FBOffset.X;
-	Grounded.BYaw = FBOffset.Y;
+	FYaw = FBOffset.X;
+	BYaw = FBOffset.Y;
 	const FVector& LROffset = YawOffset_LR->GetVectorValue(Delta.Yaw);
-	Grounded.LYaw = LROffset.X;
-	Grounded.RYaw = LROffset.Y;
+	LYaw = LROffset.X;
+	RYaw = LROffset.Y;
 }
 
 void UBMCharacterAnimInstance::UpdateInAirValues(float DeltaSeconds)
 {
 	// Update the fall speed. Setting this value only while in the air allows you to use it within the AnimGraph for the landing strength.
 	// If not, the Z velocity would return to 0 on landing.
-	InAir.FallSpeed = CharacterInformation.Velocity.Z;
+	FallSpeed = Velocity.Z;
 
 	// Set the Land Prediction weight.
-	InAir.LandPrediction = CalculateLandPrediction();
+	LandPrediction = CalculateLandPrediction();
 
 	// Interp and set the In Air Lean Amount
 	const FBMLeanAmount& InAirLeanAmount = CalculateAirLeanAmount();
-	Grounded.LeanAmount.LR = FMath::FInterpTo(Grounded.LeanAmount.LR, InAirLeanAmount.LR,
-	                                          DeltaSeconds, Config.GroundedLeanInterpSpeed);
-	Grounded.LeanAmount.FB = FMath::FInterpTo(Grounded.LeanAmount.FB, InAirLeanAmount.FB,
-	                                          DeltaSeconds, Config.GroundedLeanInterpSpeed);
+	LeanAmount.LR = FMath::FInterpTo(LeanAmount.LR, InAirLeanAmount.LR,
+	                                 DeltaSeconds, GroundedLeanInterpSpeed);
+	LeanAmount.FB = FMath::FInterpTo(LeanAmount.FB, InAirLeanAmount.FB,
+	                                 DeltaSeconds, GroundedLeanInterpSpeed);
 }
 
 void UBMCharacterAnimInstance::UpdateRagdollValues()
@@ -608,7 +608,7 @@ FBMVelocityBlend UBMCharacterAnimInstance::CalculateVelocityBlend()
 	// diagonals equal .5 for each direction), and is used in a BlendMulti node to produce better
 	// directional blending than a standard blendspace.
 	const FVector LocRelativeVelocityDir =
-		CharacterInformation.CharacterActorRotation.UnrotateVector(CharacterInformation.Velocity.GetSafeNormal(0.1f));
+		CharacterActorRotation.UnrotateVector(Velocity.GetSafeNormal(0.1f));
 	const float Sum = FMath::Abs(LocRelativeVelocityDir.X) + FMath::Abs(LocRelativeVelocityDir.Y) +
 		FMath::Abs(LocRelativeVelocityDir.Z);
 	const FVector RelativeDir = LocRelativeVelocityDir / Sum;
@@ -625,17 +625,17 @@ FVector UBMCharacterAnimInstance::CalculateRelativeAccelerationAmount()
 	// Calculate the Relative Acceleration Amount. This value represents the current amount of acceleration / deceleration
 	// relative to the actor rotation. It is normalized to a range of -1 to 1 so that -1 equals the Max Braking Deceleration,
 	// and 1 equals the Max Acceleration of the Character Movement Component.
-	if (FVector::DotProduct(CharacterInformation.Acceleration, CharacterInformation.Velocity) > 0.0f)
+	if (FVector::DotProduct(Acceleration, Velocity) > 0.0f)
 	{
 		const float MaxAcc = Character->GetCharacterMovement()->GetMaxAcceleration();
-		return CharacterInformation.CharacterActorRotation.UnrotateVector(
-			CharacterInformation.Acceleration.GetClampedToMaxSize(MaxAcc) / MaxAcc);
+		return CharacterActorRotation.UnrotateVector(
+			Acceleration.GetClampedToMaxSize(MaxAcc) / MaxAcc);
 	}
 
 	const float MaxBrakingDec = Character->GetCharacterMovement()->GetMaxBrakingDeceleration();
 	return
-		CharacterInformation.CharacterActorRotation.UnrotateVector(
-			CharacterInformation.Acceleration.GetClampedToMaxSize(MaxBrakingDec) / MaxBrakingDec);
+		CharacterActorRotation.UnrotateVector(
+			Acceleration.GetClampedToMaxSize(MaxBrakingDec) / MaxBrakingDec);
 }
 
 float UBMCharacterAnimInstance::CalculateStrideBlend()
@@ -645,18 +645,18 @@ float UBMCharacterAnimInstance::CalculateStrideBlend()
 	// It also allows the walk or run gait animations to blend independently while still matching the animation speed to
 	// the movement speed, preventing the character from needing to play a half walk+half run blend.
 	// The curves are used to map the stride amount to the speed for maximum control.
-	const float CurveTime = CharacterInformation.Speed / GetOwningComponent()->GetComponentScale().Z;
+	const float CurveTime = Speed / GetOwningComponent()->GetComponentScale().Z;
 	const float ClampedGait = GetAnimCurveClamped(FName(TEXT("Weight_Gait")), -1.0, 0.0f, 1.0f);
 	const float LerpedStrideBlend =
 		FMath::Lerp(StrideBlend_N_Walk->GetFloatValue(CurveTime), StrideBlend_N_Run->GetFloatValue(CurveTime), ClampedGait);
-	return FMath::Lerp(LerpedStrideBlend, StrideBlend_C_Walk->GetFloatValue(CharacterInformation.Speed),
+	return FMath::Lerp(LerpedStrideBlend, StrideBlend_C_Walk->GetFloatValue(Speed),
 	                   GetCurveValue(FName(TEXT("BasePose_CLF"))));
 }
 
 float UBMCharacterAnimInstance::CalculateWalkRunBlend()
 {
 	// Calculate the Walk Run Blend. This value is used within the Blendspaces to blend between walking and running.
-	return CharacterInformation.Gait == EBMGait::Walking ? 0.0f : 1.0;
+	return Gait == EBMGait::Walking ? 0.0f : 1.0;
 }
 
 float UBMCharacterAnimInstance::CalculateStandingPlayRate()
@@ -665,14 +665,14 @@ float UBMCharacterAnimInstance::CalculateStandingPlayRate()
 	// The lerps are determined by the "Weight_Gait" anim curve that exists on every locomotion cycle so
 	// that the play rate is always in sync with the currently blended animation.
 	// The value is also divided by the Stride Blend and the mesh scale so that the play rate increases as the stride or scale gets smaller
-	const float LerpedSpeed = FMath::Lerp(CharacterInformation.Speed / Config.AnimatedWalkSpeed,
-	                                      CharacterInformation.Speed / Config.AnimatedRunSpeed,
+	const float LerpedSpeed = FMath::Lerp(Speed / AnimatedWalkSpeed,
+	                                      Speed / AnimatedRunSpeed,
 	                                      GetAnimCurveClamped(FName(TEXT("Weight_Gait")), -1.0f, 0.0f, 1.0f));
 
-	const float SprintAffectedSpeed = FMath::Lerp(LerpedSpeed, CharacterInformation.Speed / Config.AnimatedSprintSpeed,
+	const float SprintAffectedSpeed = FMath::Lerp(LerpedSpeed, Speed / AnimatedSprintSpeed,
 	                                              GetAnimCurveClamped(FName(TEXT("Weight_Gait")), -2.0f, 0.0f, 1.0f));
 
-	return FMath::Clamp((SprintAffectedSpeed / Grounded.StrideBlend) / GetOwningComponent()->GetComponentScale().Z, 0.0f, 3.0f);
+	return FMath::Clamp((SprintAffectedSpeed / StrideBlend) / GetOwningComponent()->GetComponentScale().Z, 0.0f, 3.0f);
 }
 
 float UBMCharacterAnimInstance::CalculateDiagonalScaleAmount()
@@ -680,7 +680,7 @@ float UBMCharacterAnimInstance::CalculateDiagonalScaleAmount()
 	// Calculate the Diagnal Scale Amount. This value is used to scale the Foot IK Root bone to make the Foot IK bones
 	// cover more distance on the diagonal blends. Without scaling, the feet would not move far enough on the diagonal
 	// direction due to the linear translational blending of the IK bones. The curve is used to easily map the value.
-	return DiagonalScaleAmountCurve->GetFloatValue(FMath::Abs(Grounded.VelocityBlend.F + Grounded.VelocityBlend.B));
+	return DiagonalScaleAmountCurve->GetFloatValue(FMath::Abs(VelocityBlend.F + VelocityBlend.B));
 }
 
 float UBMCharacterAnimInstance::CalculateCrouchingPlayRate()
@@ -688,7 +688,7 @@ float UBMCharacterAnimInstance::CalculateCrouchingPlayRate()
 	// Calculate the Crouching Play Rate by dividing the Character's speed by the Animated Speed.
 	// This value needs to be separate from the standing play rate to improve the blend from crocuh to stand while in motion.
 	return FMath::Clamp(
-		CharacterInformation.Speed / Config.AnimatedCrouchSpeed / Grounded.StrideBlend / GetOwningComponent()->GetComponentScale().Z,
+		Speed / AnimatedCrouchSpeed / StrideBlend / GetOwningComponent()->GetComponentScale().Z,
 		0.0f, 2.0f);
 }
 
@@ -697,14 +697,14 @@ float UBMCharacterAnimInstance::CalculateLandPrediction()
 	// Calculate the land prediction weight by tracing in the velocity direction to find a walkable surface the character
 	// is falling toward, and getting the 'Time' (range of 0-1, 1 being maximum, 0 being about to land) till impact.
 	// The Land Prediction Curve is used to control how the time affects the final weight for a smooth blend. 
-	if (InAir.FallSpeed >= -200.0f)
+	if (FallSpeed >= -200.0f)
 	{
 		return 0.0f;
 	}
 
 	const FVector& CapsuleWorldLoc = Character->GetCapsuleComponent()->GetComponentLocation();
-	const float VelocityZ = CharacterInformation.Velocity.Z;
-	FVector VelocityClamped = CharacterInformation.Velocity;
+	const float VelocityZ = Velocity.Z;
+	FVector VelocityClamped = Velocity;
 	VelocityClamped.Z = FMath::Clamp(VelocityZ, -4000.0f, -200.0f);
 	VelocityClamped.Normalize();
 
@@ -734,13 +734,13 @@ FBMLeanAmount UBMCharacterAnimInstance::CalculateAirLeanAmount()
 	// Use the relative Velocity direction and amount to determine how much the character should lean while in air.
 	// The Lean In Air curve gets the Fall Speed and is used as a multiplier to smoothly reverse the leaning direction
 	// when transitioning from moving upwards to moving downwards.
-	FBMLeanAmount LeanAmount;
-	const FVector& UnrotatedVel = CharacterInformation.CharacterActorRotation.UnrotateVector(CharacterInformation.Velocity) / 350.0f;
+	FBMLeanAmount NewLeanAmount;
+	const FVector& UnrotatedVel = CharacterActorRotation.UnrotateVector(Velocity) / 350.0f;
 	FVector2D InversedVect(UnrotatedVel.Y, UnrotatedVel.X);
-	InversedVect *= LeanInAirCurve->GetFloatValue(InAir.FallSpeed);
-	LeanAmount.LR = InversedVect.X;
-	LeanAmount.FB = InversedVect.Y;
-	return LeanAmount;
+	InversedVect *= LeanInAirCurve->GetFloatValue(FallSpeed);
+	NewLeanAmount.LR = InversedVect.X;
+	NewLeanAmount.FB = InversedVect.Y;
+	return NewLeanAmount;
 }
 
 static bool AngleInRange(float Angle, float MinAngle, float MaxAngle, float Buffer, bool IncreaseBuffer)
@@ -757,14 +757,14 @@ EBMMovementDirection UBMCharacterAnimInstance::CalculateMovementDirection()
 	// Calculate the Movement Direction. This value represents the direction the character is moving relative to the camera
 	// during the Looking Cirection / Aiming rotation modes, and is used in the Cycle Blending Anim Layers to blend to the
 	// appropriate directional states.
-	if (CharacterInformation.Gait == EBMGait::Sprinting || CharacterInformation.RotationMode == EBMRotationMode::VelocityDirection)
+	if (Gait == EBMGait::Sprinting || RotationMode == EBMRotationMode::VelocityDirection)
 	{
 		return EBMMovementDirection::Forward;
 	}
 
-	FRotator Delta = CharacterInformation.Velocity.ToOrientationRotator() - CharacterInformation.AimingRotation;
+	FRotator Delta = Velocity.ToOrientationRotator() - AimingRotation;
 	Delta.Normalize();
-	return CalculateQuadrant(Grounded.MovementDirection, 70.0f, -70.0f, 110.0f, -110.0f, 5.0f, Delta.Yaw);
+	return CalculateQuadrant(MovementDirection, 70.0f, -70.0f, 110.0f, -110.0f, 5.0f, Delta.Yaw);
 }
 
 EBMMovementDirection UBMCharacterAnimInstance::CalculateQuadrant(EBMMovementDirection Current, float FRThreshold, float FLThreshold,
@@ -797,40 +797,40 @@ void UBMCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayRa
                                            bool OverrideCurrent)
 {
 	// Step 1: Set Turn Angle
-	FRotator Delta = TargetRotation - CharacterInformation.CharacterActorRotation;
+	FRotator Delta = TargetRotation - CharacterActorRotation;
 	Delta.Normalize();
 	const float TurnAngle = Delta.Yaw;
 
 	FBMTurnInPlaceAsset TargetTurnAsset;
 	// Step 2: Choose Turn Asset based on the Turn Angle and Stance
-	if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
+	if (FMath::Abs(TurnAngle) < Turn180Threshold)
 	{
 		if (TurnAngle < 0.0f)
 		{
-			TargetTurnAsset = CharacterInformation.Stance == EBMStance::Standing
-				                  ? TurnInPlaceValues.N_TurnIP_R90
-				                  : TurnInPlaceValues.CLF_TurnIP_L90;
+			TargetTurnAsset = Stance == EBMStance::Standing
+				                  ? N_TurnIP_R90
+				                  : CLF_TurnIP_L90;
 		}
 		else
 		{
-			TargetTurnAsset = CharacterInformation.Stance == EBMStance::Standing
-				                  ? TurnInPlaceValues.N_TurnIP_L90
-				                  : TurnInPlaceValues.CLF_TurnIP_R90;
+			TargetTurnAsset = Stance == EBMStance::Standing
+				                  ? N_TurnIP_L90
+				                  : CLF_TurnIP_R90;
 		}
 	}
 	else
 	{
 		if (TurnAngle < 0.0f)
 		{
-			TargetTurnAsset = CharacterInformation.Stance == EBMStance::Standing
-				                  ? TurnInPlaceValues.N_TurnIP_L180
-				                  : TurnInPlaceValues.CLF_TurnIP_L180;
+			TargetTurnAsset = Stance == EBMStance::Standing
+				                  ? N_TurnIP_L180
+				                  : CLF_TurnIP_L180;
 		}
 		else
 		{
-			TargetTurnAsset = CharacterInformation.Stance == EBMStance::Standing
-				                  ? TurnInPlaceValues.N_TurnIP_R180
-				                  : TurnInPlaceValues.CLF_TurnIP_R180;
+			TargetTurnAsset = Stance == EBMStance::Standing
+				                  ? N_TurnIP_R180
+				                  : CLF_TurnIP_R180;
 		}
 	}
 
@@ -845,19 +845,19 @@ void UBMCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayRa
 	// Step 4: Scale the rotation amount (gets scaled in animgraph) to compensate for turn angle (If Allowed) and play rate.
 	if (TargetTurnAsset.ScaleTurnAngle)
 	{
-		Grounded.RotationScale = (TurnAngle / TargetTurnAsset.AnimatedAngle) * TargetTurnAsset.PlayRate * PlayRateScale;
+		RotationScale = (TurnAngle / TargetTurnAsset.AnimatedAngle) * TargetTurnAsset.PlayRate * PlayRateScale;
 	}
 	else
 	{
-		Grounded.RotationScale = TargetTurnAsset.PlayRate * PlayRateScale;
+		RotationScale = TargetTurnAsset.PlayRate * PlayRateScale;
 	}
 }
 
 void UBMCharacterAnimInstance::OnJumped()
 {
-	InAir.bJumped = true;
-	InAir.JumpPlayRate = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 600.0f),
-	                                                       FVector2D(1.2f, 1.5f), CharacterInformation.Speed);
+	bJumped = true;
+	JumpPlayRate = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 600.0f),
+	                                                 FVector2D(1.2f, 1.5f), Speed);
 
 	UWorld* World = GetWorld();
 	check(World);
@@ -867,7 +867,7 @@ void UBMCharacterAnimInstance::OnJumped()
 
 void UBMCharacterAnimInstance::OnPivot()
 {
-	Grounded.bPivot = CharacterInformation.Speed < Config.TriggerPivotSpeedLimit;
+	bPivot = Speed < TriggerPivotSpeedLimit;
 	UWorld* World = GetWorld();
 	check(World);
 	World->GetTimerManager().SetTimer(OnPivotTimer, this,

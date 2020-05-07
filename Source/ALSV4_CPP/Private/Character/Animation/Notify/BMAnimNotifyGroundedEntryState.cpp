@@ -10,7 +10,7 @@ void UBMAnimNotifyGroundedEntryState::Notify(USkeletalMeshComponent* MeshComp, U
 	UBMCharacterAnimInstance* AnimIns = Cast<UBMCharacterAnimInstance>(MeshComp->GetAnimInstance());
 	if (AnimIns)
 	{
-		AnimIns->SetGroundedEntryState(GroundedEntryState);
+		AnimIns->GroundedEntryState = GroundedEntryState;
 	}
 }
 
