@@ -17,6 +17,9 @@ class ALSV4_CPP_API ABMPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	void RestartPawn(APawn* NewPawn);
+
+	UFUNCTION(BlueprintImplementableEvent)
 	void OnRestartPawn(APawn* NewPawn);
 
 private:

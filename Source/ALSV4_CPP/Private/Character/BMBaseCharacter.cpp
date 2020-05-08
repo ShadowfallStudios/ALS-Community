@@ -9,7 +9,6 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/TimelineComponent.h"
 #include "Curves/CurveVector.h"
-#include "Curves/CurveFloat.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -31,7 +30,7 @@ void ABMBaseCharacter::Restart()
 	ABMPlayerController* NewController = Cast<ABMPlayerController>(GetController());
 	if (NewController)
 	{
-		NewController->OnRestartPawn(this);
+		NewController->RestartPawn(this);
 	}
 }
 
@@ -58,22 +57,47 @@ void ABMBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("CameraAction", IE_Released, this, &ABMBaseCharacter::CameraReleasedAction);
 }
 
+void ABMBaseCharacter::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker)
+{
+	Super::PreReplication(ChangedPropertyTracker);
+
+	// Replicate target rotation only if we're not moving
+	DOREPLIFETIME_ACTIVE_OVERRIDE(ABMBaseCharacter, TargetRotation, bCanUpdateMovingRot);
+}
+
 void ABMBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ABMBaseCharacter, CachedControlRotation);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, CachedControlRotation, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, CachedCharacterRotation, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, TargetRotation, COND_SkipOwner);
 }
 
 void ABMBaseCharacter::OnBreakfall_Implementation()
 {
-	MainAnimInstance->Montage_Play(GetRollAnimation(), 1.35f);
+	// Increase play rate a bit compared to normal roll
+	OnRoll(1.35f);
 }
 
-void ABMBaseCharacter::OnRoll_Implementation()
+void ABMBaseCharacter::OnRoll(float PlayRate)
 {
 	// Roll: Simply play a Root Motion Montage.
-	MainAnimInstance->Montage_Play(GetRollAnimation(), 1.15f);
+	MainAnimInstance->Montage_Play(GetRollAnimation(), PlayRate);
+	Server_OnRoll(PlayRate);
+}
+
+void ABMBaseCharacter::Multicast_OnRoll_Implementation(float PlayRate)
+{
+	if (!IsLocallyControlled())
+	{
+		MainAnimInstance->Montage_Play(GetRollAnimation(), PlayRate);
+	}
+}
+
+void ABMBaseCharacter::Server_OnRoll_Implementation(float PlayRate)
+{
+	Multicast_OnRoll(PlayRate);
 }
 
 void ABMBaseCharacter::BeginPlay()
@@ -86,7 +110,7 @@ void ABMBaseCharacter::BeginPlay()
 	TimelineFinished.BindUFunction(this, FName(TEXT("MantleEnd")));
 	MantleTimeline->SetTimelineFinishedFunc(TimelineFinished);
 	MantleTimeline->SetLooping(false);
-	MantleTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
+	MantleTimeline->SetTimelineLengthMode(TL_TimelineLength);
 	MantleTimeline->AddInterpFloat(MantleTimelineCurve, TimelineUpdated);
 
 	// Make sure the mesh and animbp update after the CharacterBP to ensure it gets the most recent values.
@@ -119,7 +143,11 @@ void ABMBaseCharacter::BeginPlay()
 	}
 
 	// Set default rotation values.
-	TargetRotation = GetActorRotation();
+	if (IsLocallyControlled())
+	{
+		TargetRotation = GetActorRotation();
+		Server_SetTargetRotation(TargetRotation);
+	}
 	LastVelocityRotation = TargetRotation;
 	LastMovementInputRotation = TargetRotation;
 }
@@ -146,14 +174,18 @@ void ABMBaseCharacter::Tick(float DeltaTime)
 	// Set required values
 	SetEssentialValues(DeltaTime);
 
+	bUseControllerRotationYaw = bHasMovementInput ? 1 : 0;
+
 	// Cache values
 	PreviousVelocity = GetVelocity();
+	PreviousAimYaw = CachedControlRotation.Yaw;
 	if (IsLocallyControlled())
 	{
 		CachedControlRotation = GetControlRotation();
 		Server_SetReplicatedControlRot(CachedControlRotation);
+		CachedCharacterRotation = GetActorRotation();
+		Server_SetCachedActorRotation(CachedCharacterRotation);
 	}
-	PreviousAimYaw = CachedControlRotation.Yaw;
 
 	if (MovementState == EBMMovementState::Grounded)
 	{
@@ -162,8 +194,6 @@ void ABMBaseCharacter::Tick(float DeltaTime)
 	}
 	else if (MovementState == EBMMovementState::InAir)
 	{
-		UpdateInAirRotation(DeltaTime);
-
 		// Perform a mantle check if falling while movement input is pressed.
 		if (bHasMovementInput)
 		{
@@ -638,7 +668,6 @@ void ABMBaseCharacter::OnMovementStateChanged(const EBMMovementState PreviousSta
 		if (MovementAction == EBMMovementAction::None)
 		{
 			// If the character enters the air, set the In Air Rotation and uncrouch if crouched.
-			InAirRotation = GetActorRotation();
 			if (Stance == EBMStance::Crouching)
 			{
 				UnCrouch();
@@ -734,9 +763,16 @@ void ABMBaseCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeigh
 void ABMBaseCharacter::OnJumped_Implementation()
 {
 	Super::OnJumped_Implementation();
+	Server_OnJumped();
+}
 
-	// Set the new In Air Rotation to the velocity rotation if speed is greater than 100.
-	InAirRotation = Speed > 100.0f ? LastVelocityRotation : GetActorRotation();
+void ABMBaseCharacter::Server_OnJumped_Implementation()
+{
+	Multicast_OnJumped();
+}
+
+void ABMBaseCharacter::Multicast_OnJumped_Implementation()
+{
 	MainAnimInstance->OnJumped();
 }
 
@@ -807,6 +843,8 @@ void ABMBaseCharacter::SetEssentialValues(float DeltaTime)
 	// Set the Aim Yaw rate by comparing the current and previous Aim Yaw value, divided by Delta Seconds.
 	// This represents the speed the camera is rotating left to right.
 	SetAimYawRate(FMath::Abs((CachedControlRotation.Yaw - PreviousAimYaw) / DeltaTime));
+
+	bCanUpdateMovingRot = (bIsMoving && bHasMovementInput || Speed > 150.0f) && !HasAnyRootMotion();
 }
 
 void ABMBaseCharacter::UpdateCharacterMovement()
@@ -848,41 +886,7 @@ void ABMBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 {
 	if (MovementAction == EBMMovementAction::None)
 	{
-		const bool bCanUpdateMovingRot = ((bIsMoving && bHasMovementInput) || Speed > 150.0f) && !HasAnyRootMotion();
-		if (bCanUpdateMovingRot)
-		{
-			const float GroundedRotationRate = CalculateGroundedRotationRate();
-			if (RotationMode == EBMRotationMode::VelocityDirection)
-			{
-				// Velocity Direction Rotation
-				SmoothCharacterRotation(FRotator(0.0f, LastVelocityRotation.Yaw, 0.0f),
-				                        800.0f, GroundedRotationRate, DeltaTime);
-			}
-			else if (RotationMode == EBMRotationMode::LookingDirection)
-			{
-				// Looking Direction Rotation
-				float YawValue;
-				if (Gait == EBMGait::Sprinting)
-				{
-					YawValue = LastVelocityRotation.Yaw;
-				}
-				else
-				{
-					// Walking or Running..
-					const float YawOffsetCurveVal = MainAnimInstance->GetCurveValue(FName(TEXT("YawOffset")));
-					YawValue = CachedControlRotation.Yaw + YawOffsetCurveVal;
-				}
-				SmoothCharacterRotation(FRotator(0.0f, YawValue, 0.0f),
-				                        500.0f, GroundedRotationRate, DeltaTime);
-			}
-			else if (RotationMode == EBMRotationMode::Aiming)
-			{
-				const float ControlYaw = CachedControlRotation.Yaw;
-				SmoothCharacterRotation(FRotator(0.0f, ControlYaw, 0.0f),
-				                        1000.0f, 20.0f, DeltaTime);
-			}
-		}
-		else
+		if (!bCanUpdateMovingRot)
 		{
 			// Not Moving
 
@@ -900,40 +904,12 @@ void ABMBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 
 			if (FMath::Abs(RotAmountCurve) > 0.001f)
 			{
-				AddActorWorldRotation(
-					FRotator(0.0f, RotAmountCurve * (DeltaTime / (1.0f / 30.0f)), 0.0f));
-				TargetRotation = GetActorRotation();
+				FRotator FinalRot = CachedCharacterRotation;
+				FinalRot.Yaw += RotAmountCurve * (DeltaTime / (1.0f / 30.0f));
+				SetActorRotation(FinalRot);
+				Server_SetActorRotation(GetActorRotation());
 			}
 		}
-	}
-	else if (MovementAction == EBMMovementAction::Rolling)
-	{
-		// Rolling Rotation
-
-		if (bHasMovementInput)
-		{
-			SmoothCharacterRotation(FRotator(0.0f, LastMovementInputRotation.Yaw, 0.0f),
-			                        0.0f, 2.0f, DeltaTime);
-		}
-	}
-
-	// Other actions are ignored...
-}
-
-void ABMBaseCharacter::UpdateInAirRotation(float DeltaTime)
-{
-	if (RotationMode == EBMRotationMode::VelocityDirection || RotationMode == EBMRotationMode::LookingDirection)
-	{
-		// Velocity / Looking Direction Rotation
-		SmoothCharacterRotation(FRotator(0.0f, InAirRotation.Yaw, 0.0f),
-		                        0.0f, 5.0f, DeltaTime);
-	}
-	else if (RotationMode == EBMRotationMode::Aiming)
-	{
-		// Aiming Rotation
-		SmoothCharacterRotation(FRotator(0.0f, CachedControlRotation.Yaw, 0.0f),
-		                        0.0f, 15.0f, DeltaTime);
-		InAirRotation = GetActorRotation();
 	}
 }
 
@@ -1008,7 +984,7 @@ void ABMBaseCharacter::MantleStart(float MantleHeight, const FBMComponentAndTran
 	MantleTimeline->PlayFromStart();
 
 	// Step 7: Play the Anim Montaget if valid.
-	if (IsValid(MantleParams.AnimMontage))
+	if (MantleParams.AnimMontage)
 	{
 		MainAnimInstance->Montage_Play(MantleParams.AnimMontage, MantleParams.PlayRate,
 		                               EMontagePlayReturnType::MontageLength, MantleParams.StartingPosition, false);
@@ -1279,43 +1255,29 @@ EBMGait ABMBaseCharacter::GetActualGait(EBMGait AllowedGait)
 	return EBMGait::Walking;
 }
 
-void ABMBaseCharacter::SmoothCharacterRotation(FRotator Target, float TargetInterpSpeed, float ActorInterpSpeed,
-                                               float DeltaTime)
+void ABMBaseCharacter::SmoothCharacterRotation(FRotator Target, float TargetInterpSpeed, float ActorInterpSpeed, float DeltaTime)
 {
 	// Interpolate the Target Rotation for extra smooth rotation behavior
-	TargetRotation =
-		FMath::RInterpConstantTo(TargetRotation, Target, DeltaTime, TargetInterpSpeed);
-	SetActorRotation(
-		FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, ActorInterpSpeed));
-}
-
-float ABMBaseCharacter::CalculateGroundedRotationRate()
-{
-	// Calculate the rotation rate by using the current Rotation Rate Curve in the Movement Settings.
-	// Using the curve in conjunction with the mapped speed gives you a high level of control over the rotation
-	// rates for each speed. Increase the speed if the camera is rotating quickly for more responsive rotation.
-
-	const float MappedSpeedVal = GetMappedSpeed();
-	const float CurveVal =
-		CurrentMovementSettings.RotationRateCurve->GetFloatValue(MappedSpeedVal);
-	const float ClampedAimYawRate = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 300.0f),
-	                                                                  FVector2D(1.0f, 3.0f), AimYawRate);
-	return CurveVal * ClampedAimYawRate;
+	TargetRotation = FMath::RInterpConstantTo(TargetRotation, Target, DeltaTime, TargetInterpSpeed);
+	Server_SetTargetRotation(TargetRotation);
+	const FRotator& SmoothedRot = FMath::RInterpTo(CachedCharacterRotation, TargetRotation, DeltaTime, ActorInterpSpeed);
+	SetActorRotation(SmoothedRot);
+	CachedCharacterRotation = GetActorRotation();
+	Server_SetActorRotation(GetActorRotation());
 }
 
 void ABMBaseCharacter::LimitRotation(float AimYawMin, float AimYawMax, float InterpSpeed, float DeltaTime)
 {
 	// Prevent the character from rotating past a certain angle.
-	FRotator Delta = CachedControlRotation - GetActorRotation();
+	FRotator Delta = CachedControlRotation - CachedCharacterRotation;
 	Delta.Normalize();
 	const float RangeVal = Delta.Yaw;
 
 	if (RangeVal < AimYawMin || RangeVal > AimYawMax)
 	{
-		const float ControlRotYaw = CachedControlRotation.Yaw;
-		const float TargetYaw = ControlRotYaw + (RangeVal > 0.0f ? AimYawMin : AimYawMax);
-		SmoothCharacterRotation(FRotator(0.0f, TargetYaw, 0.0f),
-		                        0.0f, InterpSpeed, DeltaTime);
+		const float TargetYaw = CachedControlRotation.Yaw + (RangeVal > 0.0f ? AimYawMin : AimYawMax);
+		SetActorRotation(FRotator(0.0f, TargetYaw, 0.0f));
+		Server_SetActorRotation(GetActorRotation());
 	}
 }
 
@@ -1535,7 +1497,7 @@ void ABMBaseCharacter::StancePressedAction()
 	if (LastStanceInputTime - PrevStanceInputTime <= RollDoubleTapTimeout)
 	{
 		// Roll
-		OnRoll();
+		OnRoll(1.15f);
 
 		if (Stance == EBMStance::Standing)
 		{
@@ -1603,6 +1565,22 @@ void ABMBaseCharacter::LookingDirectionPressedAction()
 {
 	SetDesiredRotationMode(EBMRotationMode::LookingDirection);
 	SetRotationMode(EBMRotationMode::LookingDirection);
+}
+
+void ABMBaseCharacter::Server_SetCachedActorRotation_Implementation(FRotator Rot)
+{
+	CachedCharacterRotation = Rot;
+}
+
+void ABMBaseCharacter::Server_SetActorRotation_Implementation(FRotator Rot)
+{
+	CachedCharacterRotation = Rot;
+	SetActorRotation(Rot);
+}
+
+void ABMBaseCharacter::Server_SetTargetRotation_Implementation(FRotator Rot)
+{
+	TargetRotation = Rot;
 }
 
 void ABMBaseCharacter::Server_SetReplicatedControlRot_Implementation(FRotator Rot)

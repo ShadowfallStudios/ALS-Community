@@ -30,7 +30,14 @@ void UBMCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Velocity = Character->GetCharacterMovement()->Velocity;
 	MovementInput = Character->GetMovementInput();
 	AimingRotation = Character->GetAimingRotation();
-	CharacterActorRotation = Character->GetActorRotation();
+	if (Character->GetCanUpdateMovingRotation())
+	{
+		CharacterActorRotation = Character->GetActorRotation();
+	}
+	else
+	{
+		CharacterActorRotation = Character->GetCachedCharacterRotation();
+	}
 
 	UpdateAimingValues(DeltaSeconds);
 	UpdateLayerValues();
@@ -115,9 +122,7 @@ void UBMCharacterAnimInstance::PlayDynamicTransition(float ReTriggerDelay, FBMDy
 	{
 		bCanPlayDynamicTransition = false;
 		// Play Dynamic Additive Transition Animation
-		PlaySlotAnimationAsDynamicMontage(Parameters.Animation, FName(TEXT("Grounded Slot")),
-		                                  Parameters.BlendInTime, Parameters.BlendOutTime, Parameters.PlayRate, 1,
-		                                  0.0f, Parameters.StartTime);
+		PlayTransition(Parameters);
 
 		UWorld* World = GetWorld();
 		check(World);
@@ -178,12 +183,12 @@ void UBMCharacterAnimInstance::UpdateAimingValues(float DeltaSeconds)
 
 	// Calculate the Aiming angle and Smoothed Aiming Angle by getting
 	// the delta between the aiming rotation and the actor rotation.
-	FRotator Delta = AimingRotation - CharacterActorRotation;
+	FRotator Delta = AimingRotation - Character->GetActorRotation();
 	Delta.Normalize();
 	AimingAngle.X = Delta.Yaw;
 	AimingAngle.Y = Delta.Pitch;
 
-	Delta = SmoothedAimingRotation - CharacterActorRotation;
+	Delta = SmoothedAimingRotation - Character->GetActorRotation();
 	Delta.Normalize();
 	SmoothedAimingAngle.X = Delta.Yaw;
 	SmoothedAimingAngle.Y = Delta.Pitch;
@@ -205,7 +210,7 @@ void UBMCharacterAnimInstance::UpdateAimingValues(float DeltaSeconds)
 	{
 		// Get the delta between the Movement Input rotation and Actor rotation and map it to a range of 0-1.
 		// This value is used in the aim offset behavior to make the character look toward the Movement Input.
-		Delta = MovementInput.ToOrientationRotator() - CharacterActorRotation;
+		Delta = MovementInput.ToOrientationRotator() - Character->GetActorRotation();
 		Delta.Normalize();
 		const float InterpTarget = FMath::GetMappedRangeValueClamped(FVector2D(-180.0f, 180.0f),
 		                                                             FVector2D(0.0f, 1.0f), Delta.Yaw);
@@ -839,6 +844,7 @@ void UBMCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayRa
 	{
 		return;
 	}
+
 	PlaySlotAnimationAsDynamicMontage(TargetTurnAsset.Animation, TargetTurnAsset.SlotName, 0.2f, 0.2f,
 	                                  TargetTurnAsset.PlayRate * PlayRateScale, 1, 0.0f, StartTime);
 

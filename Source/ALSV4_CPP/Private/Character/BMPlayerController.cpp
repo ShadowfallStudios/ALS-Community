@@ -5,7 +5,7 @@
 #include "Character/BMCharacter.h"
 #include "Character/BMPlayerCameraManager.h"
 
-void ABMPlayerController::OnRestartPawn(APawn* NewPawn)
+void ABMPlayerController::RestartPawn(APawn* NewPawn)
 {
 	PossessedCharacter = Cast<ABMBaseCharacter>(NewPawn);
 	check(PossessedCharacter);
@@ -16,4 +16,7 @@ void ABMPlayerController::OnRestartPawn(APawn* NewPawn)
 	{
 		CastedMgr->OnPossess(PossessedCharacter);
 	}
+
+	// Trigger our BP event, mostly used for setting up HUD
+	OnRestartPawn(NewPawn);
 }
