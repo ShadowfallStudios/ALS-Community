@@ -46,6 +46,7 @@ void ABMBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_CONDITION(ABMBaseCharacter, PrevMovementState, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(ABMBaseCharacter, OverlayState, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(ABMBaseCharacter, ViewMode, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, ReplicatedControlRotation, COND_SkipOwner);
 }
 
 void ABMBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -113,6 +114,7 @@ void ABMBaseCharacter::BeginPlay()
 	// Update states to use the initial desired values.
 	SetDesiredGait(DesiredGait);
 	SetRotationMode(DesiredRotationMode);
+	SetDesiredRotationMode(DesiredRotationMode);
 	SetViewMode(ViewMode);
 	SetOverlayState(OverlayState);
 
@@ -140,6 +142,16 @@ void ABMBaseCharacter::PreInitializeComponents()
 	// TODO: Check null for MainAnimInstance if that's not editor object
 }
 
+FRotator ABMBaseCharacter::GetControlRotation() const
+{
+	if (GetController())
+	{
+		return Super::GetControlRotation();
+	}
+
+	return ReplicatedControlRotation;
+}
+
 void ABMBaseCharacter::SetAimYawRate(float NewAimYawRate)
 {
 	AimYawRate = NewAimYawRate;
@@ -157,10 +169,18 @@ void ABMBaseCharacter::Tick(float DeltaTime)
 	PreviousVelocity = GetVelocity();
 	PreviousAimYaw = GetControlRotation().Yaw;
 
+	// Replicate control rotation & movement input
+	if (GetLocalRole() == ROLE_AutonomousProxy)
+	{
+		ServerSetReplicatedControlRotation(GetControlRotation());
+	}
+
 	if (MovementState == EBMMovementState::Grounded)
 	{
 		UpdateCharacterMovement();
 		UpdateGroundedRotation(DeltaTime);
+
+		bUseControllerRotationYaw = bIsMoving;
 	}
 	else if (MovementState == EBMMovementState::InAir)
 	{
@@ -468,7 +488,7 @@ bool ABMBaseCharacter::CanSprint()
 
 	if (RotationMode == EBMRotationMode::LookingDirection)
 	{
-		const FRotator AccRot = GetCharacterMovement()->GetCurrentAcceleration().ToOrientationRotator();
+		const FRotator AccRot = GetMovementInput().ToOrientationRotator();
 		FRotator Delta = AccRot - GetControlRotation();
 		Delta.Normalize();
 
@@ -486,7 +506,12 @@ void ABMBaseCharacter::SetIsMoving(bool bNewIsMoving)
 
 FVector ABMBaseCharacter::GetMovementInput()
 {
-	return GetCharacterMovement()->GetCurrentAcceleration();
+	if (GetController())
+	{
+		return GetCharacterMovement()->GetCurrentAcceleration();
+	}
+
+	return GetCharacterMovement()->GetCurrentAcceleration() * GetCharacterMovement()->MaxAcceleration;
 }
 
 void ABMBaseCharacter::SetMovementInputAmount(float NewMovementInputAmount)
@@ -622,7 +647,7 @@ void ABMBaseCharacter::OnMovementStateChanged(const EBMMovementState PreviousSta
 	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 	AnimData.PrevMovementState = PrevMovementState;
 	AnimData.MovementState = MovementState;
-	
+
 	if (MovementState == EBMMovementState::InAir)
 	{
 		if (MovementAction == EBMMovementAction::None)
@@ -650,7 +675,7 @@ void ABMBaseCharacter::OnMovementStateChanged(const EBMMovementState PreviousSta
 void ABMBaseCharacter::OnMovementActionChanged(const EBMMovementAction PreviousAction)
 {
 	MainAnimInstance->GetCharacterInformationMutable().MovementAction = MovementAction;
-	
+
 	// Make the character crouch if performing a roll.
 	if (MovementAction == EBMMovementAction::Rolling)
 	{
@@ -678,7 +703,7 @@ void ABMBaseCharacter::OnStanceChanged(const EBMStance PreviousStance)
 void ABMBaseCharacter::OnRotationModeChanged(EBMRotationMode PreviousRotationMode)
 {
 	MainAnimInstance->GetCharacterInformationMutable().RotationMode = RotationMode;
-	
+
 	if (RotationMode == EBMRotationMode::VelocityDirection && ViewMode == EBMViewMode::FirstPerson)
 	{
 		// If the new rotation mode is Velocity Direction and the character is in First Person,
@@ -695,7 +720,7 @@ void ABMBaseCharacter::OnGaitChanged(const EBMGait PreviousGait)
 void ABMBaseCharacter::OnViewModeChanged(const EBMViewMode PreviousViewMode)
 {
 	MainAnimInstance->GetCharacterInformationMutable().ViewMode = ViewMode;
-	
+
 	if (ViewMode == EBMViewMode::ThirdPerson)
 	{
 		if (RotationMode == EBMRotationMode::VelocityDirection || RotationMode == EBMRotationMode::LookingDirection)
@@ -795,7 +820,8 @@ void ABMBaseCharacter::SetEssentialValues(float DeltaTime)
 	// The Movement Input Amount is equal to the current acceleration divided by the max acceleration so that
 	// it has a range of 0-1, 1 being the maximum possible amount of input, and 0 beiung none.
 	// If the character has movement input, update the Last Movement Input Rotation.
-	FVector CurAcc = GetCharacterMovement()->GetCurrentAcceleration();
+	FVector CurAcc = GetMovementInput();
+
 	SetMovementInputAmount(CurAcc.Size() / GetCharacterMovement()->GetMaxAcceleration());
 	SetHasMovementInput(MovementInputAmount > 0.0f);
 	if (bHasMovementInput)
@@ -899,6 +925,12 @@ void ABMBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 
 			if (FMath::Abs(RotAmountCurve) > 0.001f)
 			{
+				if (GetLocalRole() == ROLE_AutonomousProxy && IsReplicatingMovement())
+				{
+					// While applying the curve, stop movement replication
+					SetReplicateMovement(false);
+				}
+
 				AddActorWorldRotation(
 					FRotator(0.0f, RotAmountCurve * (DeltaTime / (1.0f / 30.0f)), 0.0f));
 				TargetRotation = GetActorRotation();
@@ -914,6 +946,12 @@ void ABMBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 			SmoothCharacterRotation(FRotator(0.0f, LastMovementInputRotation.Yaw, 0.0f),
 			                        0.0f, 2.0f, DeltaTime);
 		}
+	}
+
+	if (GetLocalRole() == ROLE_AutonomousProxy && bIsMoving && !IsReplicatingMovement())
+	{
+		// While moving, always have replicate movement enabled
+		SetReplicateMovement(true);
 	}
 
 	// Other actions are ignored...
@@ -1396,6 +1434,12 @@ void ABMBaseCharacter::JumpPressedAction()
 	// Jump Action: Press "Jump Action" to end the ragdoll if ragdolling, check for a mantle if grounded or in air,
 	// stand up if crouching, or jump if standing.
 
+	if (GetLocalRole() == ROLE_AutonomousProxy && !IsReplicatingMovement())
+	{
+		// After jump input, always have replicate movement enabled
+		SetReplicateMovement(true);
+	}
+
 	if (MovementAction == EBMMovementAction::None)
 	{
 		if (MovementState == EBMMovementState::Grounded)
@@ -1613,4 +1657,9 @@ void ABMBaseCharacter::OnRep_ViewMode(EBMViewMode PrevViewMode)
 void ABMBaseCharacter::OnRep_OverlayState(EBMOverlayState PrevOverlayState)
 {
 	OnOverlayStateChanged(PrevOverlayState);
+}
+
+void ABMBaseCharacter::ServerSetReplicatedControlRotation_Implementation(FRotator Rot)
+{
+	ReplicatedControlRotation = Rot;
 }

@@ -35,9 +35,11 @@ public:
 
 	virtual void PreInitializeComponents() override;
 
+	FRotator GetControlRotation() const;
+
 	virtual void Restart() override;
 
-	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
@@ -325,7 +327,7 @@ protected:
 
 	UFUNCTION()
 	virtual void MantleUpdate(float BlendIn);
-	
+
 	UFUNCTION()
 	virtual void MantleEnd();
 
@@ -397,7 +399,10 @@ protected:
 
 	UFUNCTION()
 	void OnRep_OverlayState(EBMOverlayState PrevOverlayState);
-	
+
+	UFUNCTION(Server, Unreliable)
+	void ServerSetReplicatedControlRotation(FRotator Rot);
+
 protected:
 	/** Input */
 
@@ -572,6 +577,9 @@ protected:
 	FVector PreviousVelocity;
 
 	float PreviousAimYaw = 0.0f;
+
+	UPROPERTY(Replicated)
+	FRotator ReplicatedControlRotation;
 
 	UBMCharacterAnimInstance* MainAnimInstance = nullptr;
 
