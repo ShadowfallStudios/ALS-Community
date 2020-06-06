@@ -12,6 +12,7 @@
 #include "Curves/CurveFloat.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 ABMBaseCharacter::ABMBaseCharacter()
 {
@@ -29,6 +30,18 @@ void ABMBaseCharacter::Restart()
 	{
 		NewController->OnRestartPawn(this);
 	}
+}
+
+void ABMBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, DesiredStance, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, DesiredGait, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, DesiredRotationMode, COND_SkipOwner);
+
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, MovementAction, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, RotationMode, COND_SkipOwner);
 }
 
 void ABMBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -94,7 +107,7 @@ void ABMBaseCharacter::BeginPlay()
 	AnimData.MovementState = MovementState;
 
 	// Update states to use the initial desired values.
-	SetGait(DesiredGait);
+	SetDesiredGait(DesiredGait);
 	SetRotationMode(DesiredRotationMode);
 	SetViewMode(ViewMode);
 	SetOverlayState(OverlayState);
@@ -229,9 +242,18 @@ void ABMBaseCharacter::SetMovementAction(const EBMMovementAction NewAction)
 	{
 		EBMMovementAction Prev = MovementAction;
 		MovementAction = NewAction;
-		MainAnimInstance->GetCharacterInformationMutable().MovementAction = MovementAction;
 		OnMovementActionChanged(Prev);
+
+		if (GetLocalRole() < ROLE_Authority)
+		{
+			ServerSetMovementAction(NewAction);
+		}
 	}
+}
+
+void ABMBaseCharacter::ServerSetMovementAction_Implementation(const EBMMovementAction NewAction)
+{
+	SetMovementAction(NewAction);
 }
 
 void ABMBaseCharacter::SetStance(const EBMStance NewStance)
@@ -251,9 +273,18 @@ void ABMBaseCharacter::SetRotationMode(const EBMRotationMode NewRotationMode)
 	{
 		EBMRotationMode Prev = RotationMode;
 		RotationMode = NewRotationMode;
-		MainAnimInstance->GetCharacterInformationMutable().RotationMode = RotationMode;
 		OnRotationModeChanged(Prev);
+
+		if (GetLocalRole() < ROLE_Authority)
+		{
+			ServerSetRotationMode(NewRotationMode);
+		}
 	}
+}
+
+void ABMBaseCharacter::ServerSetRotationMode_Implementation(EBMRotationMode NewRotationMode)
+{
+	SetRotationMode(NewRotationMode);
 }
 
 void ABMBaseCharacter::SetGait(const EBMGait NewGait)
@@ -262,7 +293,6 @@ void ABMBaseCharacter::SetGait(const EBMGait NewGait)
 	{
 		EBMGait Prev = Gait;
 		Gait = NewGait;
-		MainAnimInstance->GetCharacterInformationMutable().Gait = Gait;
 		OnGaitChanged(Prev);
 	}
 }
@@ -287,6 +317,36 @@ void ABMBaseCharacter::SetOverlayState(const EBMOverlayState NewState)
 		MainAnimInstance->GetCharacterInformationMutable().OverlayState = OverlayState;
 		OnOverlayStateChanged(Prev);
 	}
+}
+
+void ABMBaseCharacter::SetDesiredStance(EBMStance NewStance)
+{
+	DesiredStance = NewStance;
+
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerSetDesiredStance(NewStance);
+	}
+}
+
+void ABMBaseCharacter::SetDesiredGait(EBMGait NewGait)
+{
+	DesiredGait = NewGait;
+
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerSetDesiredGait(NewGait);
+	}
+}
+
+void ABMBaseCharacter::ServerSetDesiredGait_Implementation(EBMGait NewGait)
+{
+	SetDesiredGait(NewGait);
+}
+
+void ABMBaseCharacter::ServerSetDesiredStance_Implementation(EBMStance NewStance)
+{
+	SetDesiredStance(NewStance);
 }
 
 void ABMBaseCharacter::SetActorLocationAndTargetRotation(FVector NewLocation, FRotator NewRotation)
@@ -557,6 +617,8 @@ void ABMBaseCharacter::OnMovementStateChanged(const EBMMovementState PreviousSta
 
 void ABMBaseCharacter::OnMovementActionChanged(const EBMMovementAction PreviousAction)
 {
+	MainAnimInstance->GetCharacterInformationMutable().MovementAction = MovementAction;
+	
 	// Make the character crouch if performing a roll.
 	if (MovementAction == EBMMovementAction::Rolling)
 	{
@@ -582,6 +644,8 @@ void ABMBaseCharacter::OnStanceChanged(const EBMStance PreviousStance)
 
 void ABMBaseCharacter::OnRotationModeChanged(EBMRotationMode PreviousRotationMode)
 {
+	MainAnimInstance->GetCharacterInformationMutable().RotationMode = RotationMode;
+	
 	if (RotationMode == EBMRotationMode::VelocityDirection && ViewMode == EBMViewMode::FirstPerson)
 	{
 		// If the new rotation mode is Velocity Direction and the character is in First Person,
@@ -592,6 +656,7 @@ void ABMBaseCharacter::OnRotationModeChanged(EBMRotationMode PreviousRotationMod
 
 void ABMBaseCharacter::OnGaitChanged(const EBMGait PreviousGait)
 {
+	MainAnimInstance->GetCharacterInformationMutable().Gait = Gait;
 }
 
 void ABMBaseCharacter::OnViewModeChanged(const EBMViewMode PreviousViewMode)
@@ -1224,6 +1289,21 @@ void ABMBaseCharacter::GetControlForwardRightVector(FVector& Forward, FVector& R
 	Right = GetInputAxisValue("MoveRight/Left") * UKismetMathLibrary::GetRightVector(ControlRot);
 }
 
+void ABMBaseCharacter::SetDesiredRotationMode(EBMRotationMode NewRotMode)
+{
+	DesiredRotationMode = NewRotMode;
+
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerSetDesiredRotationMode(NewRotMode);
+	}
+}
+
+void ABMBaseCharacter::ServerSetDesiredRotationMode_Implementation(EBMRotationMode NewRotMode)
+{
+	SetDesiredRotationMode(NewRotMode);
+}
+
 FVector ABMBaseCharacter::GetPlayerMovementInput()
 {
 	FVector Forward;
@@ -1471,4 +1551,14 @@ void ABMBaseCharacter::LookingDirectionPressedAction()
 {
 	SetDesiredRotationMode(EBMRotationMode::LookingDirection);
 	SetRotationMode(EBMRotationMode::LookingDirection);
+}
+
+void ABMBaseCharacter::OnRep_MovementAction(EBMMovementAction PrevMovementAction)
+{
+	OnMovementActionChanged(PrevMovementAction);
+}
+
+void ABMBaseCharacter::OnRep_RotationMode(EBMRotationMode PrevRotMode)
+{
+	OnRotationModeChanged(PrevRotMode);
 }

@@ -37,6 +37,8 @@ public:
 
 	virtual void Restart() override;
 
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const override;
+
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	/** Ragdoll System */
@@ -65,6 +67,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetMovementAction(EBMMovementAction NewAction);
 
+	UFUNCTION(Server, Reliable)
+	void ServerSetMovementAction(EBMMovementAction NewAction);
+
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMMovementAction GetMovementAction() { return MovementAction; }
 
@@ -76,6 +81,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetRotationMode(EBMRotationMode NewRotationMode);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetRotationMode(EBMRotationMode NewRotationMode);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMRotationMode GetRotationMode() { return RotationMode; }
@@ -107,19 +115,28 @@ public:
 	EBMStance GetDesiredStance() { return DesiredStance; }
 
 	UFUNCTION(BlueprintSetter, Category = "Input")
-	void SetDesiredStance(EBMStance NewStance) { DesiredStance = NewStance; }
+	void SetDesiredStance(EBMStance NewStance);
+
+	UFUNCTION(Reliable, Server)
+	void ServerSetDesiredStance(EBMStance NewStance);
 
 	UFUNCTION(BlueprintGetter, Category = "Input")
 	EBMGait GetDesiredGait() { return DesiredGait; }
 
 	UFUNCTION(BlueprintSetter, Category = "Input")
-	void SetDesiredGait(EBMGait NewGait) { DesiredGait = NewGait; }
+	void SetDesiredGait(EBMGait NewGait);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetDesiredGait(EBMGait NewGait);
 
 	UFUNCTION(BlueprintGetter, Category = "Input")
 	EBMRotationMode GetDesiredRotationMode() { return DesiredRotationMode; }
 
 	UFUNCTION(BlueprintSetter, Category = "Input")
-	void SetDesiredRotationMode(EBMRotationMode NewRotMode) { DesiredRotationMode = NewRotMode; }
+	void SetDesiredRotationMode(EBMRotationMode NewRotMode);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetDesiredRotationMode(EBMRotationMode NewRotMode);
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	FVector GetPlayerMovementInput();
@@ -164,12 +181,10 @@ public:
 	/** BP implementable function that called when Breakfall starts */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Movement System")
 	void OnBreakfall();
-	virtual void OnBreakfall_Implementation();
 
 	/** BP implementable function that called when Roll starts */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Movement System")
 	void OnRoll();
-	virtual void OnRoll_Implementation();
 
 	/** Implement on BP to get required roll animation according to character's state */
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Movement System")
@@ -252,7 +267,7 @@ protected:
 
 	void SetActorLocationDuringRagdoll();
 
-	/** Stace Changes */
+	/** State Changes */
 
 	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode = 0) override;
 
@@ -356,16 +371,23 @@ protected:
 
 	void LookingDirectionPressedAction();
 
+	/** Replication */
+	UFUNCTION()
+	void OnRep_MovementAction(EBMMovementAction PrevMovementAction);
+
+	UFUNCTION()
+	void OnRep_RotationMode(EBMRotationMode PrevRotMode);
+
 protected:
 	/** Input */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input", Replicated)
 	EBMRotationMode DesiredRotationMode = EBMRotationMode::LookingDirection;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input", Replicated)
 	EBMGait DesiredGait = EBMGait::Running;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	UPROPERTY(BlueprintReadWrite, Category = "Input", Replicated)
 	EBMStance DesiredStance = EBMStance::Standing;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input", BlueprintReadOnly)
@@ -466,10 +488,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "State Values")
 	EBMMovementState PrevMovementState = EBMMovementState::None;
 
-	UPROPERTY(BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(BlueprintReadOnly, Category = "State Values", ReplicatedUsing=OnRep_MovementAction)
 	EBMMovementAction MovementAction = EBMMovementAction::None;
 
-	UPROPERTY(BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(BlueprintReadOnly, Category = "State Values", ReplicatedUsing=OnRep_RotationMode)
 	EBMRotationMode RotationMode = EBMRotationMode::LookingDirection;
 
 	UPROPERTY(BlueprintReadOnly, Category = "State Values")
