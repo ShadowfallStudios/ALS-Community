@@ -42,6 +42,10 @@ void ABMBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME_CONDITION(ABMBaseCharacter, MovementAction, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(ABMBaseCharacter, RotationMode, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, MovementState, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, PrevMovementState, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, OverlayState, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, ViewMode, COND_SkipOwner);
 }
 
 void ABMBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -229,11 +233,18 @@ void ABMBaseCharacter::SetMovementState(const EBMMovementState NewState)
 	{
 		PrevMovementState = MovementState;
 		MovementState = NewState;
-		FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
-		AnimData.PrevMovementState = PrevMovementState;
-		AnimData.MovementState = MovementState;
 		OnMovementStateChanged(PrevMovementState);
+
+		if (GetLocalRole() == ROLE_AutonomousProxy)
+		{
+			ServerSetMovementState(NewState);
+		}
 	}
+}
+
+void ABMBaseCharacter::ServerSetMovementState_Implementation(EBMMovementState NewState)
+{
+	SetMovementState(NewState);
 }
 
 void ABMBaseCharacter::SetMovementAction(const EBMMovementAction NewAction)
@@ -244,7 +255,7 @@ void ABMBaseCharacter::SetMovementAction(const EBMMovementAction NewAction)
 		MovementAction = NewAction;
 		OnMovementActionChanged(Prev);
 
-		if (GetLocalRole() < ROLE_Authority)
+		if (GetLocalRole() == ROLE_AutonomousProxy)
 		{
 			ServerSetMovementAction(NewAction);
 		}
@@ -262,7 +273,6 @@ void ABMBaseCharacter::SetStance(const EBMStance NewStance)
 	{
 		EBMStance Prev = Stance;
 		Stance = NewStance;
-		MainAnimInstance->GetCharacterInformationMutable().Stance = Stance;
 		OnStanceChanged(Prev);
 	}
 }
@@ -275,7 +285,7 @@ void ABMBaseCharacter::SetRotationMode(const EBMRotationMode NewRotationMode)
 		RotationMode = NewRotationMode;
 		OnRotationModeChanged(Prev);
 
-		if (GetLocalRole() < ROLE_Authority)
+		if (GetLocalRole() == ROLE_AutonomousProxy)
 		{
 			ServerSetRotationMode(NewRotationMode);
 		}
@@ -303,9 +313,18 @@ void ABMBaseCharacter::SetViewMode(const EBMViewMode NewViewMode)
 	{
 		EBMViewMode Prev = ViewMode;
 		ViewMode = NewViewMode;
-		MainAnimInstance->GetCharacterInformationMutable().ViewMode = ViewMode;
 		OnViewModeChanged(Prev);
+
+		if (GetLocalRole() == ROLE_AutonomousProxy)
+		{
+			ServerSetViewMode(NewViewMode);
+		}
 	}
+}
+
+void ABMBaseCharacter::ServerSetViewMode_Implementation(EBMViewMode NewViewMode)
+{
+	SetViewMode(NewViewMode);
 }
 
 void ABMBaseCharacter::SetOverlayState(const EBMOverlayState NewState)
@@ -314,26 +333,40 @@ void ABMBaseCharacter::SetOverlayState(const EBMOverlayState NewState)
 	{
 		EBMOverlayState Prev = OverlayState;
 		OverlayState = NewState;
-		MainAnimInstance->GetCharacterInformationMutable().OverlayState = OverlayState;
 		OnOverlayStateChanged(Prev);
+
+		if (GetLocalRole() == ROLE_AutonomousProxy)
+		{
+			ServerSetOverlayState(NewState);
+		}
 	}
+}
+
+void ABMBaseCharacter::ServerSetOverlayState_Implementation(EBMOverlayState NewState)
+{
+	SetOverlayState(NewState);
 }
 
 void ABMBaseCharacter::SetDesiredStance(EBMStance NewStance)
 {
 	DesiredStance = NewStance;
 
-	if (GetLocalRole() < ROLE_Authority)
+	if (GetLocalRole() == ROLE_AutonomousProxy)
 	{
 		ServerSetDesiredStance(NewStance);
 	}
+}
+
+void ABMBaseCharacter::ServerSetDesiredStance_Implementation(EBMStance NewStance)
+{
+	SetDesiredStance(NewStance);
 }
 
 void ABMBaseCharacter::SetDesiredGait(EBMGait NewGait)
 {
 	DesiredGait = NewGait;
 
-	if (GetLocalRole() < ROLE_Authority)
+	if (GetLocalRole() == ROLE_AutonomousProxy)
 	{
 		ServerSetDesiredGait(NewGait);
 	}
@@ -342,11 +375,6 @@ void ABMBaseCharacter::SetDesiredGait(EBMGait NewGait)
 void ABMBaseCharacter::ServerSetDesiredGait_Implementation(EBMGait NewGait)
 {
 	SetDesiredGait(NewGait);
-}
-
-void ABMBaseCharacter::ServerSetDesiredStance_Implementation(EBMStance NewStance)
-{
-	SetDesiredStance(NewStance);
 }
 
 void ABMBaseCharacter::SetActorLocationAndTargetRotation(FVector NewLocation, FRotator NewRotation)
@@ -591,6 +619,10 @@ void ABMBaseCharacter::OnMovementModeChanged(EMovementMode PrevMovementMode, uin
 
 void ABMBaseCharacter::OnMovementStateChanged(const EBMMovementState PreviousState)
 {
+	FBMAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
+	AnimData.PrevMovementState = PrevMovementState;
+	AnimData.MovementState = MovementState;
+	
 	if (MovementState == EBMMovementState::InAir)
 	{
 		if (MovementAction == EBMMovementAction::None)
@@ -640,6 +672,7 @@ void ABMBaseCharacter::OnMovementActionChanged(const EBMMovementAction PreviousA
 
 void ABMBaseCharacter::OnStanceChanged(const EBMStance PreviousStance)
 {
+	MainAnimInstance->GetCharacterInformationMutable().Stance = Stance;
 }
 
 void ABMBaseCharacter::OnRotationModeChanged(EBMRotationMode PreviousRotationMode)
@@ -661,6 +694,8 @@ void ABMBaseCharacter::OnGaitChanged(const EBMGait PreviousGait)
 
 void ABMBaseCharacter::OnViewModeChanged(const EBMViewMode PreviousViewMode)
 {
+	MainAnimInstance->GetCharacterInformationMutable().ViewMode = ViewMode;
+	
 	if (ViewMode == EBMViewMode::ThirdPerson)
 	{
 		if (RotationMode == EBMRotationMode::VelocityDirection || RotationMode == EBMRotationMode::LookingDirection)
@@ -678,6 +713,7 @@ void ABMBaseCharacter::OnViewModeChanged(const EBMViewMode PreviousViewMode)
 
 void ABMBaseCharacter::OnOverlayStateChanged(const EBMOverlayState PreviousState)
 {
+	MainAnimInstance->GetCharacterInformationMutable().OverlayState = OverlayState;
 }
 
 void ABMBaseCharacter::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
@@ -1293,7 +1329,7 @@ void ABMBaseCharacter::SetDesiredRotationMode(EBMRotationMode NewRotMode)
 {
 	DesiredRotationMode = NewRotMode;
 
-	if (GetLocalRole() < ROLE_Authority)
+	if (GetLocalRole() == ROLE_AutonomousProxy)
 	{
 		ServerSetDesiredRotationMode(NewRotMode);
 	}
@@ -1561,4 +1597,20 @@ void ABMBaseCharacter::OnRep_MovementAction(EBMMovementAction PrevMovementAction
 void ABMBaseCharacter::OnRep_RotationMode(EBMRotationMode PrevRotMode)
 {
 	OnRotationModeChanged(PrevRotMode);
+}
+
+void ABMBaseCharacter::OnRep_MovementState(EBMMovementState PrevState)
+{
+	// TODO: Check if PrevMovementState is synced?
+	OnMovementStateChanged(PrevState);
+}
+
+void ABMBaseCharacter::OnRep_ViewMode(EBMViewMode PrevViewMode)
+{
+	OnViewModeChanged(PrevViewMode);
+}
+
+void ABMBaseCharacter::OnRep_OverlayState(EBMOverlayState PrevOverlayState)
+{
+	OnOverlayStateChanged(PrevOverlayState);
 }

@@ -39,10 +39,10 @@ void UBMCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (CharacterInformation.MovementState == EBMMovementState::Grounded)
 	{
 		// Check If Moving Or Not & Enable Movement Animations if IsMoving and HasMovementInput, or if the Speed is greater than 150.
-		const bool prevShouldMove = Grounded.bShouldMove;
+		const bool PrevShouldMove = Grounded.bShouldMove;
 		Grounded.bShouldMove = ShouldMoveCheck();
 
-		if (prevShouldMove == false && Grounded.bShouldMove)
+		if (PrevShouldMove == false && Grounded.bShouldMove)
 		{
 			// Do When Starting To Move
 			TurnInPlaceValues.ElapsedDelayTime = 0.0f;

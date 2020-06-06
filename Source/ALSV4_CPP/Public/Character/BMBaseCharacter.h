@@ -58,6 +58,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetMovementState(EBMMovementState NewState);
 
+	UFUNCTION(Server, Reliable)
+	void ServerSetMovementState(EBMMovementState NewState);
+
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMMovementState GetMovementState() { return MovementState; }
 
@@ -73,6 +76,7 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMMovementAction GetMovementAction() { return MovementAction; }
 
+	/** Indirectly replicated via SetDesiredStance() */
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetStance(EBMStance NewStance);
 
@@ -88,6 +92,7 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMRotationMode GetRotationMode() { return RotationMode; }
 
+	/** Indirectly replicated via SetDesiredGait() */
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetGait(EBMGait NewGait);
 
@@ -97,11 +102,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetViewMode(EBMViewMode NewViewMode);
 
+	UFUNCTION(Server, Reliable)
+	void ServerSetViewMode(EBMViewMode NewViewMode);
+
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMViewMode GetViewMode() { return ViewMode; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetOverlayState(EBMOverlayState NewState);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetOverlayState(EBMOverlayState NewState);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMOverlayState GetOverlayState() { return OverlayState; }
@@ -378,6 +389,15 @@ protected:
 	UFUNCTION()
 	void OnRep_RotationMode(EBMRotationMode PrevRotMode);
 
+	UFUNCTION()
+	void OnRep_MovementState(EBMMovementState PrevState);
+
+	UFUNCTION()
+	void OnRep_ViewMode(EBMViewMode PrevViewMode);
+
+	UFUNCTION()
+	void OnRep_OverlayState(EBMOverlayState PrevOverlayState);
+	
 protected:
 	/** Input */
 
@@ -424,7 +444,7 @@ protected:
 
 	/** State Values */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values", ReplicatedUsing=OnRep_OverlayState)
 	EBMOverlayState OverlayState = EBMOverlayState::Default;
 
 	/** Movement System */
@@ -482,10 +502,10 @@ protected:
 
 	/** State Values */
 
-	UPROPERTY(BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(BlueprintReadOnly, Category = "State Values", ReplicatedUsing=OnRep_MovementState)
 	EBMMovementState MovementState = EBMMovementState::None;
 
-	UPROPERTY(BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(BlueprintReadOnly, Category = "State Values", Replicated)
 	EBMMovementState PrevMovementState = EBMMovementState::None;
 
 	UPROPERTY(BlueprintReadOnly, Category = "State Values", ReplicatedUsing=OnRep_MovementAction)
@@ -500,7 +520,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values")
 	EBMStance Stance = EBMStance::Standing;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values", ReplicatedUsing=OnRep_ViewMode)
 	EBMViewMode ViewMode = EBMViewMode::ThirdPerson;
 
 	/** Movement System */
