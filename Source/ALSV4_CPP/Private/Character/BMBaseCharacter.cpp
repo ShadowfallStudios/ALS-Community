@@ -12,12 +12,16 @@
 #include "Curves/CurveFloat.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 ABMBaseCharacter::ABMBaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(FName(TEXT("MantleTimeline")));
 	bUseControllerRotationYaw = 0;
+	SetReplicates(true);
+	SetReplicatingMovement(true);
 }
 
 void ABMBaseCharacter::Restart()
@@ -54,21 +58,32 @@ void ABMBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("CameraAction", IE_Released, this, &ABMBaseCharacter::CameraReleasedAction);
 }
 
-void ABMBaseCharacter::OnBreakfall_Implementation()
+void ABMBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	MainAnimInstance->Montage_Play(GetRollAnimation(), 1.35f);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, MovementInputAmount, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, CustomControlRotation, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ABMBaseCharacter, TargetRotation, COND_SkipOwner);
+	DOREPLIFETIME(ABMBaseCharacter, OnDedicatedServer);
 }
 
-void ABMBaseCharacter::OnRoll_Implementation()
+void ABMBaseCharacter::OnBreakfall_Implementation()
+{
+	Replicated_PlayMontage(GetRollAnimation(), 1.35);
+}
+
+void ABMBaseCharacter::Replicated_PlayMontage_Implementation(UAnimMontage* montage, float track)
 {
 	// Roll: Simply play a Root Motion Montage.
-	MainAnimInstance->Montage_Play(GetRollAnimation(), 1.15f);
+	MainAnimInstance->Montage_Play(montage, track);
+	Server_PlayMontage(montage, track);
 }
 
 void ABMBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	FOnTimelineFloat TimelineUpdated;
 	FOnTimelineEvent TimelineFinished;
 	TimelineUpdated.BindUFunction(this, FName(TEXT("MantleUpdate")));
@@ -112,6 +127,12 @@ void ABMBaseCharacter::BeginPlay()
 	TargetRotation = GetActorRotation();
 	LastVelocityRotation = TargetRotation;
 	LastMovementInputRotation = TargetRotation;
+
+	// Determines if the game instance is being run in a dedicated server, which is then stored and replicated.
+	if (HasAuthority())
+	{
+		OnDedicatedServer = UKismetSystemLibrary::IsDedicatedServer(GetWorld());
+	}
 }
 
 void ABMBaseCharacter::PreInitializeComponents()
@@ -136,10 +157,6 @@ void ABMBaseCharacter::Tick(float DeltaTime)
 	// Set required values
 	SetEssentialValues(DeltaTime);
 
-	// Cache values
-	PreviousVelocity = GetVelocity();
-	PreviousAimYaw = GetControlRotation().Yaw;
-
 	if (MovementState == EBMMovementState::Grounded)
 	{
 		UpdateCharacterMovement();
@@ -160,6 +177,10 @@ void ABMBaseCharacter::Tick(float DeltaTime)
 		RagdollUpdate();
 	}
 
+	// Cache values
+	PreviousVelocity = GetVelocity();
+	PreviousAimYaw = CustomControlRotation.Yaw;
+
 	DrawDebugSpheres();
 }
 
@@ -175,12 +196,18 @@ void ABMBaseCharacter::RagdollStart()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetMesh()->SetAllBodiesBelowSimulatePhysics(FName(TEXT("Pelvis")), true, true);
 
+	//** When Networked, Disables Replicate Movement*/
+	SetReplicateMovement(false);
+
 	// Step 3: Stop any active montages.
 	MainAnimInstance->Montage_Stop(0.2f);
 }
 
 void ABMBaseCharacter::RagdollEnd()
 {
+	//** Re-enable Replicate Movement*/
+	SetReplicateMovement(true);
+
 	if (!MainAnimInstance)
 	{
 		return;
@@ -245,6 +272,40 @@ void ABMBaseCharacter::SetStance(const EBMStance NewStance)
 	}
 }
 
+void ABMBaseCharacter::SetGait(const EBMGait NewGait)
+{
+	if (Gait != NewGait)
+	{
+		Gait = NewGait;
+		MainAnimInstance->GetCharacterInformationMutable().Gait = Gait;
+	}
+}
+
+void ABMBaseCharacter::SetDesiredGait(const EBMGait NewGait)
+{
+	if (Gait != NewGait)
+	{
+		EBMGait Prev = Gait;
+		DesiredGait = NewGait;
+		OnGaitChanged(Prev);
+	}
+	Server_SetDesiredGait(NewGait);
+}
+
+void ABMBaseCharacter::Server_SetDesiredGait_Implementation(EBMGait NewGait)
+{
+	Multicast_SetDesiredGait(NewGait);
+}
+
+void ABMBaseCharacter::Multicast_SetDesiredGait_Implementation(EBMGait NewGait)
+{
+	if (!IsLocallyControlled())
+	{
+		DesiredGait = NewGait;
+		OnGaitChanged(NewGait);
+	}
+}
+
 void ABMBaseCharacter::SetRotationMode(const EBMRotationMode NewRotationMode)
 {
 	if (RotationMode != NewRotationMode)
@@ -254,16 +315,21 @@ void ABMBaseCharacter::SetRotationMode(const EBMRotationMode NewRotationMode)
 		MainAnimInstance->GetCharacterInformationMutable().RotationMode = RotationMode;
 		OnRotationModeChanged(Prev);
 	}
+	Server_SetRotationMode(NewRotationMode);
 }
 
-void ABMBaseCharacter::SetGait(const EBMGait NewGait)
+void ABMBaseCharacter::Server_SetRotationMode_Implementation(EBMRotationMode NewRotationMode)
 {
-	if (Gait != NewGait)
+	Multicast_SetRotationMode(NewRotationMode);
+}
+
+void ABMBaseCharacter::Multicast_SetRotationMode_Implementation(EBMRotationMode NewRotationMode)
+{
+	if (!IsLocallyControlled())
 	{
-		EBMGait Prev = Gait;
-		Gait = NewGait;
-		MainAnimInstance->GetCharacterInformationMutable().Gait = Gait;
-		OnGaitChanged(Prev);
+		RotationMode = NewRotationMode;
+		MainAnimInstance->GetCharacterInformationMutable().RotationMode = RotationMode;
+		OnRotationModeChanged(NewRotationMode);
 	}
 }
 
@@ -276,6 +342,22 @@ void ABMBaseCharacter::SetViewMode(const EBMViewMode NewViewMode)
 		MainAnimInstance->GetCharacterInformationMutable().ViewMode = ViewMode;
 		OnViewModeChanged(Prev);
 	}
+	Server_SetViewMode(NewViewMode);
+}
+
+void ABMBaseCharacter::Server_SetViewMode_Implementation(EBMViewMode NewViewMode)
+{
+	Multicast_SetViewMode(NewViewMode);
+}
+
+void ABMBaseCharacter::Multicast_SetViewMode_Implementation(EBMViewMode NewViewMode)
+{
+	if (!IsLocallyControlled())
+	{
+		ViewMode = NewViewMode;
+		MainAnimInstance->GetCharacterInformationMutable().ViewMode = ViewMode;
+		OnViewModeChanged(NewViewMode);
+	}
 }
 
 void ABMBaseCharacter::SetOverlayState(const EBMOverlayState NewState)
@@ -287,6 +369,116 @@ void ABMBaseCharacter::SetOverlayState(const EBMOverlayState NewState)
 		MainAnimInstance->GetCharacterInformationMutable().OverlayState = OverlayState;
 		OnOverlayStateChanged(Prev);
 	}
+	Server_SetOverlayState(NewState);
+}
+
+
+void ABMBaseCharacter::Server_SetOverlayState_Implementation(EBMOverlayState NewState)
+{
+	Multicast_SetOverlayState(NewState);
+}
+
+void ABMBaseCharacter::Multicast_SetOverlayState_Implementation(EBMOverlayState NewState)
+{
+	if (!IsLocallyControlled())
+	{
+		OverlayState = NewState;
+		MainAnimInstance->GetCharacterInformationMutable().OverlayState = OverlayState;
+		OnOverlayStateChanged(NewState);
+	}
+}
+
+void ABMBaseCharacter::EventOnLanded()
+{
+	const float VelZ = FMath::Abs(GetCharacterMovement()->Velocity.Z);
+
+	if (bHasMovementInput && VelZ >= 600.0f && VelZ <= 1000.0f)
+	{
+		OnBreakfall();
+	}
+	else if (VelZ > 1000.0f)
+	{
+		ReplicatedRagdollStart();
+	}
+	else
+	{
+		GetCharacterMovement()->BrakingFrictionFactor = bHasMovementInput ? 0.5f : 3.0f;
+
+		// After 0.5 secs, reset braking friction factor to zero
+		GetWorldTimerManager().SetTimer(OnLandedFrictionResetTimer, this,
+			&ABMBaseCharacter::OnLandFrictionReset, 0.5f, false);
+	}
+}
+
+void ABMBaseCharacter::Multicast_OnLanded_Implementation()
+{
+	if (!IsLocallyControlled())
+	{
+		EventOnLanded();
+	}
+}
+
+void ABMBaseCharacter::EventOnJumped()
+{
+	// Set the new In Air Rotation to the velocity rotation if speed is greater than 100.
+	InAirRotation = Speed > 100.0f ? LastVelocityRotation : GetActorRotation();
+	MainAnimInstance->OnJumped();
+}
+
+void ABMBaseCharacter::Server_MantleStart_Implementation(float MantleHeight, const FBMComponentAndTransform& MantleLedgeWS, EBMMantleType MantleType)
+{
+	Multicast_MantleStart(MantleHeight, MantleLedgeWS, MantleType);
+}
+
+void ABMBaseCharacter::Multicast_MantleStart_Implementation(float MantleHeight, const FBMComponentAndTransform& MantleLedgeWS, EBMMantleType MantleType)
+{
+	if (!IsLocallyControlled())
+	{
+
+		MantleStart(MantleHeight, MantleLedgeWS, MantleType);
+	}
+}
+
+void ABMBaseCharacter::Server_PlayMontage_Implementation(UAnimMontage* montage, float track)
+{
+	Multicast_PlayMontage(montage, track);
+}
+
+void ABMBaseCharacter::Multicast_PlayMontage_Implementation(UAnimMontage* montage, float track)
+{
+	if (!IsLocallyControlled())
+	{
+		// Roll: Simply play a Root Motion Montage.
+		MainAnimInstance->Montage_Play(montage, track);
+	}
+}
+
+void ABMBaseCharacter::Multicast_OnJumped_Implementation()
+{
+	if (!IsLocallyControlled())
+	{
+		EventOnJumped();
+	}
+}
+
+void ABMBaseCharacter::Server_RagdollStart_Implementation()
+{
+	Multicast_RagdollStart();
+}
+
+void ABMBaseCharacter::Multicast_RagdollStart_Implementation()
+{
+	RagdollStart();
+}
+
+void ABMBaseCharacter::Server_RagdollEnd_Implementation(FVector CharacterLocation)
+{
+	Multicast_RagdollEnd(CharacterLocation);
+}
+
+void ABMBaseCharacter::Multicast_RagdollEnd_Implementation(FVector CharacterLocation)
+{
+	RagdollEnd();
 }
 
 void ABMBaseCharacter::SetActorLocationAndTargetRotation(FVector NewLocation, FRotator NewRotation)
@@ -381,7 +573,7 @@ bool ABMBaseCharacter::CanSprint()
 	if (RotationMode == EBMRotationMode::LookingDirection)
 	{
 		const FRotator AccRot = GetCharacterMovement()->GetCurrentAcceleration().ToOrientationRotator();
-		FRotator Delta = AccRot - GetControlRotation();
+		FRotator Delta = AccRot - CustomControlRotation;
 		Delta.Normalize();
 
 		return bValidInputAmount && FMath::Abs(Delta.Yaw) < 50.0f;
@@ -456,7 +648,7 @@ void ABMBaseCharacter::SetAcceleration(const FVector& NewAcceleration)
 void ABMBaseCharacter::RagdollUpdate()
 {
 	// Set the Last Ragdoll Velocity.
-	LastRagdollVelocity = GetMesh()->GetPhysicsLinearVelocity(FName(TEXT("Root")));
+	LastRagdollVelocity = GetMesh()->GetPhysicsLinearVelocity(FName(TEXT("root")));
 
 	// Use the Ragdoll Velocity to scale the ragdoll's joint strength for physical animation.
 	const float SpringValue = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 1000.0f),
@@ -467,7 +659,7 @@ void ABMBaseCharacter::RagdollUpdate()
 	// This also prevents the ragdoll from going through the floor.
 	const bool bEnableGrav = LastRagdollVelocity.Z > -4000.0f;
 	GetMesh()->SetEnableGravity(bEnableGrav);
-
+	
 	// Update the Actor location to follow the ragdoll.
 	SetActorLocationDuringRagdoll();
 }
@@ -475,7 +667,7 @@ void ABMBaseCharacter::RagdollUpdate()
 void ABMBaseCharacter::SetActorLocationDuringRagdoll()
 {
 	// Set the pelvis as the target location.
-	const FVector TargetRagdollLocation = GetMesh()->GetSocketLocation(FName(TEXT("Pelvis")));
+	TargetRagdollLocation = GetMesh()->GetSocketLocation(FName(TEXT("Pelvis")));
 
 	// Determine wether the ragdoll is facing up or down and set the target rotation accordingly.
 	const FRotator PelvisRot = GetMesh()->GetSocketRotation(FName(TEXT("Pelvis")));
@@ -488,7 +680,7 @@ void ABMBaseCharacter::SetActorLocationDuringRagdoll()
 	// Trace downward from the target location to offset the target location,
 	// preventing the lower half of the capsule from going through the floor when the ragdoll is laying on the ground.
 	const FVector TraceVect(TargetRagdollLocation.X, TargetRagdollLocation.Y,
-	                        TargetRagdollLocation.Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+		TargetRagdollLocation.Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
@@ -505,9 +697,18 @@ void ABMBaseCharacter::SetActorLocationDuringRagdoll()
 		NewRagdollLoc.Z += GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - ImpactDistZ + 2.0f;
 		SetActorLocationAndTargetRotation(NewRagdollLoc, TargetRagdollRotation);
 	}
-	else
+
+	// Server_RagdollUpdate() only happens when the character is on a dedicated server. For some reason, the C++ version
+	// of ALS's ragdoll system's TargetRagdollLocation variable keeps increasing its Z value resulting in the character
+	// being launched into the air when SetReplicateMovement is turned off in RagdollEnd() which does not happen in the
+	// blueprint version. I suspect this is due to SetAllBodiesBelowSimulatePhysics() in Ragdoll Start not firing.
+	else if (!bRagdollOnGround && !UKismetSystemLibrary::IsDedicatedServer(GetWorld()))
 	{
 		SetActorLocationAndTargetRotation(TargetRagdollLocation, TargetRagdollRotation);
+		if (OnDedicatedServer && IsLocallyControlled())
+		{
+			Server_RagdollUpdate(TargetRagdollLocation, TargetRagdollRotation);
+		}
 	}
 }
 
@@ -545,7 +746,7 @@ void ABMBaseCharacter::OnMovementStateChanged(const EBMMovementState PreviousSta
 		else if (MovementAction == EBMMovementAction::Rolling)
 		{
 			// If the character is currently rolling, enable the ragdoll.
-			RagdollStart();
+			ReplicatedRagdollStart();
 		}
 	}
 	else if (MovementState == EBMMovementState::Ragdoll && PreviousState == EBMMovementState::Mantling)
@@ -632,33 +833,27 @@ void ABMBaseCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeigh
 void ABMBaseCharacter::OnJumped_Implementation()
 {
 	Super::OnJumped_Implementation();
-
-	// Set the new In Air Rotation to the velocity rotation if speed is greater than 100.
-	InAirRotation = Speed > 100.0f ? LastVelocityRotation : GetActorRotation();
-	MainAnimInstance->OnJumped();
+	if (IsLocallyControlled())
+	{
+		EventOnJumped();
+	}
+	if (HasAuthority())
+	{
+		Multicast_OnJumped();
+	}
 }
 
 void ABMBaseCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
-
-	const float VelZ = FMath::Abs(GetCharacterMovement()->Velocity.Z);
-
-	if (bHasMovementInput && VelZ >= 600.0f && VelZ <= 1000.0f)
+	
+	if (IsLocallyControlled())
 	{
-		OnBreakfall();
+		EventOnLanded();
 	}
-	else if (VelZ > 1000.0f)
+	if (HasAuthority())
 	{
-		RagdollStart();
-	}
-	else
-	{
-		GetCharacterMovement()->BrakingFrictionFactor = bHasMovementInput ? 0.5f : 3.0f;
-
-		// After 0.5 secs, reset braking friction factor to zero
-		GetWorldTimerManager().SetTimer(OnLandedFrictionResetTimer, this,
-		                                &ABMBaseCharacter::OnLandFrictionReset, 0.5f, false);
+		Multicast_OnLanded();
 	}
 }
 
@@ -690,21 +885,27 @@ void ABMBaseCharacter::SetEssentialValues(float DeltaTime)
 		LastVelocityRotation = CurrentVel.ToOrientationRotator();
 	}
 
-	// Determine if the character has movement input by getting its movement input amount.
-	// The Movement Input Amount is equal to the current acceleration divided by the max acceleration so that
-	// it has a range of 0-1, 1 being the maximum possible amount of input, and 0 beiung none.
-	// If the character has movement input, update the Last Movement Input Rotation.
-	FVector CurAcc = GetCharacterMovement()->GetCurrentAcceleration();
-	SetMovementInputAmount(CurAcc.Size() / GetCharacterMovement()->GetMaxAcceleration());
 	SetHasMovementInput(MovementInputAmount > 0.0f);
 	if (bHasMovementInput)
 	{
-		LastMovementInputRotation = CurAcc.ToOrientationRotator();
+		LastMovementInputRotation = Acceleration.ToOrientationRotator();
+	}
+
+	if (HasAuthority() || IsLocallyControlled())
+	{
+		// Determine if the character has movement input by getting its movement input amount.
+		// The Movement Input Amount is equal to the current acceleration divided by the max acceleration so that
+		// it has a range of 0-1, 1 being the maximum possible amount of input, and 0 beiung none.
+		// If the character has movement input, update the Last Movement Input Rotation.
+		FVector CurAcc = GetCharacterMovement()->GetCurrentAcceleration();
+		SetMovementInputAmount(CurAcc.Size() / GetCharacterMovement()->GetMaxAcceleration());
+
+		CustomControlRotation = GetControlRotation();
 	}
 
 	// Set the Aim Yaw rate by comparing the current and previous Aim Yaw value, divided by Delta Seconds.
 	// This represents the speed the camera is rotating left to right.
-	SetAimYawRate(FMath::Abs((GetControlRotation().Yaw - PreviousAimYaw) / DeltaTime));
+	SetAimYawRate(FMath::Abs((CustomControlRotation.Yaw - PreviousAimYaw) / DeltaTime));
 }
 
 void ABMBaseCharacter::UpdateCharacterMovement()
@@ -768,14 +969,14 @@ void ABMBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 				{
 					// Walking or Running..
 					const float YawOffsetCurveVal = MainAnimInstance->GetCurveValue(FName(TEXT("YawOffset")));
-					YawValue = GetControlRotation().Yaw + YawOffsetCurveVal;
+					YawValue = CustomControlRotation.Yaw + YawOffsetCurveVal;
 				}
 				SmoothCharacterRotation(FRotator(0.0f, YawValue, 0.0f),
 				                        500.0f, GroundedRotationRate, DeltaTime);
 			}
 			else if (RotationMode == EBMRotationMode::Aiming)
 			{
-				const float ControlYaw = GetControlRotation().Yaw;
+				const float ControlYaw = CustomControlRotation.Yaw;
 				SmoothCharacterRotation(FRotator(0.0f, ControlYaw, 0.0f),
 				                        1000.0f, 20.0f, DeltaTime);
 			}
@@ -798,8 +999,7 @@ void ABMBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 
 			if (FMath::Abs(RotAmountCurve) > 0.001f)
 			{
-				AddActorWorldRotation(
-					FRotator(0.0f, RotAmountCurve * (DeltaTime / (1.0f / 30.0f)), 0.0f));
+				SetActorRotation(FRotator(GetActorRotation().Pitch, (RotAmountCurve * (DeltaTime / (1.0f / 30.0f))) + GetActorRotation().Yaw, GetActorRotation().Roll) );
 				TargetRotation = GetActorRotation();
 			}
 		}
@@ -829,7 +1029,7 @@ void ABMBaseCharacter::UpdateInAirRotation(float DeltaTime)
 	else if (RotationMode == EBMRotationMode::Aiming)
 	{
 		// Aiming Rotation
-		SmoothCharacterRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f),
+		SmoothCharacterRotation(FRotator(0.0f, CustomControlRotation.Yaw, 0.0f),
 		                        0.0f, 15.0f, DeltaTime);
 		InAirRotation = GetActorRotation();
 	}
@@ -1002,6 +1202,7 @@ bool ABMBaseCharacter::MantleCheck(const FBMMantleTraceSettings& TraceSettings, 
 	MantleWS.Component = HitComponent;
 	MantleWS.Transform = TargetTransform;
 	MantleStart(MantleHeight, MantleWS, MantleType);
+	Server_MantleStart(MantleHeight, MantleWS, MantleType);
 
 	return true;
 }
@@ -1204,13 +1405,13 @@ float ABMBaseCharacter::CalculateGroundedRotationRate()
 void ABMBaseCharacter::LimitRotation(float AimYawMin, float AimYawMax, float InterpSpeed, float DeltaTime)
 {
 	// Prevent the character from rotating past a certain angle.
-	FRotator Delta = GetControlRotation() - GetActorRotation();
+	FRotator Delta = CustomControlRotation - GetActorRotation();
 	Delta.Normalize();
 	const float RangeVal = Delta.Yaw;
 
 	if (RangeVal < AimYawMin || RangeVal > AimYawMax)
 	{
-		const float ControlRotYaw = GetControlRotation().Yaw;
+		const float ControlRotYaw = CustomControlRotation.Yaw;
 		const float TargetYaw = ControlRotYaw + (RangeVal > 0.0f ? AimYawMin : AimYawMax);
 		SmoothCharacterRotation(FRotator(0.0f, TargetYaw, 0.0f),
 		                        0.0f, InterpSpeed, DeltaTime);
@@ -1219,7 +1420,7 @@ void ABMBaseCharacter::LimitRotation(float AimYawMin, float AimYawMax, float Int
 
 void ABMBaseCharacter::GetControlForwardRightVector(FVector& Forward, FVector& Right)
 {
-	const FRotator ControlRot(0.0f, GetControlRotation().Yaw, 0.0f);
+	const FRotator ControlRot(0.0f, CustomControlRotation.Yaw, 0.0f);
 	Forward = GetInputAxisValue("MoveForward/Backwards") * UKismetMathLibrary::GetForwardVector(ControlRot);
 	Right = GetInputAxisValue("MoveRight/Left") * UKismetMathLibrary::GetRightVector(ControlRot);
 }
@@ -1249,7 +1450,7 @@ void ABMBaseCharacter::PlayerForwardMovementInput(float Value)
 	{
 		// Default camera relative movement behavior
 		const float Scale = FixDiagonalGamepadValues(Value, GetInputAxisValue("MoveRight/Left")).Key;
-		const FRotator DirRotator(0.0f, GetControlRotation().Yaw, 0.0f);
+		const FRotator DirRotator(0.0f, CustomControlRotation.Yaw, 0.0f);
 		AddMovementInput(UKismetMathLibrary::GetForwardVector(DirRotator), Scale);
 	}
 }
@@ -1260,7 +1461,7 @@ void ABMBaseCharacter::PlayerRightMovementInput(float Value)
 	{
 		// Default camera relative movement behavior
 		const float Scale = FixDiagonalGamepadValues(GetInputAxisValue("MoveForward/Backwards"), Value).Value;
-		const FRotator DirRotator(0.0f, GetControlRotation().Yaw, 0.0f);
+		const FRotator DirRotator(0.0f, CustomControlRotation.Yaw, 0.0f);
 		AddMovementInput(UKismetMathLibrary::GetRightVector(DirRotator), Scale);
 	}
 }
@@ -1306,7 +1507,7 @@ void ABMBaseCharacter::JumpPressedAction()
 		}
 		else if (MovementState == EBMMovementState::Ragdoll)
 		{
-			RagdollEnd();
+			ReplicatedRagdollEnd();
 		}
 	}
 }
@@ -1403,7 +1604,7 @@ void ABMBaseCharacter::StancePressedAction()
 	if (LastStanceInputTime - PrevStanceInputTime <= RollDoubleTapTimeout)
 	{
 		// Roll
-		OnRoll();
+		Replicated_PlayMontage(GetRollAnimation(), 1.15f);
 
 		if (Stance == EBMStance::Standing)
 		{
@@ -1451,11 +1652,11 @@ void ABMBaseCharacter::RagdollPressedAction()
 
 	if (GetMovementState() == EBMMovementState::Ragdoll)
 	{
-		RagdollEnd();
+		ReplicatedRagdollEnd();
 	}
 	else
 	{
-		RagdollStart();
+		ReplicatedRagdollStart();
 	}
 }
 
@@ -1471,4 +1672,36 @@ void ABMBaseCharacter::LookingDirectionPressedAction()
 {
 	SetDesiredRotationMode(EBMRotationMode::LookingDirection);
 	SetRotationMode(EBMRotationMode::LookingDirection);
+}
+
+void ABMBaseCharacter::ReplicatedRagdollStart()
+{
+	if (HasAuthority())
+	{
+		Multicast_RagdollStart();
+	}
+	else
+	{
+		Server_RagdollStart();
+	}
+}
+
+void ABMBaseCharacter::ReplicatedRagdollEnd()
+{
+	if (HasAuthority())
+	{
+		Multicast_RagdollEnd(GetActorLocation());
+	}
+	else
+	{
+		Server_RagdollEnd(GetActorLocation());
+	}
+}
+
+
+// TODO: Fix TargetRagdollLocation Z location increase bug so this function can be deleted
+void ABMBaseCharacter::Server_RagdollUpdate_Implementation(FVector CharacterLocation, FRotator CharacterRotation)
+{
+	TargetRagdollLocation = CharacterLocation;
+	SetActorLocationAndTargetRotation(CharacterLocation, CharacterRotation);
 }

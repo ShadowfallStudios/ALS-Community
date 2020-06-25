@@ -39,6 +39,8 @@ public:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	/** Ragdoll System */
 
 	/** Implement on BP to get required get up animation according to character's state */
@@ -75,19 +77,43 @@ public:
 	EBMStance GetStance() { return Stance; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
-	void SetRotationMode(EBMRotationMode NewRotationMode);
-
-	UFUNCTION(BlueprintGetter, Category = "Character States")
-	EBMRotationMode GetRotationMode() { return RotationMode; }
-
-	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetGait(EBMGait NewGait);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMGait GetGait() { return Gait; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
+	void SetDesiredGait(EBMGait NewGait);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	void Server_SetDesiredGait(EBMGait NewGait);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	void Multicast_SetDesiredGait(EBMGait NewGait);
+
+	UFUNCTION(BlueprintGetter, Category = "CharacterStates")
+	EBMGait GetDesiredGait() { return DesiredGait; }
+
+	UFUNCTION(BlueprintCallable, Category = "Character States")
+	void SetRotationMode(EBMRotationMode NewRotationMode);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	void Server_SetRotationMode(EBMRotationMode NewRotationMode);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	void Multicast_SetRotationMode(EBMRotationMode NewRotationMode);
+
+	UFUNCTION(BlueprintGetter, Category = "Character States")
+	EBMRotationMode GetRotationMode() { return RotationMode; }
+
+	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetViewMode(EBMViewMode NewViewMode);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	void Server_SetViewMode(EBMViewMode NewViewMode);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	void Multicast_SetViewMode(EBMViewMode NewViewMode);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMViewMode GetViewMode() { return ViewMode; }
@@ -95,11 +121,68 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetOverlayState(EBMOverlayState NewState);
 
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	void Server_SetOverlayState(EBMOverlayState NewState);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	void Multicast_SetOverlayState(EBMOverlayState NewState);
+
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMOverlayState GetOverlayState() { return OverlayState; }
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMOverlayState SwitchRight() { return OverlayState; }
+
+	/** Landed, Jumped, Rolling, Mantling and Ragdoll*/
+	/** On Landed*/
+	UFUNCTION(BlueprintCallable, Category = "Character States")
+	void EventOnLanded();
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	void Multicast_OnLanded();
+
+	/** On Jumped*/
+	UFUNCTION(BlueprintCallable, Category = "Character States")
+	void EventOnJumped();
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	void Multicast_OnJumped();
+
+	/** Rolling Montage Play Replication*/
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	void Server_PlayMontage(UAnimMontage* montage, float track);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	void Multicast_PlayMontage(UAnimMontage* montage, float track);
+
+	/** Mantling*/
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	void Server_MantleStart(float MantleHeight, const FBMComponentAndTransform& MantleLedgeWS, EBMMantleType MantleType);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	void Multicast_MantleStart(float MantleHeight, const FBMComponentAndTransform& MantleLedgeWS, EBMMantleType MantleType);
+
+	/** Ragolling*/
+	UFUNCTION(BlueprintCallable, Category = "Character States")
+	void ReplicatedRagdollStart();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	void Server_RagdollStart();
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	void Multicast_RagdollStart();
+
+	UFUNCTION(BlueprintCallable, Category = "Character States")
+	void ReplicatedRagdollEnd();
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	void Server_RagdollEnd(FVector CharacterLocation);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	void Multicast_RagdollEnd(FVector CharacterLocation);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	void Server_RagdollUpdate(FVector CharacterLocation, FRotator CharacterRotation);
 
 	/** Input */
 
@@ -108,12 +191,6 @@ public:
 
 	UFUNCTION(BlueprintSetter, Category = "Input")
 	void SetDesiredStance(EBMStance NewStance) { DesiredStance = NewStance; }
-
-	UFUNCTION(BlueprintGetter, Category = "Input")
-	EBMGait GetDesiredGait() { return DesiredGait; }
-
-	UFUNCTION(BlueprintSetter, Category = "Input")
-	void SetDesiredGait(EBMGait NewGait) { DesiredGait = NewGait; }
 
 	UFUNCTION(BlueprintGetter, Category = "Input")
 	EBMRotationMode GetDesiredRotationMode() { return DesiredRotationMode; }
@@ -166,10 +243,10 @@ public:
 	void OnBreakfall();
 	virtual void OnBreakfall_Implementation();
 
-	/** BP implementable function that called when Roll starts */
+	/** BP implementable function that called when A Montage starts, e.g. during rolling */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Movement System")
-	void OnRoll();
-	virtual void OnRoll_Implementation();
+	void Replicated_PlayMontage(UAnimMontage* montage, float track);
+	virtual void Replicated_PlayMontage_Implementation(UAnimMontage* montage, float track);
 
 	/** Implement on BP to get required roll animation according to character's state */
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Movement System")
@@ -233,8 +310,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	void SetSpeed(float NewSpeed);
 
-	UFUNCTION(BlueprintCallable, Category = "Essential Information")
-	FRotator GetAimingRotation() { return GetControlRotation(); }
+	UFUNCTION(BlueprintCallable)
+	FRotator GetAimingRotation() { return CustomControlRotation; }
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
 	float GetAimYawRate() { return AimYawRate; }
@@ -443,6 +520,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
 	bool bHasMovementInput = false;
 
+	UPROPERTY(BlueprintReadOnly, replicated, Category = "Essential Information")
+	FRotator CustomControlRotation;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
 	FRotator LastVelocityRotation;
 
@@ -452,7 +532,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
 	float Speed = 0.0f;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
+	UPROPERTY(BlueprintReadOnly, replicated, Category = "Essential Information")
 	float MovementInputAmount = 0.0f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
@@ -488,7 +568,7 @@ protected:
 
 	/** Rotation System */
 
-	UPROPERTY(BlueprintReadOnly, Category = "Rotation System")
+	UPROPERTY(BlueprintReadOnly, replicated, Category = "Rotation System")
 	FRotator TargetRotation;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Rotation System")
@@ -523,7 +603,13 @@ protected:
 	bool bRagdollFaceUp = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Ragdoll System")
+	bool bReplicateRagdollLocation = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Ragdoll System")
 	FVector LastRagdollVelocity;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Ragdoll System")
+	FVector TargetRagdollLocation;
 
 	/** Cached Variables */
 
@@ -531,7 +617,12 @@ protected:
 
 	float PreviousAimYaw = 0.0f;
 
+	UPROPERTY(BlueprintReadOnly)
 	UBMCharacterAnimInstance* MainAnimInstance = nullptr;
+
+	/** Replication */
+	UPROPERTY(BlueprintReadOnly, replicated, Category = "Replication")
+	bool OnDedicatedServer;
 
 	/** Last time the 'first' crouch/roll button is pressed */
 	float LastStanceInputTime = 0.0f;
