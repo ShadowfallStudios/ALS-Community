@@ -146,7 +146,7 @@ void ABMBaseCharacter::PreInitializeComponents()
 
 void ABMBaseCharacter::SetAimYawRate(float NewAimYawRate)
 {
-	AimYawRate = NewAimYawRate;
+	AimYawRate = HasAuthority() ? AimYawRate : NewAimYawRate;
 	MainAnimInstance->GetCharacterInformationMutable().AimYawRate = AimYawRate;
 }
 
@@ -641,8 +641,17 @@ void ABMBaseCharacter::GetCameraParameters(float& TPFOVOut, float& FPFOVOut, boo
 
 void ABMBaseCharacter::SetAcceleration(const FVector& NewAcceleration)
 {
-	Acceleration = NewAcceleration;
+	Acceleration = HasAuthority() ? Acceleration : NewAcceleration;
+	if (!HasAuthority() && IsLocallyControlled())
+	{
+		Server_SetAcceleration(Acceleration);
+	}
 	MainAnimInstance->GetCharacterInformationMutable().Acceleration = Acceleration;
+}
+
+void ABMBaseCharacter::Server_SetAcceleration_Implementation(const FVector& NewAcceleration)
+{
+	Acceleration = NewAcceleration;
 }
 
 void ABMBaseCharacter::RagdollUpdate()
@@ -707,7 +716,7 @@ void ABMBaseCharacter::SetActorLocationDuringRagdoll()
 		SetActorLocationAndTargetRotation(TargetRagdollLocation, TargetRagdollRotation);
 		if (OnDedicatedServer && IsLocallyControlled())
 		{
-			Server_RagdollUpdate(TargetRagdollLocation, TargetRagdollRotation);
+			Server_RagdollUpdate(GetActorLocation(), TargetRagdollRotation);
 		}
 	}
 }

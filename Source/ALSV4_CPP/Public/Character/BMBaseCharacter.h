@@ -289,6 +289,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	void SetAcceleration(const FVector& NewAcceleration);
 
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "EssentialInformation")
+	void Server_SetAcceleration(const FVector& NewAcceleration);
+
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
 	bool IsMoving() { return bIsMoving; }
 
@@ -613,6 +616,7 @@ protected:
 
 	/** Cached Variables */
 
+	UPROPERTY(BlueprintReadOnly)
 	FVector PreviousVelocity;
 
 	float PreviousAimYaw = 0.0f;
