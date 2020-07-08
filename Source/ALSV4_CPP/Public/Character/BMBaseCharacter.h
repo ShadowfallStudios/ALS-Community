@@ -40,7 +40,7 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
+
 	/** Ragdoll System */
 
 	/** Implement on BP to get required get up animation according to character's state */
@@ -82,15 +82,6 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMGait GetGait() { return Gait; }
 
-	UFUNCTION(BlueprintCallable, Category = "Character States")
-	void SetDesiredGait(EBMGait NewGait);
-
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
-	void Server_SetDesiredGait(EBMGait NewGait);
-
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
-	void Multicast_SetDesiredGait(EBMGait NewGait);
-
 	UFUNCTION(BlueprintGetter, Category = "CharacterStates")
 	EBMGait GetDesiredGait() { return DesiredGait; }
 
@@ -99,9 +90,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
 	void Server_SetRotationMode(EBMRotationMode NewRotationMode);
-
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
-	void Multicast_SetRotationMode(EBMRotationMode NewRotationMode);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMRotationMode GetRotationMode() { return RotationMode; }
@@ -112,9 +100,6 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
 	void Server_SetViewMode(EBMViewMode NewViewMode);
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
-	void Multicast_SetViewMode(EBMViewMode NewViewMode);
-
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMViewMode GetViewMode() { return ViewMode; }
 
@@ -123,9 +108,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
 	void Server_SetOverlayState(EBMOverlayState NewState);
-
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
-	void Multicast_SetOverlayState(EBMOverlayState NewState);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
 	EBMOverlayState GetOverlayState() { return OverlayState; }
@@ -181,22 +163,31 @@ public:
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
 	void Multicast_RagdollEnd(FVector CharacterLocation);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
-	void Server_RagdollUpdate(FVector CharacterLocation, FRotator CharacterRotation);
-
 	/** Input */
 
 	UFUNCTION(BlueprintGetter, Category = "Input")
 	EBMStance GetDesiredStance() { return DesiredStance; }
 
 	UFUNCTION(BlueprintSetter, Category = "Input")
-	void SetDesiredStance(EBMStance NewStance) { DesiredStance = NewStance; }
+	void SetDesiredStance(EBMStance NewStance);
 
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Input")
+	void Server_SetDesiredStance(EBMStance NewStance);
+
+	UFUNCTION(BlueprintCallable, Category = "Character States")
+	void SetDesiredGait(EBMGait NewGait);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	void Server_SetDesiredGait(EBMGait NewGait);
+	
 	UFUNCTION(BlueprintGetter, Category = "Input")
 	EBMRotationMode GetDesiredRotationMode() { return DesiredRotationMode; }
 
 	UFUNCTION(BlueprintSetter, Category = "Input")
-	void SetDesiredRotationMode(EBMRotationMode NewRotMode) { DesiredRotationMode = NewRotMode; }
+	void SetDesiredRotationMode(EBMRotationMode NewRotMode);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	void Server_SetDesiredRotationMode(EBMRotationMode NewRotMode);
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	FVector GetPlayerMovementInput();
@@ -289,9 +280,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	void SetAcceleration(const FVector& NewAcceleration);
 
-	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "EssentialInformation")
-	void Server_SetAcceleration(const FVector& NewAcceleration);
-
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
 	bool IsMoving() { return bIsMoving; }
 
@@ -314,7 +302,7 @@ public:
 	void SetSpeed(float NewSpeed);
 
 	UFUNCTION(BlueprintCallable)
-	FRotator GetAimingRotation() { return CustomControlRotation; }
+	FRotator GetAimingRotation() { return AimingRotation; }
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
 	float GetAimYawRate() { return AimYawRate; }
@@ -375,16 +363,16 @@ protected:
 	virtual void MantleStart(float MantleHeight, const FBMComponentAndTransform& MantleLedgeWS, EBMMantleType MantleType);
 
 	virtual bool MantleCheck(const FBMMantleTraceSettings& TraceSettings,
-	                         EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::ForOneFrame);
+		EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::ForOneFrame);
 
 	UFUNCTION()
 	virtual void MantleUpdate(float BlendIn);
-	
+
 	UFUNCTION()
 	virtual void MantleEnd();
 
 	bool CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector TargetLocation,
-	                         float HeightOffset, float RadiusOffset, EDrawDebugTrace::Type DebugType);
+		float HeightOffset, float RadiusOffset, EDrawDebugTrace::Type DebugType);
 
 	/** Utils */
 
@@ -436,16 +424,26 @@ protected:
 
 	void LookingDirectionPressedAction();
 
+	/** Replication */
+	UFUNCTION()
+	void OnRep_RotationMode(EBMRotationMode PrevRotMode);
+
+	UFUNCTION()
+	void OnRep_ViewMode(EBMViewMode PrevViewMode);
+
+	UFUNCTION()
+	void OnRep_OverlayState(EBMOverlayState PrevOverlayState);
+
 protected:
 	/** Input */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, replicated, BlueprintReadWrite, Category = "Input")
 	EBMRotationMode DesiredRotationMode = EBMRotationMode::LookingDirection;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, replicated, BlueprintReadWrite, Category = "Input")
 	EBMGait DesiredGait = EBMGait::Running;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	UPROPERTY(BlueprintReadWrite, replicated, Category = "Input")
 	EBMStance DesiredStance = EBMStance::Standing;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input", BlueprintReadOnly)
@@ -482,7 +480,7 @@ protected:
 
 	/** State Values */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values", ReplicatedUsing = OnRep_OverlayState)
 	EBMOverlayState OverlayState = EBMOverlayState::Default;
 
 	/** Movement System */
@@ -523,9 +521,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
 	bool bHasMovementInput = false;
 
-	UPROPERTY(BlueprintReadOnly, replicated, Category = "Essential Information")
-	FRotator CustomControlRotation;
-
 	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
 	FRotator LastVelocityRotation;
 
@@ -541,6 +536,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
 	float AimYawRate = 0.0f;
 
+	/** Replicated Essential Information*/
+	UPROPERTY(BlueprintReadOnly, replicated, Category = "Essential Information")
+	FVector ReplicatedCurrentAcceleration;
+
+	UPROPERTY(BlueprintReadOnly, replicated, Category = "Essential Information")
+	FRotator ReplicatedControlRotation;
+
 	/** State Values */
 
 	UPROPERTY(BlueprintReadOnly, Category = "State Values")
@@ -552,7 +554,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "State Values")
 	EBMMovementAction MovementAction = EBMMovementAction::None;
 
-	UPROPERTY(BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(BlueprintReadOnly, Category = "State Values", ReplicatedUsing = OnRep_RotationMode)
 	EBMRotationMode RotationMode = EBMRotationMode::LookingDirection;
 
 	UPROPERTY(BlueprintReadOnly, Category = "State Values")
@@ -561,7 +563,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values")
 	EBMStance Stance = EBMStance::Standing;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values", ReplicatedUsing = OnRep_ViewMode)
 	EBMViewMode ViewMode = EBMViewMode::ThirdPerson;
 
 	/** Movement System */
@@ -571,7 +573,7 @@ protected:
 
 	/** Rotation System */
 
-	UPROPERTY(BlueprintReadOnly, replicated, Category = "Rotation System")
+	UPROPERTY(BlueprintReadOnly, Category = "Rotation System")
 	FRotator TargetRotation;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Rotation System")
@@ -606,27 +608,18 @@ protected:
 	bool bRagdollFaceUp = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Ragdoll System")
-	bool bReplicateRagdollLocation = false;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Ragdoll System")
 	FVector LastRagdollVelocity;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Ragdoll System")
+	UPROPERTY(BlueprintReadOnly, replicated, Category = "Ragdoll System")
 	FVector TargetRagdollLocation;
 
 	/** Cached Variables */
 
-	UPROPERTY(BlueprintReadOnly)
 	FVector PreviousVelocity;
 
 	float PreviousAimYaw = 0.0f;
 
-	UPROPERTY(BlueprintReadOnly)
 	UBMCharacterAnimInstance* MainAnimInstance = nullptr;
-
-	/** Replication */
-	UPROPERTY(BlueprintReadOnly, replicated, Category = "Replication")
-	bool OnDedicatedServer;
 
 	/** Last time the 'first' crouch/roll button is pressed */
 	float LastStanceInputTime = 0.0f;
@@ -639,4 +632,7 @@ protected:
 
 	/* Timer to manage reset of braking friction factor after on landed event */
 	FTimerHandle OnLandedFrictionResetTimer;
+
+	/* Smooth out aiming by interping control rotation*/
+	FRotator AimingRotation;
 };
