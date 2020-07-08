@@ -272,7 +272,7 @@ void UBMCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 		SetPelvisIKOffset(DeltaSeconds, FVector::ZeroVector, FVector::ZeroVector);
 		ResetIKOffsets(DeltaSeconds);
 	}
-	else
+	else if(CharacterInformation.MovementState != EBMMovementState::Ragdoll)
 	{
 		// Update all Foot Lock and Foot Offset values when not In Air
 		FVector FootOffsetLTarget;
@@ -425,12 +425,11 @@ void UBMCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableFo
 		// These values are offset by the nomrmal multiplied by the
 		// foot height to get better behavior on angled surfaces.
 		CurLocationTarget = (ImpactPoint + ImpactNormal * Config.FootHeight) -
-			(IKFootFloorLoc + FVector::UpVector * Config.FootHeight);
+			(IKFootFloorLoc + FVector(0,0, Config.FootHeight));
 
 		// Step 1.2: Calculate the Rotation offset by getting the Atan2 of the Impact Normal.
-		TargetRotOffset.Pitch = -FMath::Atan2(ImpactNormal.X, ImpactNormal.Z);
-		TargetRotOffset.Yaw = 0.0f;
-		TargetRotOffset.Roll = FMath::Atan2(ImpactNormal.Y, ImpactNormal.Z);
+		TargetRotOffset.Pitch = -FMath::RadiansToDegrees(FMath::Atan2(ImpactNormal.X, ImpactNormal.Z));
+		TargetRotOffset.Roll = FMath::RadiansToDegrees(FMath::Atan2(ImpactNormal.Y, ImpactNormal.Z));
 	}
 
 	// Step 2: Interp the Current Location Offset to the new target value.
@@ -702,14 +701,14 @@ float UBMCharacterAnimInstance::CalculateLandPrediction()
 		return 0.0f;
 	}
 
-	const FVector& CapsuleWorldLoc = Character->GetCapsuleComponent()->GetComponentLocation();
+	const UCapsuleComponent* capsule = Character->GetCapsuleComponent();
+	const FVector& CapsuleWorldLoc = capsule->GetComponentLocation();
 	const float VelocityZ = CharacterInformation.Velocity.Z;
 	FVector VelocityClamped = CharacterInformation.Velocity;
 	VelocityClamped.Z = FMath::Clamp(VelocityZ, -4000.0f, -200.0f);
 	VelocityClamped.Normalize();
 
-	const FVector TraceLength = VelocityClamped * FMath::GetMappedRangeValueClamped(FVector2D(0.0f, -4000.0f), FVector2D(50.0f, 2000.0f),
-	                                                                                VelocityZ);
+	const FVector TraceLength = VelocityClamped * FMath::GetMappedRangeValueClamped(FVector2D(0.0f, -4000.0f), FVector2D(50.0f, 2000.0f), VelocityZ);
 
 	UWorld* World = GetWorld();
 	check(World);
@@ -718,8 +717,9 @@ float UBMCharacterAnimInstance::CalculateLandPrediction()
 	Params.AddIgnoredActor(Character);
 
 	FHitResult HitResult;
+
 	World->SweepSingleByProfile(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity, FName(TEXT("ALS_Character")),
-	                            Character->GetCapsuleComponent()->GetCollisionShape(), Params);
+	                            FCollisionShape::MakeCapsule(capsule->GetUnscaledCapsuleRadius(), capsule->GetUnscaledCapsuleHalfHeight()), Params);
 
 	if (Character->GetCharacterMovement()->IsWalkable(HitResult))
 	{
