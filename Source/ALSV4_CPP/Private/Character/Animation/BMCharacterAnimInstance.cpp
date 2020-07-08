@@ -701,8 +701,8 @@ float UBMCharacterAnimInstance::CalculateLandPrediction()
 		return 0.0f;
 	}
 
-	const UCapsuleComponent* capsule = Character->GetCapsuleComponent();
-	const FVector& CapsuleWorldLoc = capsule->GetComponentLocation();
+	const UCapsuleComponent* CapsuleComp = Character->GetCapsuleComponent();
+	const FVector& CapsuleWorldLoc = CapsuleComp->GetComponentLocation();
 	const float VelocityZ = CharacterInformation.Velocity.Z;
 	FVector VelocityClamped = CharacterInformation.Velocity;
 	VelocityClamped.Z = FMath::Clamp(VelocityZ, -4000.0f, -200.0f);
@@ -719,7 +719,7 @@ float UBMCharacterAnimInstance::CalculateLandPrediction()
 	FHitResult HitResult;
 
 	World->SweepSingleByProfile(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity, FName(TEXT("ALS_Character")),
-	                            FCollisionShape::MakeCapsule(capsule->GetUnscaledCapsuleRadius(), capsule->GetUnscaledCapsuleHalfHeight()), Params);
+	                            FCollisionShape::MakeCapsule(CapsuleComp->GetUnscaledCapsuleRadius(), CapsuleComp->GetUnscaledCapsuleHalfHeight()), Params);
 
 	if (Character->GetCharacterMovement()->IsWalkable(HitResult))
 	{
