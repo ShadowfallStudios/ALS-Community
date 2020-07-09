@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Runtime/Engine/Classes/Animation/AnimSequenceBase.h"
 #include "ALSCharacterEnumLibrary.h"
 
 

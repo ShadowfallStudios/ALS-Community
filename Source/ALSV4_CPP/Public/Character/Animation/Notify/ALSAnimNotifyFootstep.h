@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Runtime/Engine/Classes/Sound/SoundBase.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "Library/ALSCharacterEnumLibrary.h"
 
