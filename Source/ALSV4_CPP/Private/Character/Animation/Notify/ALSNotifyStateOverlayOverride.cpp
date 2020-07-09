@@ -1,31 +1,31 @@
 // Copyright (C) 2020, Doga Can Yanikoglu
 
 
-#include "Character/Animation/Notify/BMNotifyStateOverlayOverride.h"
+#include "Character/Animation/Notify/ALSNotifyStateOverlayOverride.h"
 
-#include "Character/Animation/BMCharacterAnimInstance.h"
+#include "Character/Animation/ALSCharacterAnimInstance.h"
 
-void UBMNotifyStateOverlayOverride::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
+void UALSNotifyStateOverlayOverride::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
-	UBMCharacterAnimInstance* AnimInst = Cast<UBMCharacterAnimInstance>(MeshComp->GetAnimInstance());
+	UALSCharacterAnimInstance* AnimInst = Cast<UALSCharacterAnimInstance>(MeshComp->GetAnimInstance());
 	if (AnimInst)
 	{
 		AnimInst->SetOverlayOverrideState(OverlayOverrideState);
 	}
 }
 
-void UBMNotifyStateOverlayOverride::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+void UALSNotifyStateOverlayOverride::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	UBMCharacterAnimInstance* AnimInst = Cast<UBMCharacterAnimInstance>(MeshComp->GetAnimInstance());
+	UALSCharacterAnimInstance* AnimInst = Cast<UALSCharacterAnimInstance>(MeshComp->GetAnimInstance());
 	if (AnimInst)
 	{
 		AnimInst->SetOverlayOverrideState(0);
 	}
 }
 
-FString UBMNotifyStateOverlayOverride::GetNotifyName_Implementation() const
+FString UALSNotifyStateOverlayOverride::GetNotifyName_Implementation() const
 {
 	FString Name(TEXT("Overlay Override State: "));
-	Name.Append(GetEnumerationToString(EBMOverlayState(OverlayOverrideState)));
+	Name.Append(GetEnumerationToString(EALSOverlayState(OverlayOverrideState)));
 	return Name;
 }

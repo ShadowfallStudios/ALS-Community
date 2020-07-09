@@ -1,20 +1,20 @@
 // Copyright (C) 2020, Doga Can Yanikoglu
 
 
-#include "Character/Animation/Notify/BMAnimNotifyGroundedEntryState.h"
+#include "Character/Animation/Notify/ALSAnimNotifyGroundedEntryState.h"
 
-#include "Character/Animation/BMCharacterAnimInstance.h"
+#include "Character/Animation/ALSCharacterAnimInstance.h"
 
-void UBMAnimNotifyGroundedEntryState::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+void UALSAnimNotifyGroundedEntryState::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	UBMCharacterAnimInstance* AnimIns = Cast<UBMCharacterAnimInstance>(MeshComp->GetAnimInstance());
+	UALSCharacterAnimInstance* AnimIns = Cast<UALSCharacterAnimInstance>(MeshComp->GetAnimInstance());
 	if (AnimIns)
 	{
 		AnimIns->SetGroundedEntryState(GroundedEntryState);
 	}
 }
 
-FString UBMAnimNotifyGroundedEntryState::GetNotifyName_Implementation() const
+FString UALSAnimNotifyGroundedEntryState::GetNotifyName_Implementation() const
 {
 	FString Name(TEXT("Grounded Entry State: "));
 	Name.Append(GetEnumerationToString(GroundedEntryState));

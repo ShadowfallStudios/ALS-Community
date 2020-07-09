@@ -1,17 +1,17 @@
 // Copyright (C) 2020, Doga Can Yanikoglu
 
 
-#include "Character/BMPlayerController.h"
-#include "Character/BMCharacter.h"
-#include "Character/BMPlayerCameraManager.h"
+#include "Character/ALSPlayerController.h"
+#include "Character/ALSCharacter.h"
+#include "Character/ALSPlayerCameraManager.h"
 
-void ABMPlayerController::OnRestartPawn(APawn* NewPawn)
+void AALSPlayerController::OnRestartPawn(APawn* NewPawn)
 {
-	PossessedCharacter = Cast<ABMBaseCharacter>(NewPawn);
+	PossessedCharacter = Cast<AALSBaseCharacter>(NewPawn);
 	check(PossessedCharacter);
 
 	// Call "OnPossess" in Player Camera Manager when possessing a pawn
-	ABMPlayerCameraManager* CastedMgr = Cast<ABMPlayerCameraManager>(PlayerCameraManager);
+	AALSPlayerCameraManager* CastedMgr = Cast<AALSPlayerCameraManager>(PlayerCameraManager);
 	if (CastedMgr)
 	{
 		CastedMgr->OnPossess(PossessedCharacter);
