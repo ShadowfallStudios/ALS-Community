@@ -3,44 +3,10 @@
 
 #include "Character/Animation/ALSCharacterAnimInstance.h"
 #include "Character/ALSBaseCharacter.h"
+#include "Library/ALSMathLibrary.h"
 #include "Curves/CurveVector.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
-static bool AngleInRange(float Angle, float MinAngle, float MaxAngle, float Buffer, bool IncreaseBuffer)
-{
-	if (IncreaseBuffer)
-	{
-		return Angle >= MinAngle - Buffer && Angle <= MaxAngle + Buffer;
-	}
-	return Angle >= MinAngle + Buffer && Angle <= MaxAngle - Buffer;
-}
-
-static EALSMovementDirection CalculateQuadrant(EALSMovementDirection Current, float FRThreshold, float FLThreshold,
-                                                                 float BRThreshold, float BLThreshold, float Buffer, float Angle)
-{
-	// Take the input angle and determine its quadrant (direction). Use the current Movement Direction to increase or
-	// decrease the buffers on the angle ranges for each quadrant.
-	if (AngleInRange(Angle, FLThreshold, FRThreshold, Buffer,
-                     Current != EALSMovementDirection::Forward || Current != EALSMovementDirection::Backward))
-	{
-		return EALSMovementDirection::Forward;
-	}
-
-	if (AngleInRange(Angle, FRThreshold, BRThreshold, Buffer,
-                     Current != EALSMovementDirection::Right || Current != EALSMovementDirection::Left))
-	{
-		return EALSMovementDirection::Right;
-	}
-
-	if (AngleInRange(Angle, BLThreshold, FLThreshold, Buffer,
-                     Current != EALSMovementDirection::Right || Current != EALSMovementDirection::Left))
-	{
-		return EALSMovementDirection::Left;
-	}
-
-	return EALSMovementDirection::Backward;
-}
 
 void UALSCharacterAnimInstance::NativeInitializeAnimation()
 {
@@ -789,7 +755,7 @@ EALSMovementDirection UALSCharacterAnimInstance::CalculateMovementDirection() co
 
 	FRotator Delta = CharacterInformation.Velocity.ToOrientationRotator() - CharacterInformation.AimingRotation;
 	Delta.Normalize();
-	return CalculateQuadrant(Grounded.MovementDirection, 70.0f, -70.0f, 110.0f, -110.0f, 5.0f, Delta.Yaw);
+	return UALSMathLibrary::CalculateQuadrant(Grounded.MovementDirection, 70.0f, -70.0f, 110.0f, -110.0f, 5.0f, Delta.Yaw);
 }
 
 void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayRateScale, float StartTime,

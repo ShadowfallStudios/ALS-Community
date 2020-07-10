@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ALSCharacterEnumLibrary.h"
 #include "CoreMinimal.h"
 #include "ALSMathLibrary.generated.h"
 
@@ -45,4 +46,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static bool CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector TargetLocation, float HeightOffset,
 	                                float RadiusOffset);
+
+	UFUNCTION(BlueprintCallable)
+	static bool AngleInRange(float Angle, float MinAngle, float MaxAngle, float Buffer, bool IncreaseBuffer);
+
+	UFUNCTION(BlueprintCallable)
+	static EALSMovementDirection CalculateQuadrant(EALSMovementDirection Current, float FRThreshold, float FLThreshold, float BRThreshold,
+	                                        float BLThreshold, float Buffer, float Angle);
 };
