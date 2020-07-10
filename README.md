@@ -8,7 +8,7 @@ Performance optimized C++ Port of [Advanced Locomotion System V4](https://www.un
 - Source code is highly optimized while being ported from blueprints. For 100 characters in a scene, CPU time is decreased from ~17ms to ~10ms.
 - Suitable for a network-performance friendly replication support. Replication implementation is still in progress, and currently beats ALS V3 and other BP based replicated V4 implementations on network performance:
 ```
-Advanced Locomotion System V3:
+Advanced Locomotion System V3 (BP):
 Total outgoing bandwidth is 686KB over 60 seconds (30 seconds playing server, 30 on client).
 Character Actor Data sent over network - 43KB
 'ReplicatedMovement' Data sent over network - 19KB
@@ -16,7 +16,7 @@ Highest RPC Data sent over network - 90KB
 Overall Property Size - 46KB
 Overall RPC Size - 201KB
 
-Advanced Locomotion System V4 on BP:
+Advanced Locomotion System V4 (BP):
 Total outgoing bandwidth is  2.7MB over 60 seconds (30 seconds playing server, 30 on client).
 Character Actor Data sent over network - 116KB
 'ReplicatedMovement' Data sent over network - 45KB
@@ -24,7 +24,7 @@ Highest RPC Data sent over network - 536KB
 Overall Property Size - 209KB
 Overall RPC Size - 1.7MB
 
-Advanced Locomotion System V4 on C++:
+Advanced Locomotion System V4 (C++):
 Total outgoing bandwidth is 618KB over 60 seconds (30 seconds playing server, 30 on client).
 Character Actor Data sent over network - 38KB
 'ReplicatedMovement' Data sent over network - 14KB
@@ -32,7 +32,7 @@ Highest RPC Data sent over network - 48KB
 Overall Property Size - 41.1KB
 Overall RPC Size - 91.1KB
 
-Benchmark by @Scragnog
+Netprofiler benchmark by @Scragnog
 ```
 
 # Setting Up The Plugin
