@@ -29,7 +29,7 @@ void AALSPlayerCameraManager::OnPossess(AALSBaseCharacter* NewCharacter)
 	}
 }
 
-float AALSPlayerCameraManager::GetCameraBehaviorParam(FName CurveName)
+float AALSPlayerCameraManager::GetCameraBehaviorParam(FName CurveName) const
 {
 	UAnimInstance* Inst = CameraBehavior->GetAnimInstance();
 	if (Inst)

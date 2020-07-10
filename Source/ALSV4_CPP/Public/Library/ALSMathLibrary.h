@@ -20,7 +20,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static FTransform MantleComponentLocalToWorld(const FALSComponentAndTransform& CompAndTransform);
 
-	static TPair<float, float> FixDiagonalGamepadValues(const float Y, const float X);
+	static TPair<float, float> FixDiagonalGamepadValues(float Y, float X);
 
 	UFUNCTION(BlueprintCallable)
 	static FTransform TransfromSub(const FTransform& T1, const FTransform& T2)
@@ -37,10 +37,10 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	static FVector GetCapsuleBaseLocation(const float ZOffset, UCapsuleComponent* Capsule);
+	static FVector GetCapsuleBaseLocation(float ZOffset, UCapsuleComponent* Capsule);
 
 	UFUNCTION(BlueprintCallable)
-	static FVector GetCapsuleLocationFromBase(FVector BaseLocation, const float ZOffset, UCapsuleComponent* Capsule);
+	static FVector GetCapsuleLocationFromBase(FVector BaseLocation, float ZOffset, UCapsuleComponent* Capsule);
 
 	UFUNCTION(BlueprintCallable)
 	static bool CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector TargetLocation, float HeightOffset,

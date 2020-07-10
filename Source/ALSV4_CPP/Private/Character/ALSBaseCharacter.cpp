@@ -233,7 +233,7 @@ void AALSBaseCharacter::SetMovementAction(const EALSMovementAction NewAction)
 {
 	if (MovementAction != NewAction)
 	{
-		EALSMovementAction Prev = MovementAction;
+		const EALSMovementAction Prev = MovementAction;
 		MovementAction = NewAction;
 		MainAnimInstance->GetCharacterInformationMutable().MovementAction = MovementAction;
 		OnMovementActionChanged(Prev);
@@ -244,7 +244,7 @@ void AALSBaseCharacter::SetStance(const EALSStance NewStance)
 {
 	if (Stance != NewStance)
 	{
-		EALSStance Prev = Stance;
+		const EALSStance Prev = Stance;
 		Stance = NewStance;
 		MainAnimInstance->GetCharacterInformationMutable().Stance = Stance;
 		OnStanceChanged(Prev);
@@ -255,7 +255,7 @@ void AALSBaseCharacter::SetRotationMode(const EALSRotationMode NewRotationMode)
 {
 	if (RotationMode != NewRotationMode)
 	{
-		EALSRotationMode Prev = RotationMode;
+		const EALSRotationMode Prev = RotationMode;
 		RotationMode = NewRotationMode;
 		MainAnimInstance->GetCharacterInformationMutable().RotationMode = RotationMode;
 		OnRotationModeChanged(Prev);
@@ -266,7 +266,7 @@ void AALSBaseCharacter::SetGait(const EALSGait NewGait)
 {
 	if (Gait != NewGait)
 	{
-		EALSGait Prev = Gait;
+		const EALSGait Prev = Gait;
 		Gait = NewGait;
 		MainAnimInstance->GetCharacterInformationMutable().Gait = Gait;
 		OnGaitChanged(Prev);
@@ -277,7 +277,7 @@ void AALSBaseCharacter::SetViewMode(const EALSViewMode NewViewMode)
 {
 	if (ViewMode != NewViewMode)
 	{
-		EALSViewMode Prev = ViewMode;
+		const EALSViewMode Prev = ViewMode;
 		ViewMode = NewViewMode;
 		MainAnimInstance->GetCharacterInformationMutable().ViewMode = ViewMode;
 		OnViewModeChanged(Prev);
@@ -288,7 +288,7 @@ void AALSBaseCharacter::SetOverlayState(const EALSOverlayState NewState)
 {
 	if (OverlayState != NewState)
 	{
-		EALSOverlayState Prev = OverlayState;
+		const EALSOverlayState Prev = OverlayState;
 		OverlayState = NewState;
 		MainAnimInstance->GetCharacterInformationMutable().OverlayState = OverlayState;
 		OnOverlayStateChanged(Prev);
@@ -313,7 +313,7 @@ bool AALSBaseCharacter::MantleCheckFalling()
 
 void AALSBaseCharacter::SetMovementModel()
 {
-	FString ContextString = GetFullName();
+	const FString ContextString = GetFullName();
 	FALSMovementStateSettings* OutRow =
 		MovementModel.DataTable->FindRow<FALSMovementStateSettings>(MovementModel.RowName, ContextString);
 	check(OutRow);
@@ -326,7 +326,7 @@ void AALSBaseCharacter::SetHasMovementInput(bool bNewHasMovementInput)
 	MainAnimInstance->GetCharacterInformationMutable().bHasMovementInput = bHasMovementInput;
 }
 
-FALSMovementSettings AALSBaseCharacter::GetTargetMovementSettings()
+FALSMovementSettings AALSBaseCharacter::GetTargetMovementSettings() const
 {
 	if (RotationMode == EALSRotationMode::VelocityDirection)
 	{
@@ -366,7 +366,7 @@ FALSMovementSettings AALSBaseCharacter::GetTargetMovementSettings()
 	return MovementData.VelocityDirection.Standing;
 }
 
-bool AALSBaseCharacter::CanSprint()
+bool AALSBaseCharacter::CanSprint() const
 {
 	// Determine if the character is currently able to sprint based on the Rotation mode and current acceleration
 	// (input) rotation. If the character is in the Looking Rotation mode, only allow sprinting if there is full
@@ -402,7 +402,7 @@ void AALSBaseCharacter::SetIsMoving(bool bNewIsMoving)
 	MainAnimInstance->GetCharacterInformationMutable().bIsMoving = bIsMoving;
 }
 
-FVector AALSBaseCharacter::GetMovementInput()
+FVector AALSBaseCharacter::GetMovementInput() const
 {
 	return GetCharacterMovement()->GetCurrentAcceleration();
 }
@@ -419,7 +419,7 @@ void AALSBaseCharacter::SetSpeed(float NewSpeed)
 	MainAnimInstance->GetCharacterInformationMutable().Speed = Speed;
 }
 
-float AALSBaseCharacter::GetAnimCurveValue(FName CurveName)
+float AALSBaseCharacter::GetAnimCurveValue(FName CurveName) const
 {
 	if (MainAnimInstance)
 	{
@@ -446,7 +446,7 @@ FVector AALSBaseCharacter::GetFirstPersonCameraTarget()
 	return GetMesh()->GetSocketLocation(FName(TEXT("FP_Camera")));
 }
 
-void AALSBaseCharacter::GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bool& bRightShoulderOut)
+void AALSBaseCharacter::GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bool& bRightShoulderOut) const
 {
 	TPFOVOut = ThirdPersonFOV;
 	FPFOVOut = FirstPersonFOV;
@@ -700,7 +700,7 @@ void AALSBaseCharacter::SetEssentialValues(float DeltaTime)
 	// The Movement Input Amount is equal to the current acceleration divided by the max acceleration so that
 	// it has a range of 0-1, 1 being the maximum possible amount of input, and 0 beiung none.
 	// If the character has movement input, update the Last Movement Input Rotation.
-	FVector CurAcc = GetCharacterMovement()->GetCurrentAcceleration();
+	const FVector& CurAcc = GetCharacterMovement()->GetCurrentAcceleration();
 	SetMovementInputAmount(CurAcc.Size() / GetCharacterMovement()->GetMaxAcceleration());
 	SetHasMovementInput(MovementInputAmount > 0.0f);
 	if (bHasMovementInput)
@@ -1042,7 +1042,7 @@ void AALSBaseCharacter::MantleEnd()
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 }
 
-float AALSBaseCharacter::GetMappedSpeed()
+float AALSBaseCharacter::GetMappedSpeed() const
 {
 	// Map the character's current speed to the configured movement speeds with a range of 0-3,
 	// with 0 = stopped, 1 = the Walk Speed, 2 = the Run Speed, and 3 = the Sprint Speed.
@@ -1068,7 +1068,7 @@ float AALSBaseCharacter::GetMappedSpeed()
 	                                         FVector2D(0.0f, 1.0f), Speed);
 }
 
-EALSGait AALSBaseCharacter::GetAllowedGait()
+EALSGait AALSBaseCharacter::GetAllowedGait() const
 {
 	// Calculate the Allowed Gait. This represents the maximum Gait the character is currently allowed to be in,
 	// and can be determined by the desired gait, the rotation mode, the stance, etc. For example,
@@ -1096,7 +1096,7 @@ EALSGait AALSBaseCharacter::GetAllowedGait()
 	return DesiredGait;
 }
 
-EALSGait AALSBaseCharacter::GetActualGait(EALSGait AllowedGait)
+EALSGait AALSBaseCharacter::GetActualGait(EALSGait AllowedGait) const
 {
 	// Get the Actual Gait. This is calculated by the actual movement of the character,  and so it can be different
 	// from the desired gait or allowed gait. For instance, if the Allowed Gait becomes walking,
@@ -1132,7 +1132,7 @@ void AALSBaseCharacter::SmoothCharacterRotation(FRotator Target, float TargetInt
 		FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, ActorInterpSpeed));
 }
 
-float AALSBaseCharacter::CalculateGroundedRotationRate()
+float AALSBaseCharacter::CalculateGroundedRotationRate() const
 {
 	// Calculate the rotation rate by using the current Rotation Rate Curve in the Movement Settings.
 	// Using the curve in conjunction with the mapped speed gives you a high level of control over the rotation
@@ -1162,14 +1162,14 @@ void AALSBaseCharacter::LimitRotation(float AimYawMin, float AimYawMax, float In
 	}
 }
 
-void AALSBaseCharacter::GetControlForwardRightVector(FVector& Forward, FVector& Right)
+void AALSBaseCharacter::GetControlForwardRightVector(FVector& Forward, FVector& Right) const
 {
 	const FRotator ControlRot(0.0f, GetControlRotation().Yaw, 0.0f);
 	Forward = GetInputAxisValue("MoveForward/Backwards") * UKismetMathLibrary::GetForwardVector(ControlRot);
 	Right = GetInputAxisValue("MoveRight/Left") * UKismetMathLibrary::GetRightVector(ControlRot);
 }
 
-FVector AALSBaseCharacter::GetPlayerMovementInput()
+FVector AALSBaseCharacter::GetPlayerMovementInput() const
 {
 	FVector Forward;
 	FVector Right;
