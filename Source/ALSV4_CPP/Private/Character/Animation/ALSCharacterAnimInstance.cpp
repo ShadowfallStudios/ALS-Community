@@ -149,10 +149,9 @@ void UALSCharacterAnimInstance::PlayDynamicTransition(float ReTriggerDelay, FALS
 	if (bCanPlayDynamicTransition)
 	{
 		bCanPlayDynamicTransition = false;
+
 		// Play Dynamic Additive Transition Animation
-		PlaySlotAnimationAsDynamicMontage(Parameters.Animation, FName(TEXT("Grounded Slot")),
-		                                  Parameters.BlendInTime, Parameters.BlendOutTime, Parameters.PlayRate, 1,
-		                                  0.0f, Parameters.StartTime);
+		PlayTransition(Parameters);
 
 		UWorld* World = GetWorld();
 		check(World);
