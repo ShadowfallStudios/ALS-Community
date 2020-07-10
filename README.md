@@ -31,6 +31,8 @@ Character Actor Data sent over network - 38KB
 Highest RPC Data sent over network - 48KB
 Overall Property Size - 41.1KB
 Overall RPC Size - 91.1KB
+
+Benchmark by @Scragnog
 ```
 
 # Setting Up The Plugin
