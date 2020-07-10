@@ -299,12 +299,9 @@ protected:
 
 	UFUNCTION()
 	virtual void MantleUpdate(float BlendIn);
-	
+
 	UFUNCTION()
 	virtual void MantleEnd();
-
-	bool CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector TargetLocation,
-	                         float HeightOffset, float RadiusOffset, EDrawDebugTrace::Type DebugType);
 
 	/** Utils */
 

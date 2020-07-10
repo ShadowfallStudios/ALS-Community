@@ -6,6 +6,7 @@
 #include "Engine.h"
 #include "Character/ALSPlayerController.h"
 #include "Character/Animation/ALSCharacterAnimInstance.h"
+#include "Library/ALSMathLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/TimelineComponent.h"
 #include "Curves/CurveVector.h"
@@ -840,30 +841,6 @@ void AALSBaseCharacter::UpdateInAirRotation(float DeltaTime)
 	}
 }
 
-static FTransform TransfromSub(const FTransform& T1, const FTransform& T2)
-{
-	return FTransform(T1.GetRotation().Rotator() - T2.GetRotation().Rotator(),
-	                  T1.GetLocation() - T2.GetLocation(), T1.GetScale3D() - T2.GetScale3D());
-}
-
-static FTransform TransfromAdd(const FTransform& T1, const FTransform& T2)
-{
-	return FTransform(T1.GetRotation().Rotator() + T2.GetRotation().Rotator(),
-	                  T1.GetLocation() + T2.GetLocation(), T1.GetScale3D() + T2.GetScale3D());
-}
-
-static FVector GetCapsuleBaseLocation(const float ZOffset, UCapsuleComponent* Capsule)
-{
-	return Capsule->GetComponentLocation() -
-		Capsule->GetUpVector() * (Capsule->GetScaledCapsuleHalfHeight() + ZOffset);
-}
-
-static FVector GetCapsuleLocationFromBase(FVector BaseLocation, const float ZOffset, UCapsuleComponent* Capsule)
-{
-	BaseLocation.Z += Capsule->GetScaledCapsuleHalfHeight() + ZOffset;
-	return BaseLocation;
-}
-
 void AALSBaseCharacter::MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS, EALSMantleType MantleType)
 {
 	// Step 1: Get the Mantle Asset and use it to set the new Mantle Params.
@@ -886,7 +863,7 @@ void AALSBaseCharacter::MantleStart(float MantleHeight, const FALSComponentAndTr
 	// Step 3: Set the Mantle Target and calculate the Starting Offset
 	// (offset amount between the actor and target transform).
 	MantleTarget = MantleLedgeWS.Transform;
-	MantleActualStartOffset = TransfromSub(GetActorTransform(), MantleTarget);
+	MantleActualStartOffset = UALSMathLibrary::TransfromSub(GetActorTransform(), MantleTarget);
 
 	// Step 4: Calculate the Animated Start Offset from the Target Location.
 	// This would be the location the actual animation starts at relative to the Target Transform.
@@ -894,7 +871,7 @@ void AALSBaseCharacter::MantleStart(float MantleHeight, const FALSComponentAndTr
 	RotatedVector.Z = MantleParams.StartingOffset.Z;
 	const FTransform StartOffset(MantleTarget.Rotator(), MantleTarget.GetLocation() - RotatedVector,
 	                             FVector::OneVector);
-	MantleAnimatedStartOffset = TransfromSub(StartOffset, MantleTarget);
+	MantleAnimatedStartOffset = UALSMathLibrary::TransfromSub(StartOffset, MantleTarget);
 
 	// Step 5: Clear the Character Movement Mode and set the Movement State to Mantling
 	GetCharacterMovement()->SetMovementMode(MOVE_None);
@@ -921,7 +898,7 @@ void AALSBaseCharacter::MantleStart(float MantleHeight, const FALSComponentAndTr
 bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings, EDrawDebugTrace::Type DebugType)
 {
 	// Step 1: Trace forward to find a wall / object the character cannot walk on.
-	const FVector& CapsuleBaseLocation = GetCapsuleBaseLocation(2.0f, GetCapsuleComponent());
+	const FVector& CapsuleBaseLocation = UALSMathLibrary::GetCapsuleBaseLocation(2.0f, GetCapsuleComponent());
 	FVector TraceStart = CapsuleBaseLocation + GetPlayerMovementInput() * -30.0f;
 	TraceStart.Z += (TraceSettings.MaxLedgeHeight + TraceSettings.MinLedgeHeight) / 2.0f;
 	const FVector TraceEnd = TraceStart + (GetPlayerMovementInput() * TraceSettings.ReachDistance);
@@ -969,9 +946,9 @@ bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings
 
 	// Step 3: Check if the capsule has room to stand at the downward trace's location.
 	// If so, set that location as the Target Transform and calculate the mantle height.
-	const FVector& CapsuleLocationFBase = GetCapsuleLocationFromBase(DownTraceLocation, 2.0f, GetCapsuleComponent());
-	const bool bCapsuleHasRoom = CapsuleHasRoomCheck(GetCapsuleComponent(), CapsuleLocationFBase, 0.0f,
-	                                                 0.0f, DebugType);
+	const FVector& CapsuleLocationFBase = UALSMathLibrary::GetCapsuleLocationFromBase(DownTraceLocation, 2.0f, GetCapsuleComponent());
+	const bool bCapsuleHasRoom = UALSMathLibrary::CapsuleHasRoomCheck(GetCapsuleComponent(), CapsuleLocationFBase, 0.0f,
+	                                                                  0.0f);
 
 	if (!bCapsuleHasRoom)
 	{
@@ -1006,19 +983,10 @@ bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings
 	return true;
 }
 
-static FTransform MantleComponentLocalToWorld(FALSComponentAndTransform CompAndTransform)
-{
-	const FTransform& InverseTransform = CompAndTransform.Component->GetComponentToWorld().Inverse();
-	const FVector Location = InverseTransform.InverseTransformPosition(CompAndTransform.Transform.GetLocation());
-	const FQuat Quat = InverseTransform.InverseTransformRotation(CompAndTransform.Transform.GetRotation());
-	const FVector Scale = InverseTransform.InverseTransformPosition(CompAndTransform.Transform.GetScale3D());
-	return {Quat, Location, Scale};
-}
-
 void AALSBaseCharacter::MantleUpdate(float BlendIn)
 {
 	// Step 1: Continually update the mantle target from the stored local transform to follow along with moving objects
-	MantleTarget = MantleComponentLocalToWorld(MantleLedgeLS);
+	MantleTarget = UALSMathLibrary::MantleComponentLocalToWorld(MantleLedgeLS);
 
 	// Step 2: Update the Position and Correction Alphas using the Position/Correction curve set for each Mantle.
 	const FVector CurveVec = MantleParams.PositionCorrectionCurve
@@ -1056,12 +1024,13 @@ void AALSBaseCharacter::MantleUpdate(float BlendIn)
 
 	// Blend from the currently blending transforms into the final mantle target using the X
 	// value of the Position/Correction Curve.
-	const FTransform& ResultLerp = UKismetMathLibrary::TLerp(TransfromAdd(MantleTarget, ResultTransform), MantleTarget, PositionAlpha);
+	const FTransform& ResultLerp = UKismetMathLibrary::TLerp(UALSMathLibrary::TransfromAdd(MantleTarget, ResultTransform), MantleTarget,
+	                                                         PositionAlpha);
 
 	// Initial Blend In (controlled in the timeline curve) to allow the actor to blend into the Position/Correction
 	// curve at the midoint. This prevents pops when mantling an object lower than the animated mantle.
 	const FTransform& LerpedTarget =
-		UKismetMathLibrary::TLerp(TransfromAdd(MantleTarget, MantleActualStartOffset), ResultLerp, BlendIn);
+		UKismetMathLibrary::TLerp(UALSMathLibrary::TransfromAdd(MantleTarget, MantleActualStartOffset), ResultLerp, BlendIn);
 
 	// Step 4: Set the actors location and rotation to the Lerped Target.
 	SetActorLocationAndTargetRotation(LerpedTarget.GetLocation(), LerpedTarget.GetRotation().Rotator());
@@ -1071,30 +1040,6 @@ void AALSBaseCharacter::MantleEnd()
 {
 	// Set the Character Movement Mode to Walking
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-}
-
-bool AALSBaseCharacter::CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector TargetLocation, float HeightOffset,
-                                           float RadiusOffset, EDrawDebugTrace::Type DebugType)
-{
-	// Perform a trace to see if the capsule has room to be at the target location.
-	const float ZTarget = Capsule->GetScaledCapsuleHalfHeight_WithoutHemisphere() - RadiusOffset + HeightOffset;
-	FVector TraceStart = TargetLocation;
-	TraceStart.Z += ZTarget;
-	FVector TraceEnd = TargetLocation;
-	TraceEnd.Z -= ZTarget;
-	const float Radius = Capsule->GetUnscaledCapsuleRadius() + RadiusOffset;
-
-	const UWorld* World = GetWorld();
-	check(World);
-
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-
-	FHitResult HitResult;
-	World->SweepSingleByProfile(HitResult, TraceStart, TraceEnd, FQuat::Identity,
-	                            FName(TEXT("ALS_Character")), FCollisionShape::MakeSphere(Radius), Params);
-
-	return !(HitResult.bBlockingHit || HitResult.bStartPenetrating);
 }
 
 float AALSBaseCharacter::GetMappedSpeed()
@@ -1178,7 +1123,7 @@ EALSGait AALSBaseCharacter::GetActualGait(EALSGait AllowedGait)
 }
 
 void AALSBaseCharacter::SmoothCharacterRotation(FRotator Target, float TargetInterpSpeed, float ActorInterpSpeed,
-                                               float DeltaTime)
+                                                float DeltaTime)
 {
 	// Interpolate the Target Rotation for extra smooth rotation behavior
 	TargetRotation =
@@ -1232,23 +1177,12 @@ FVector AALSBaseCharacter::GetPlayerMovementInput()
 	return (Forward + Right).GetSafeNormal();
 }
 
-static TPair<float, float> FixDiagonalGamepadValues(const float Y, const float X)
-{
-	float ResultY = Y * FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 0.6f),
-	                                                      FVector2D(1.0f, 1.2f), FMath::Abs(X));
-	ResultY = FMath::Clamp(ResultY, -1.0f, 1.0f);
-	float ResultX = X * FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 0.6f),
-	                                                      FVector2D(1.0f, 1.2f), FMath::Abs(Y));
-	ResultX = FMath::Clamp(ResultX, -1.0f, 1.0f);
-	return TPair<float, float>(ResultY, ResultX);
-}
-
 void AALSBaseCharacter::PlayerForwardMovementInput(float Value)
 {
 	if (MovementState == EALSMovementState::Grounded || MovementState == EALSMovementState::InAir)
 	{
 		// Default camera relative movement behavior
-		const float Scale = FixDiagonalGamepadValues(Value, GetInputAxisValue("MoveRight/Left")).Key;
+		const float Scale = UALSMathLibrary::FixDiagonalGamepadValues(Value, GetInputAxisValue("MoveRight/Left")).Key;
 		const FRotator DirRotator(0.0f, GetControlRotation().Yaw, 0.0f);
 		AddMovementInput(UKismetMathLibrary::GetForwardVector(DirRotator), Scale);
 	}
@@ -1259,7 +1193,7 @@ void AALSBaseCharacter::PlayerRightMovementInput(float Value)
 	if (MovementState == EALSMovementState::Grounded || MovementState == EALSMovementState::InAir)
 	{
 		// Default camera relative movement behavior
-		const float Scale = FixDiagonalGamepadValues(GetInputAxisValue("MoveForward/Backwards"), Value).Value;
+		const float Scale = UALSMathLibrary::FixDiagonalGamepadValues(GetInputAxisValue("MoveForward/Backwards"), Value).Value;
 		const FRotator DirRotator(0.0f, GetControlRotation().Yaw, 0.0f);
 		AddMovementInput(UKismetMathLibrary::GetRightVector(DirRotator), Scale);
 	}
