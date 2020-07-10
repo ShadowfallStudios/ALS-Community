@@ -52,8 +52,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ragdoll System")
 	virtual void RagdollStart();
 
+	UFUNCTION(Server, Reliable)
+	void ServerRagdollStart();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRagdollStart();
+
 	UFUNCTION(BlueprintCallable, Category = "Ragdoll System")
 	virtual void RagdollEnd();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRagdollEnd();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRagdollEnd();
 
 	/** Character States */
 
@@ -195,9 +207,21 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Movement System")
 	void OnBreakfall();
 
+	UFUNCTION(Server, Reliable)
+	void ServerOnBreakfall();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOnBreakfall();
+
 	/** BP implementable function that called when Roll starts */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Movement System")
 	void OnRoll();
+
+	UFUNCTION(Server, Reliable)
+	void ServerOnRoll(class UAnimMontage* AnimMontage, float InPlayRate = 1.f);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOnRoll(class UAnimMontage* AnimMontage, float InPlayRate = 1.f);
 
 	/** Implement on BP to get required roll animation according to character's state */
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Movement System")
@@ -321,6 +345,12 @@ protected:
 	/** Mantle System */
 
 	virtual void MantleStart(float MantleHeight, const FBMComponentAndTransform& MantleLedgeWS, EBMMantleType MantleType);
+
+	UFUNCTION(Server, Reliable)
+	void ServerMantleStart(float MantleHeight, const FBMComponentAndTransform& MantleLedgeWS, EBMMantleType MantleType);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastMantleStart(float MantleHeight, const FBMComponentAndTransform& MantleLedgeWS, EBMMantleType MantleType);
 
 	virtual bool MantleCheck(const FBMMantleTraceSettings& TraceSettings,
 	                         EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::ForOneFrame);

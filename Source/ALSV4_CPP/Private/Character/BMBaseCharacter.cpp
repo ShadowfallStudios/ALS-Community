@@ -75,12 +75,57 @@ void ABMBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void ABMBaseCharacter::OnBreakfall_Implementation()
 {
 	MainAnimInstance->Montage_Play(GetRollAnimation(), 1.35f);
+
+	if (HasAuthority() == true)
+	{
+		MulticastOnBreakfall();
+	}
+	else
+	{
+		ServerOnBreakfall();
+	}
+}
+
+void ABMBaseCharacter::ServerOnBreakfall_Implementation()
+{
+	MainAnimInstance->Montage_Play(GetRollAnimation(), 1.35f);
+	MulticastOnBreakfall();
+}
+
+void ABMBaseCharacter::MulticastOnBreakfall_Implementation()
+{
+	if (IsLocallyControlled() == false)
+	{
+		MainAnimInstance->Montage_Play(GetRollAnimation(), 1.35f);
+	}
 }
 
 void ABMBaseCharacter::OnRoll_Implementation()
 {
 	// Roll: Simply play a Root Motion Montage.
 	MainAnimInstance->Montage_Play(GetRollAnimation(), 1.15f);
+	if (HasAuthority() == true)
+	{
+		MulticastOnRoll(GetRollAnimation(), 1.32f);
+	}
+	else
+	{
+		ServerOnRoll(GetRollAnimation(), 1.32f);
+	}
+}
+
+void ABMBaseCharacter::ServerOnRoll_Implementation(class UAnimMontage* AnimMontage, float InPlayRate)
+{
+	MainAnimInstance->Montage_Play(AnimMontage, InPlayRate);
+	MulticastOnRoll(AnimMontage, InPlayRate);
+}
+
+void ABMBaseCharacter::MulticastOnRoll_Implementation(class UAnimMontage* AnimMontage, float InPlayRate)
+{
+	if (IsLocallyControlled() == false)
+	{
+		MainAnimInstance->Montage_Play(AnimMontage, InPlayRate);
+	}
 }
 
 void ABMBaseCharacter::BeginPlay()
@@ -216,6 +261,20 @@ void ABMBaseCharacter::RagdollStart()
 	MainAnimInstance->Montage_Stop(0.2f);
 }
 
+void ABMBaseCharacter::ServerRagdollStart_Implementation()
+{
+	RagdollStart();
+	MulticastRagdollStart();
+}
+
+void ABMBaseCharacter::MulticastRagdollStart_Implementation()
+{
+	if(IsLocallyControlled() == false)
+	{
+		RagdollStart();
+	}
+}
+
 void ABMBaseCharacter::RagdollEnd()
 {
 	if (!MainAnimInstance)
@@ -245,6 +304,20 @@ void ABMBaseCharacter::RagdollEnd()
 	GetMesh()->SetCollisionObjectType(ECC_Pawn);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetMesh()->SetAllBodiesSimulatePhysics(false);
+}
+
+void ABMBaseCharacter::ServerRagdollEnd_Implementation()
+{
+	RagdollEnd();
+	MulticastRagdollEnd();
+}
+
+void ABMBaseCharacter::MulticastRagdollEnd_Implementation()
+{
+	if (IsLocallyControlled() == false)
+	{
+		RagdollEnd();
+	}
 }
 
 void ABMBaseCharacter::SetMovementState(const EBMMovementState NewState)
@@ -663,6 +736,14 @@ void ABMBaseCharacter::OnMovementStateChanged(const EBMMovementState PreviousSta
 		{
 			// If the character is currently rolling, enable the ragdoll.
 			RagdollStart();
+			if(HasAuthority() == true)
+			{
+			MulticastRagdollStart();
+			}
+			else 
+			{
+			ServerRagdollStart();
+			}
 		}
 	}
 	else if (MovementState == EBMMovementState::Ragdoll && PreviousState == EBMMovementState::Mantling)
@@ -777,6 +858,14 @@ void ABMBaseCharacter::Landed(const FHitResult& Hit)
 	else if (VelZ > 1000.0f)
 	{
 		RagdollStart();
+		if(HasAuthority() == true)
+		{
+			MulticastRagdollStart();
+		}
+		else 
+		{
+			ServerRagdollStart();
+		}
 	}
 	else
 	{
@@ -1057,6 +1146,20 @@ void ABMBaseCharacter::MantleStart(float MantleHeight, const FBMComponentAndTran
 	GetCapsuleComponent()->SetWorldRotation(ForcedRotation);
 }
 
+void ABMBaseCharacter::ServerMantleStart_Implementation(float MantleHeight, const FBMComponentAndTransform& MantleLedgeWS, EBMMantleType MantleType)
+{
+	MantleStart(MantleHeight, MantleLedgeWS, MantleType);
+	MulticastMantleStart(MantleHeight, MantleLedgeWS, MantleType);
+}
+
+void ABMBaseCharacter::MulticastMantleStart_Implementation(float MantleHeight, const FBMComponentAndTransform& MantleLedgeWS, EBMMantleType MantleType)
+{
+	if(IsLocallyControlled() == false)
+	{
+		MantleStart(MantleHeight, MantleLedgeWS, MantleType);
+	}
+}
+
 bool ABMBaseCharacter::MantleCheck(const FBMMantleTraceSettings& TraceSettings, EDrawDebugTrace::Type DebugType)
 {
 	// Step 1: Trace forward to find a wall / object the character cannot walk on.
@@ -1141,6 +1244,14 @@ bool ABMBaseCharacter::MantleCheck(const FBMMantleTraceSettings& TraceSettings, 
 	MantleWS.Component = HitComponent;
 	MantleWS.Transform = TargetTransform;
 	MantleStart(MantleHeight, MantleWS, MantleType);
+	if(HasAuthority() == true)
+	{
+		MulticastMantleStart(MantleHeight, MantleWS, MantleType);
+	}
+	else
+	{
+		ServerMantleStart(MantleHeight, MantleWS, MantleType);
+	}
 
 	return true;
 }
@@ -1467,6 +1578,14 @@ void ABMBaseCharacter::JumpPressedAction()
 		else if (MovementState == EBMMovementState::Ragdoll)
 		{
 			RagdollEnd();
+			if (HasAuthority() == true)
+			{
+			MulticastRagdollEnd();
+			}
+			else
+			{
+			ServerRagdollEnd();
+			}
 		}
 	}
 }
@@ -1612,10 +1731,27 @@ void ABMBaseCharacter::RagdollPressedAction()
 	if (GetMovementState() == EBMMovementState::Ragdoll)
 	{
 		RagdollEnd();
+		if (HasAuthority() == true)
+		{
+			MulticastRagdollEnd();
+		}
+		else
+		{
+			ServerRagdollEnd();
+		}
 	}
 	else
 	{
 		RagdollStart();
+		if(HasAuthority() == true)
+		{
+			MulticastRagdollStart();
+		}
+		else 
+		{
+			ServerRagdollStart();
+		}
+
 	}
 }
 
