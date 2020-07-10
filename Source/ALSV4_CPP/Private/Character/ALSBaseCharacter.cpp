@@ -916,11 +916,6 @@ void AALSBaseCharacter::MantleStart(float MantleHeight, const FALSComponentAndTr
 		MainAnimInstance->Montage_Play(MantleParams.AnimMontage, MantleParams.PlayRate,
 		                               EMontagePlayReturnType::MontageLength, MantleParams.StartingPosition, false);
 	}
-
-	// Step 8: Prevent Incorrect Rotation
-	FRotator ForcedRotation = GetCapsuleComponent()->GetComponentRotation();
-	ForcedRotation.Yaw = MantleTarget.GetRotation().Rotator().Yaw;
-	GetCapsuleComponent()->SetWorldRotation(ForcedRotation);
 }
 
 bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings, EDrawDebugTrace::Type DebugType)
