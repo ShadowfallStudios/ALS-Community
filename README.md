@@ -1,8 +1,14 @@
-# ALSV4_CPP
-Performance optimized C++ Port of Advanced Locomotion System V4 for **Unreal Engine 4.25**
+# Advanced Locomotion System V4 on C++
+![image](https://github.com/dyanikoglu/ALSV4_CPP/raw/master/Resources/Readme_Content_2.gif)
+
+Performance optimized C++ Port of [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1) for **Unreal Engine 4.25+**
+
+# Features
+- Converted into plugin structure. You can immediately start using it in your project without doing any serious change in your project configuration.
+- Source code is highly optimized while being ported from blueprints. For 100 characters in a scene, CPU time is decreased from ~17ms to ~10ms.
+- Suitable for a network-performance friendly replication support. Replication implementation is still in progress.
 
 # Setting Up The Plugin
-
 - Clone the repository if you're working on a C++ project, or download the latest release if you're on a BP project.
 - Move ALSV4_CPP folder into your project's `Plugins` folder
 - Add the lines below into your project's `DefaultIntput.ini`, below `[/Script/Engine.InputSettings]` tag:
@@ -60,8 +66,5 @@ Performance optimized C++ Port of Advanced Locomotion System V4 for **Unreal Eng
 - Launch your project, and enable plugin content viewer as seen below. This will show contents of the ALS in your content browser:
 ![image](https://github.com/dyanikoglu/ALSV4_CPP/raw/master/Resources/Readme_Content_1.png)
 
-## Known Issues & Missing Features
-Known issues & missing features can be tracked under Github issues tab.
-
 ## License & Contribution
-**Source code** is licensed under MIT license, and other developers are encouraged to fork the repository, open issues & pull requests to help the development.
+**Source code** of the plugin is licensed under MIT license, and other developers are encouraged to fork the repository, open issues & pull requests to help the development.
