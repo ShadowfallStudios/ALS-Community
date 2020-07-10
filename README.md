@@ -76,19 +76,11 @@ Benchmark by @Scragnog
 +AxisMappings=(AxisName="LookUp/Down",Scale=1.000000,Key=Gamepad_RightY)
 +AxisMappings=(AxisName="LookLeft/Right",Scale=1.000000,Key=Gamepad_RightX)
 ```
-- Add the lines below into your `DefaultEngine.ini`, below `[/Script/Engine.CollisionProfile]` tag:
+- Add the lines below into your `DefaultEngine.ini`, below `[/Script/Engine.CollisionProfile]` tag (Create the tag if it doesn't exist):
 ```
-+Profiles=(Name="ALS_Character",CollisionEnabled=QueryAndPhysics,bCanModify=True,ObjectTypeName="Pawn",CustomResponses=((Channel="Visibility",Response=ECR_Ignore),(Channel="Camera",Response=ECR_Ignore),(Channel="Grabbable",Response=ECR_Ignore),(Channel="Climbable",Response=ECR_Ignore)),HelpMessage="Custom collision settings for the capsule in the ALS_BaseCharacter.")
-+Profiles=(Name="ALS_Prop",CollisionEnabled=QueryAndPhysics,bCanModify=True,ObjectTypeName="WorldDynamic",CustomResponses=((Channel="Visibility",Response=ECR_Ignore),(Channel="Camera",Response=ECR_Ignore),(Channel="Grabbable",Response=ECR_Ignore),(Channel="Climbable",Response=ECR_Ignore)),HelpMessage="Custom collision settings for the props")
++Profiles=(Name="ALS_Character",CollisionEnabled=QueryAndPhysics,bCanModify=True,ObjectTypeName="Pawn",CustomResponses=((Channel="Visibility",Response=ECR_Ignore),(Channel="Camera",Response=ECR_Ignore),(Channel="Climbable",Response=ECR_Ignore)),HelpMessage="Custom collision settings for the capsule in the ALS_BaseCharacter.")
++Profiles=(Name="ALS_Prop",CollisionEnabled=QueryAndPhysics,bCanModify=True,ObjectTypeName="WorldDynamic",CustomResponses=((Channel="Visibility",Response=ECR_Ignore),(Channel="Camera",Response=ECR_Ignore),(Channel="Climbable",Response=ECR_Ignore)),HelpMessage="Custom collision settings for the props")
 +DefaultChannelResponses=(Channel=ECC_GameTraceChannel2,DefaultResponse=ECR_Block,bTraceType=True,bStaticObject=False,Name="Climbable")
-+EditProfiles=(Name="Pawn",CustomResponses=((Channel="Grabbable",Response=ECR_Ignore)))
-+EditProfiles=(Name="Spectator",CustomResponses=((Channel="Grabbable",Response=ECR_Ignore)))
-+EditProfiles=(Name="InvisibleWall",CustomResponses=((Channel="Grabbable",Response=ECR_Ignore)))
-+EditProfiles=(Name="InvisibleWallDynamic",CustomResponses=((Channel="Grabbable",Response=ECR_Ignore)))
-+EditProfiles=(Name="Trigger",CustomResponses=((Channel="Grabbable",Response=ECR_Ignore)))
-+EditProfiles=(Name="Ragdoll",CustomResponses=((Channel="Grabbable",Response=ECR_Ignore)))
-+EditProfiles=(Name="UI",CustomResponses=((Channel="Grabbable",Response=ECR_Ignore),(Channel="Destructible",Response=ECR_Overlap)))
-+EditProfiles=(Name="CharacterMesh",CustomResponses=((Channel="Grabbable",Response=ECR_Ignore)))
 ```
 - Launch your project, and enable plugin content viewer as seen below. This will show contents of the ALS in your content browser:
 ![image](https://github.com/dyanikoglu/ALSV4_CPP/raw/master/Resources/Readme_Content_1.png)
