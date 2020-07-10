@@ -38,7 +38,7 @@ Benchmark by @Scragnog
 # Setting Up The Plugin
 - Clone the repository if you're working on a C++ project, or download the latest release if you're on a BP project.
 - Move ALSV4_CPP folder into your project's `Plugins` folder
-- Add the lines below into your project's `DefaultIntput.ini`, below `[/Script/Engine.InputSettings]` tag:
+- Add the lines below into your project's `DefaultInput.ini`, below `[/Script/Engine.InputSettings]` tag:
 ```
 +ActionMappings=(ActionName="JumpAction",bShift=False,bCtrl=False,bAlt=False,bCmd=False,Key=SpaceBar)
 +ActionMappings=(ActionName="JumpAction",bShift=False,bCtrl=False,bAlt=False,bCmd=False,Key=Gamepad_FaceButton_Bottom)
