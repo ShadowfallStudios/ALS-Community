@@ -119,8 +119,13 @@ void AALSBaseCharacter::PreInitializeComponents()
 	Super::PreInitializeComponents();
 
 	MainAnimInstance = Cast<UALSCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-
-	// TODO: Check null for MainAnimInstance if that's not editor object
+	if (!MainAnimInstance)
+	{
+		// Animation instance should be assigned if we're not in editor preview
+		checkf(GetWorld()->WorldType == EWorldType::EditorPreview,
+		       TEXT("%s doesn't have a valid animation instance assigned. That's not allowed"),
+		       *GetName());
+	}
 }
 
 void AALSBaseCharacter::SetAimYawRate(float NewAimYawRate)
