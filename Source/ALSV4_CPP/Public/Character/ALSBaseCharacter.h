@@ -57,72 +57,72 @@ public:
 	void SetMovementState(EALSMovementState NewState);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
-	EALSMovementState GetMovementState() { return MovementState; }
+	EALSMovementState GetMovementState() const { return MovementState; }
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
-	EALSMovementState GetPrevMovementState() { return PrevMovementState; }
+	EALSMovementState GetPrevMovementState() const { return PrevMovementState; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetMovementAction(EALSMovementAction NewAction);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
-	EALSMovementAction GetMovementAction() { return MovementAction; }
+	EALSMovementAction GetMovementAction() const { return MovementAction; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetStance(EALSStance NewStance);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
-	EALSStance GetStance() { return Stance; }
+	EALSStance GetStance() const { return Stance; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetRotationMode(EALSRotationMode NewRotationMode);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
-	EALSRotationMode GetRotationMode() { return RotationMode; }
+	EALSRotationMode GetRotationMode() const { return RotationMode; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetGait(EALSGait NewGait);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
-	EALSGait GetGait() { return Gait; }
+	EALSGait GetGait() const { return Gait; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetViewMode(EALSViewMode NewViewMode);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
-	EALSViewMode GetViewMode() { return ViewMode; }
+	EALSViewMode GetViewMode() const { return ViewMode; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character States")
 	void SetOverlayState(EALSOverlayState NewState);
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
-	EALSOverlayState GetOverlayState() { return OverlayState; }
+	EALSOverlayState GetOverlayState() const { return OverlayState; }
 
 	UFUNCTION(BlueprintGetter, Category = "Character States")
-	EALSOverlayState SwitchRight() { return OverlayState; }
+	EALSOverlayState SwitchRight() const { return OverlayState; }
 
 	/** Input */
 
 	UFUNCTION(BlueprintGetter, Category = "Input")
-	EALSStance GetDesiredStance() { return DesiredStance; }
+	EALSStance GetDesiredStance() const { return DesiredStance; }
 
 	UFUNCTION(BlueprintSetter, Category = "Input")
 	void SetDesiredStance(EALSStance NewStance) { DesiredStance = NewStance; }
 
 	UFUNCTION(BlueprintGetter, Category = "Input")
-	EALSGait GetDesiredGait() { return DesiredGait; }
+	EALSGait GetDesiredGait() const { return DesiredGait; }
 
 	UFUNCTION(BlueprintSetter, Category = "Input")
 	void SetDesiredGait(EALSGait NewGait) { DesiredGait = NewGait; }
 
 	UFUNCTION(BlueprintGetter, Category = "Input")
-	EALSRotationMode GetDesiredRotationMode() { return DesiredRotationMode; }
+	EALSRotationMode GetDesiredRotationMode() const { return DesiredRotationMode; }
 
 	UFUNCTION(BlueprintSetter, Category = "Input")
 	void SetDesiredRotationMode(EALSRotationMode NewRotMode) { DesiredRotationMode = NewRotMode; }
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
-	FVector GetPlayerMovementInput();
+	FVector GetPlayerMovementInput() const;
 
 	/** Rotation System */
 
@@ -144,22 +144,22 @@ public:
 	/** Movement System */
 
 	UFUNCTION(BlueprintGetter, Category = "Movement System")
-	bool HasMovementInput() { return bHasMovementInput; }
+	bool HasMovementInput() const { return bHasMovementInput; }
 
 	UFUNCTION(BlueprintCallable, Category = "Movement System")
 	void SetHasMovementInput(bool bNewHasMovementInput);
 
 	UFUNCTION(BlueprintCallable, Category = "Movement System")
-	FALSMovementSettings GetTargetMovementSettings();
+	FALSMovementSettings GetTargetMovementSettings() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Movement System")
-	EALSGait GetAllowedGait();
+	EALSGait GetAllowedGait() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Movement States")
-	EALSGait GetActualGait(EALSGait AllowedGait);
+	EALSGait GetActualGait(EALSGait AllowedGait) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Movement System")
-	bool CanSprint();
+	bool CanSprint() const;
 
 	/** BP implementable function that called when Breakfall starts */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Movement System")
@@ -178,7 +178,7 @@ public:
 	/** Utility */
 
 	UFUNCTION(BlueprintCallable, Category = "Utility")
-	float GetAnimCurveValue(FName CurveName);
+	float GetAnimCurveValue(FName CurveName) const;
 
 	/** Implement on BP to draw debug spheres */
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Debug")
@@ -187,7 +187,7 @@ public:
 	/** Camera System */
 
 	UFUNCTION(BlueprintGetter, Category = "Camera System")
-	bool IsRightShoulder() { return bRightShoulder; }
+	bool IsRightShoulder() const { return bRightShoulder; }
 
 	UFUNCTION(BlueprintCallable, Category = "Camera System")
 	void SetRightShoulder(bool bNewRightShoulder) { bRightShoulder = bNewRightShoulder; }
@@ -202,48 +202,48 @@ public:
 	virtual FVector GetFirstPersonCameraTarget();
 
 	UFUNCTION(BlueprintCallable, Category = "Camera System")
-	void GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bool& bRightShoulderOut);
+	void GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bool& bRightShoulderOut) const;
 
 	/** Essential Information Getters/Setters */
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
-	FVector GetAcceleration() { return Acceleration; }
+	FVector GetAcceleration() const { return Acceleration; }
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	void SetAcceleration(const FVector& NewAcceleration);
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
-	bool IsMoving() { return bIsMoving; }
+	bool IsMoving() const { return bIsMoving; }
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	void SetIsMoving(bool bNewIsMoving);
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
-	FVector GetMovementInput();
+	FVector GetMovementInput() const;
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
-	float GetMovementInputAmount() { return MovementInputAmount; }
+	float GetMovementInputAmount() const { return MovementInputAmount; }
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	void SetMovementInputAmount(float NewMovementInputAmount);
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
-	float GetSpeed() { return Speed; }
+	float GetSpeed() const { return Speed; }
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	void SetSpeed(float NewSpeed);
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
-	FRotator GetAimingRotation() { return GetControlRotation(); }
+	FRotator GetAimingRotation() const { return GetControlRotation(); }
 
 	UFUNCTION(BlueprintGetter, Category = "Essential Information")
-	float GetAimYawRate() { return AimYawRate; }
+	float GetAimYawRate() const { return AimYawRate; }
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
 	void SetAimYawRate(float NewAimYawRate);
 
 	UFUNCTION(BlueprintCallable, Category = "Essential Information")
-	void GetControlForwardRightVector(FVector& Forward, FVector& Right);
+	void GetControlForwardRightVector(FVector& Forward, FVector& Right) const;
 
 protected:
 	/** Ragdoll System */
@@ -299,20 +299,17 @@ protected:
 
 	UFUNCTION()
 	virtual void MantleUpdate(float BlendIn);
-	
+
 	UFUNCTION()
 	virtual void MantleEnd();
 
-	bool CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector TargetLocation,
-	                         float HeightOffset, float RadiusOffset, EDrawDebugTrace::Type DebugType);
-
 	/** Utils */
 
-	float GetMappedSpeed();
+	float GetMappedSpeed() const;
 
 	void SmoothCharacterRotation(FRotator Target, float TargetInterpSpeed, float ActorInterpSpeed, float DeltaTime);
 
-	float CalculateGroundedRotationRate();
+	float CalculateGroundedRotationRate() const;
 
 	void LimitRotation(float AimYawMin, float AimYawMax, float InterpSpeed, float DeltaTime);
 
