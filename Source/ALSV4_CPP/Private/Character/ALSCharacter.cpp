@@ -2,6 +2,7 @@
 
 
 #include "Character/ALSCharacter.h"
+#include "Character/AI/ALSAIController.h"
 
 AALSCharacter::AALSCharacter()
 {
@@ -13,6 +14,8 @@ AALSCharacter::AALSCharacter()
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(HeldObjectRoot);
+
+	AIControllerClass = AALSAIController::StaticClass();
 }
 
 void AALSCharacter::ClearHeldObject()
@@ -110,6 +113,8 @@ void AALSCharacter::Tick(float DeltaTime)
 void AALSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UpdateHeldObject();
 }
 
 void AALSCharacter::MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,

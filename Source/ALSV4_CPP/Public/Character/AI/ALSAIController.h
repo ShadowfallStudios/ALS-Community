@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (C) 2020, Doga Can Yanikoglu
+// @author: Jens Bjarne Myhre
 
 #pragma once
 
