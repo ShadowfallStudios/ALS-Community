@@ -25,8 +25,11 @@ EBTNodeResult::Type UALS_BTTask_GetRandomLocation::ExecuteTask(UBehaviorTreeComp
 
 		if (Filter)
 		{
-			if (const ANavigationData* NavData = NavSys->GetDefaultNavDataInstance(FNavigationSystem::DontCreate))
+			const ANavigationData* NavData = NavSys->GetDefaultNavDataInstance(FNavigationSystem::DontCreate);
+			if (NavData)
+			{
 				SharedFilter = UNavigationQueryFilter::GetQueryFilter(*NavData, World, Filter);
+			}
 		}
 
 		const FVector Origin = Pawn->GetActorLocation();

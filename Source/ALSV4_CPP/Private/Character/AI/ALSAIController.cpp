@@ -15,5 +15,7 @@ void AALSAIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	if(Behaviour && InPawn)
+	{
 		RunBehaviorTree(Behaviour);
+	}
 }
