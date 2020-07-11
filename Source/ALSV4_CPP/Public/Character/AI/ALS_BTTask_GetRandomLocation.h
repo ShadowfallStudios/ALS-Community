@@ -17,7 +17,7 @@ class ALSV4_CPP_API UALS_BTTask_GetRandomLocation : public UBTTask_BlackboardBas
 public:
 	UALS_BTTask_GetRandomLocation();
 
-	//Maximum distance the random location picket may be from pawn
+	//Maximum distance the random location picked may be from pawn
 	UPROPERTY(Category = Navigation, EditAnywhere, meta=(ClampMin = 1))
 	float MaxDistance = 1000;
 
