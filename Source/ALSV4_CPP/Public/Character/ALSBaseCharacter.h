@@ -356,13 +356,13 @@ protected:
 protected:
 	/** Input */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	EALSRotationMode DesiredRotationMode = EALSRotationMode::LookingDirection;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	EALSGait DesiredGait = EALSGait::Running;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	EALSStance DesiredStance = EALSStance::Standing;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input", BlueprintReadOnly)
@@ -399,7 +399,7 @@ protected:
 
 	/** State Values */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State Values")
 	EALSOverlayState OverlayState = EALSOverlayState::Default;
 
 	/** Movement System */

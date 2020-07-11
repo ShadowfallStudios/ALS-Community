@@ -88,6 +88,7 @@ void AALSBaseCharacter::BeginPlay()
 	// Once, force set variables in anim bp. This ensures anim instance & character starts synchronized
 	FALSAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 	AnimData.Gait = DesiredGait;
+	AnimData.Stance = DesiredStance;
 	AnimData.RotationMode = DesiredRotationMode;
 	AnimData.ViewMode = ViewMode;
 	AnimData.OverlayState = OverlayState;
@@ -96,6 +97,7 @@ void AALSBaseCharacter::BeginPlay()
 
 	// Update states to use the initial desired values.
 	SetGait(DesiredGait);
+	SetDesiredStance(DesiredStance);
 	SetRotationMode(DesiredRotationMode);
 	SetViewMode(ViewMode);
 	SetOverlayState(OverlayState);
