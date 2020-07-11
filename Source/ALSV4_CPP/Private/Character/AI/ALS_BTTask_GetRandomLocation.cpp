@@ -15,35 +15,27 @@ UALS_BTTask_GetRandomLocation::UALS_BTTask_GetRandomLocation()
 
 EBTNodeResult::Type UALS_BTTask_GetRandomLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	if(UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent())
+	UWorld* World = GetWorld();
+	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
+	APawn* Pawn = OwnerComp.GetAIOwner()->GetPawn();
+
+	if (NavSys && Pawn)
 	{
-		if (AAIController* Controller = OwnerComp.GetAIOwner())
+		FSharedConstNavQueryFilter SharedFilter = 0;
+
+		if (Filter)
 		{
-			if(APawn* Pawn = Controller->GetPawn())
-			{
-				if (UWorld* World = GetWorld())
-				{
-					if (UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World))
-					{
-						FSharedConstNavQueryFilter sharedFilter = 0;
+			if (const ANavigationData* NavData = NavSys->GetDefaultNavDataInstance(FNavigationSystem::DontCreate))
+				SharedFilter = UNavigationQueryFilter::GetQueryFilter(*NavData, World, Filter);
+		}
 
-						if (Filter)
-						{
-							if (const ANavigationData* NavData = NavSys->GetDefaultNavDataInstance(FNavigationSystem::DontCreate))
-								sharedFilter = UNavigationQueryFilter::GetQueryFilter(*NavData, World, Filter);
-						}
+		const FVector Origin = Pawn->GetActorLocation();
+		FNavLocation Destination;
 
-						const FVector Origin = Pawn->GetActorLocation();
-						FNavLocation Destination;
-
-						if (NavSys->GetRandomReachablePointInRadius(Origin, MaxDistance, Destination, nullptr, sharedFilter))
-						{
-							OwnerComp.GetBlackboardComponent()->SetValueAsVector(BlackboardKey.SelectedKeyName, Destination.Location);
-							return EBTNodeResult::Succeeded;
-						}
-					}
-				}
-			}
+		if (NavSys->GetRandomReachablePointInRadius(Origin, MaxDistance, Destination, nullptr, SharedFilter))
+		{
+			OwnerComp.GetBlackboardComponent()->SetValueAsVector(BlackboardKey.SelectedKeyName, Destination.Location);
+			return EBTNodeResult::Succeeded;
 		}
 	}
 

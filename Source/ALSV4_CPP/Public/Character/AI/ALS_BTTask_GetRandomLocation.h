@@ -8,7 +8,7 @@
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
 #include "ALS_BTTask_GetRandomLocation.generated.h"
 
- //Picks a random location reachable through NavMesh within the Max Distance from the Owning Pawn's current location and assigns it to the specified Blackboard Key
+/** Picks a random location reachable through NavMesh within the Max Distance from the Owning Pawn's current location and assigns it to the specified Blackboard Key. */
 UCLASS(Category=ALS, meta=(DisplayName = "Get Random Location"))
 class ALSV4_CPP_API UALS_BTTask_GetRandomLocation : public UBTTask_BlackboardBase
 {
@@ -17,11 +17,11 @@ class ALSV4_CPP_API UALS_BTTask_GetRandomLocation : public UBTTask_BlackboardBas
 public:
 	UALS_BTTask_GetRandomLocation();
 
-	//Maximum distance the random location picked may be from pawn
+	/** Maximum distance the random location picked may be from pawn. */
 	UPROPERTY(Category = Navigation, EditAnywhere, meta=(ClampMin = 1))
-	float MaxDistance = 1000;
+	float MaxDistance = 1000.0f;
 
-	//Navigation Query filter used when picking the location, only picks locations reachable using this filter when assigned
+	/** Navigation Query filter used when picking the location, only picks locations reachable using this filter when assigned. */
 	UPROPERTY(Category = Navigation, EditAnywhere)
 	TSubclassOf<UNavigationQueryFilter> Filter = nullptr;
 
