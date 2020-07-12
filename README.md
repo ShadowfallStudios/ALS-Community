@@ -4,7 +4,7 @@
 Performance optimized & replicated C++ port of [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1) for **Unreal Engine 4.25+**
 
 ## Features
-- Converted into plugin structure. You can immediately start using it in your project without doing any serious change in your project configuration.
+- Converted into plugin structure (by [AHGS-Jens](https://github.com/AHGS-Jens)). You can immediately start using it in your project without doing any serious change in your project configuration.
 - Source code is highly optimized while being ported from blueprints. For 100 characters in a scene, CPU time is decreased from ~17ms to ~10ms.
 - Network performance optimized, and comes with full replication support (Big kudos to [senfkorn92](https://github.com/senfkorn92) for his work). ALSV4_CPP currently beats ALS V3 and other BP based V4 replication implementations on network performance:
 ```
