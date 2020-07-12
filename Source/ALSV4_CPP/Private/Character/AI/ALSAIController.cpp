@@ -2,6 +2,7 @@
 // @author: Jens Bjarne Myhre
 
 #include "Character/AI/ALSAIController.h"
+#include "UObject/ConstructorHelpers.h"
 
 AALSAIController::AALSAIController()
 {

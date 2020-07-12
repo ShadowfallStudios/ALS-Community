@@ -2,6 +2,7 @@
 
 
 #include "Character/ALSCharacter.h"
+#include "Engine/StaticMesh.h"
 #include "Character/AI/ALSAIController.h"
 
 AALSCharacter::AALSCharacter()
