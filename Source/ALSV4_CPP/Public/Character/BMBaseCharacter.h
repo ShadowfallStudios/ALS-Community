@@ -635,4 +635,7 @@ protected:
 
 	/* Smooth out aiming by interping control rotation*/
 	FRotator AimingRotation;
+
+	/* Default interp speed for client-server synchronisation*/
+	float SynchroInterpSpeed = 20;
 };

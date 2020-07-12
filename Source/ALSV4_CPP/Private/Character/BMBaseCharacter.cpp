@@ -147,7 +147,7 @@ void ABMBaseCharacter::PreInitializeComponents()
 
 void ABMBaseCharacter::SetAimYawRate(float NewAimYawRate)
 {
-	AimYawRate = (NewAimYawRate != 0 || IsLocallyControlled()) ? NewAimYawRate : AimYawRate / 2;
+	AimYawRate = NewAimYawRate;
 	MainAnimInstance->GetCharacterInformationMutable().AimYawRate = AimYawRate;
 }
 
@@ -873,7 +873,7 @@ void ABMBaseCharacter::SetEssentialValues(float DeltaTime)
 
 	// Interp AimingRotation to current control rotation for smooth character rotation movement. Decrease InterpSpeed
 	// for slower but smoother movement.
-	AimingRotation = FMath::RInterpTo(AimingRotation, ReplicatedControlRotation, DeltaTime, 10);
+	AimingRotation = FMath::RInterpTo(AimingRotation, ReplicatedControlRotation, DeltaTime, SynchroInterpSpeed);
 
 	// These values represent how the capsule is moving as well as how it wants to move, and therefore are essential
 	// for any data driven animation system. They are also used throughout the system for various functions,
@@ -1002,8 +1002,8 @@ void ABMBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 
 			if (FMath::Abs(RotAmountCurve) > 0.001f)
 			{
-				AddActorWorldRotation(FRotator(0, RotAmountCurve * (DeltaTime / (1.0f / 30.0f)), 0));
-				TargetRotation = GetActorRotation();
+				TargetRotation.Yaw += RotAmountCurve * (DeltaTime / (1.0f / 30.0f));
+				SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, SynchroInterpSpeed));
 			}
 		}
 	}
