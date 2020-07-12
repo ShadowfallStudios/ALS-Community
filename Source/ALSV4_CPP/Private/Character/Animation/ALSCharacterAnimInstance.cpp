@@ -296,7 +296,7 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
 	}
 
 	// Step 1: Set Local FootLock Curve value
-	const float FootLockCurveVal = GetCurveValue(FootLockCurve);
+	const float FootLockCurveVal = FMath::FInterpTo(CurFootLockAlpha, GetCurveValue(FootLockCurve), DeltaSeconds, 20);
 
 	// Step 2: Only update the FootLock Alpha if the new value is less than the current, or it equals 1. This makes it
 	// so that the foot can only blend out of the locked position or lock to a new position, and never blend in.
@@ -425,7 +425,7 @@ void UALSCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableF
 		// These values are offset by the nomrmal multiplied by the
 		// foot height to get better behavior on angled surfaces.
 		CurLocationTarget = (ImpactPoint + ImpactNormal * Config.FootHeight) -
-			(IKFootFloorLoc + FVector(0, 0, Config.FootHeight));
+			(IKFootFloorLoc + FVector(0,0, Config.FootHeight));
 
 		// Step 1.2: Calculate the Rotation offset by getting the Atan2 of the Impact Normal.
 		TargetRotOffset.Pitch = -FMath::RadiansToDegrees(FMath::Atan2(ImpactNormal.X, ImpactNormal.Z));
@@ -701,8 +701,8 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 		return 0.0f;
 	}
 
-	const UCapsuleComponent* capsule = Character->GetCapsuleComponent();
-	const FVector& CapsuleWorldLoc = capsule->GetComponentLocation();
+	const UCapsuleComponent* CapsuleComp = Character->GetCapsuleComponent();
+	const FVector& CapsuleWorldLoc = CapsuleComp->GetComponentLocation();
 	const float VelocityZ = CharacterInformation.Velocity.Z;
 	FVector VelocityClamped = CharacterInformation.Velocity;
 	VelocityClamped.Z = FMath::Clamp(VelocityZ, -4000.0f, -200.0f);
@@ -719,7 +719,7 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 	FHitResult HitResult;
 
 	World->SweepSingleByProfile(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity, FName(TEXT("ALS_Character")),
-	                            FCollisionShape::MakeCapsule(capsule->GetUnscaledCapsuleRadius(), capsule->GetUnscaledCapsuleHalfHeight()), Params);
+	                            FCollisionShape::MakeCapsule(CapsuleComp->GetUnscaledCapsuleRadius(), CapsuleComp->GetUnscaledCapsuleHalfHeight()), Params);
 
 	if (Character->GetCharacterMovement()->IsWalkable(HitResult))
 	{
