@@ -61,11 +61,11 @@ public:
 
 	/** Enable Movement Animations if IsMoving and HasMovementInput, or if the Speed is greater than 150. */
 	UFUNCTION(BlueprintCallable, Category = "Grounded")
-	bool ShouldMoveCheck();
+	bool ShouldMoveCheck() const;
 
 	/** Only perform a Rotate In Place Check if the character is Aiming or in First Person. */
 	UFUNCTION(BlueprintCallable, Category = "Grounded")
-	bool CanRotateInPlace();
+	bool CanRotateInPlace() const;
 
 	/**
 	 * Only perform a Turn In Place check if the character is looking toward the camera in Third Person,
@@ -73,7 +73,7 @@ public:
 	 * states of the AnimBP so that the character can only turn while in those states..
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Grounded")
-	bool CanTurnInPlace();
+	bool CanTurnInPlace() const;
 
 	/**
 	 * Only perform a Dynamic Transition check if the "Enable Transition" curve is fully weighted.
@@ -81,7 +81,7 @@ public:
 	 * that the character can only transition while in those states.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Grounded")
-	bool CanDynamicTransition();
+	bool CanDynamicTransition() const;
 
 	/** Return mutable reference of character information to edit them easily inside character class */
 	FALSAnimCharacterInformation& GetCharacterInformationMutable()
@@ -134,36 +134,33 @@ private:
 
 	void DynamicTransitionCheck();
 
-	FALSVelocityBlend CalculateVelocityBlend();
+	FALSVelocityBlend CalculateVelocityBlend() const;
 
 	void TurnInPlace(FRotator TargetRotation, float PlayRateScale, float StartTime, bool OverrideCurrent);
 
 	/** Movement */
 
-	FVector CalculateRelativeAccelerationAmount();
+	FVector CalculateRelativeAccelerationAmount() const;
 
-	float CalculateStrideBlend();
+	float CalculateStrideBlend() const;
 
-	float CalculateWalkRunBlend();
+	float CalculateWalkRunBlend() const;
 
-	float CalculateStandingPlayRate();
+	float CalculateStandingPlayRate() const;
 
-	float CalculateDiagonalScaleAmount();
+	float CalculateDiagonalScaleAmount() const;
 
-	float CalculateCrouchingPlayRate();
+	float CalculateCrouchingPlayRate() const;
 
-	float CalculateLandPrediction();
+	float CalculateLandPrediction() const;
 
-	FALSLeanAmount CalculateAirLeanAmount();
+	FALSLeanAmount CalculateAirLeanAmount() const;
 
-	EALSMovementDirection CalculateMovementDirection();
-
-	EALSMovementDirection CalculateQuadrant(EALSMovementDirection Current, float FRThreshold, float FLThreshold, float BRThreshold,
-	                                       float BLThreshold, float Buffer, float Angle);
+	EALSMovementDirection CalculateMovementDirection() const;
 
 	/** Util */
 
-	float GetAnimCurveClamped(const FName& Name, float Bias, float ClampMin, float ClampMax);
+	float GetAnimCurveClamped(const FName& Name, float Bias, float ClampMin, float ClampMax) const;
 
 protected:
 	/** References */

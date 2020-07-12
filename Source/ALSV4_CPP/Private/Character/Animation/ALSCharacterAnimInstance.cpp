@@ -3,6 +3,7 @@
 
 #include "Character/Animation/ALSCharacterAnimInstance.h"
 #include "Character/ALSBaseCharacter.h"
+#include "Library/ALSMathLibrary.h"
 #include "Curves/CurveVector.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -114,10 +115,9 @@ void UALSCharacterAnimInstance::PlayDynamicTransition(float ReTriggerDelay, FALS
 	if (bCanPlayDynamicTransition)
 	{
 		bCanPlayDynamicTransition = false;
+
 		// Play Dynamic Additive Transition Animation
-		PlaySlotAnimationAsDynamicMontage(Parameters.Animation, FName(TEXT("Grounded Slot")),
-		                                  Parameters.BlendInTime, Parameters.BlendOutTime, Parameters.PlayRate, 1,
-		                                  0.0f, Parameters.StartTime);
+		PlayTransition(Parameters);
 
 		UWorld* World = GetWorld();
 		check(World);
@@ -127,26 +127,26 @@ void UALSCharacterAnimInstance::PlayDynamicTransition(float ReTriggerDelay, FALS
 	}
 }
 
-bool UALSCharacterAnimInstance::ShouldMoveCheck()
+bool UALSCharacterAnimInstance::ShouldMoveCheck() const
 {
 	return (CharacterInformation.bIsMoving && CharacterInformation.bHasMovementInput) ||
 		CharacterInformation.Speed > 150.0f;
 }
 
-bool UALSCharacterAnimInstance::CanRotateInPlace()
+bool UALSCharacterAnimInstance::CanRotateInPlace() const
 {
 	return CharacterInformation.RotationMode == EALSRotationMode::Aiming ||
 		CharacterInformation.ViewMode == EALSViewMode::FirstPerson;
 }
 
-bool UALSCharacterAnimInstance::CanTurnInPlace()
+bool UALSCharacterAnimInstance::CanTurnInPlace() const
 {
 	return CharacterInformation.RotationMode == EALSRotationMode::LookingDirection &&
 		CharacterInformation.ViewMode == EALSViewMode::ThirdPerson &&
 		GetCurveValue(FName(TEXT("Enable_Transition"))) > 0.99f;
 }
 
-bool UALSCharacterAnimInstance::CanDynamicTransition()
+bool UALSCharacterAnimInstance::CanDynamicTransition() const
 {
 	return GetCurveValue(FName(TEXT("Enable_Transition"))) == 1.0f;
 }
@@ -596,12 +596,12 @@ void UALSCharacterAnimInstance::UpdateRagdollValues()
 	FlailRate = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 1000.0f), FVector2D(0.0f, 1.0f), VelocityLength);
 }
 
-float UALSCharacterAnimInstance::GetAnimCurveClamped(const FName& Name, float Bias, float ClampMin, float ClampMax)
+float UALSCharacterAnimInstance::GetAnimCurveClamped(const FName& Name, float Bias, float ClampMin, float ClampMax) const
 {
 	return FMath::Clamp(GetCurveValue(Name) + Bias, ClampMin, ClampMax);
 }
 
-FALSVelocityBlend UALSCharacterAnimInstance::CalculateVelocityBlend()
+FALSVelocityBlend UALSCharacterAnimInstance::CalculateVelocityBlend() const
 {
 	// Calculate the Velocity Blend. This value represents the velocity amount of the actor in each direction (normalized so that
 	// diagonals equal .5 for each direction), and is used in a BlendMulti node to produce better
@@ -619,7 +619,7 @@ FALSVelocityBlend UALSCharacterAnimInstance::CalculateVelocityBlend()
 	return Result;
 }
 
-FVector UALSCharacterAnimInstance::CalculateRelativeAccelerationAmount()
+FVector UALSCharacterAnimInstance::CalculateRelativeAccelerationAmount() const
 {
 	// Calculate the Relative Acceleration Amount. This value represents the current amount of acceleration / deceleration
 	// relative to the actor rotation. It is normalized to a range of -1 to 1 so that -1 equals the Max Braking Deceleration,
@@ -637,7 +637,7 @@ FVector UALSCharacterAnimInstance::CalculateRelativeAccelerationAmount()
 			CharacterInformation.Acceleration.GetClampedToMaxSize(MaxBrakingDec) / MaxBrakingDec);
 }
 
-float UALSCharacterAnimInstance::CalculateStrideBlend()
+float UALSCharacterAnimInstance::CalculateStrideBlend() const
 {
 	// Calculate the Stride Blend. This value is used within the blendspaces to scale the stride (distance feet travel)
 	// so that the character can walk or run at different movement speeds.
@@ -652,13 +652,13 @@ float UALSCharacterAnimInstance::CalculateStrideBlend()
 	                   GetCurveValue(FName(TEXT("BasePose_CLF"))));
 }
 
-float UALSCharacterAnimInstance::CalculateWalkRunBlend()
+float UALSCharacterAnimInstance::CalculateWalkRunBlend() const
 {
 	// Calculate the Walk Run Blend. This value is used within the Blendspaces to blend between walking and running.
 	return CharacterInformation.Gait == EALSGait::Walking ? 0.0f : 1.0;
 }
 
-float UALSCharacterAnimInstance::CalculateStandingPlayRate()
+float UALSCharacterAnimInstance::CalculateStandingPlayRate() const
 {
 	// Calculate the Play Rate by dividing the Character's speed by the Animated Speed for each gait.
 	// The lerps are determined by the "Weight_Gait" anim curve that exists on every locomotion cycle so
@@ -674,7 +674,7 @@ float UALSCharacterAnimInstance::CalculateStandingPlayRate()
 	return FMath::Clamp((SprintAffectedSpeed / Grounded.StrideBlend) / GetOwningComponent()->GetComponentScale().Z, 0.0f, 3.0f);
 }
 
-float UALSCharacterAnimInstance::CalculateDiagonalScaleAmount()
+float UALSCharacterAnimInstance::CalculateDiagonalScaleAmount() const
 {
 	// Calculate the Diagnal Scale Amount. This value is used to scale the Foot IK Root bone to make the Foot IK bones
 	// cover more distance on the diagonal blends. Without scaling, the feet would not move far enough on the diagonal
@@ -682,7 +682,7 @@ float UALSCharacterAnimInstance::CalculateDiagonalScaleAmount()
 	return DiagonalScaleAmountCurve->GetFloatValue(FMath::Abs(Grounded.VelocityBlend.F + Grounded.VelocityBlend.B));
 }
 
-float UALSCharacterAnimInstance::CalculateCrouchingPlayRate()
+float UALSCharacterAnimInstance::CalculateCrouchingPlayRate() const
 {
 	// Calculate the Crouching Play Rate by dividing the Character's speed by the Animated Speed.
 	// This value needs to be separate from the standing play rate to improve the blend from crocuh to stand while in motion.
@@ -691,7 +691,7 @@ float UALSCharacterAnimInstance::CalculateCrouchingPlayRate()
 		0.0f, 2.0f);
 }
 
-float UALSCharacterAnimInstance::CalculateLandPrediction()
+float UALSCharacterAnimInstance::CalculateLandPrediction() const
 {
 	// Calculate the land prediction weight by tracing in the velocity direction to find a walkable surface the character
 	// is falling toward, and getting the 'Time' (range of 0-1, 1 being maximum, 0 being about to land) till impact.
@@ -729,7 +729,7 @@ float UALSCharacterAnimInstance::CalculateLandPrediction()
 	return 0.0f;
 }
 
-FALSLeanAmount UALSCharacterAnimInstance::CalculateAirLeanAmount()
+FALSLeanAmount UALSCharacterAnimInstance::CalculateAirLeanAmount() const
 {
 	// Use the relative Velocity direction and amount to determine how much the character should lean while in air.
 	// The Lean In Air curve gets the Fall Speed and is used as a multiplier to smoothly reverse the leaning direction
@@ -743,16 +743,7 @@ FALSLeanAmount UALSCharacterAnimInstance::CalculateAirLeanAmount()
 	return LeanAmount;
 }
 
-static bool AngleInRange(float Angle, float MinAngle, float MaxAngle, float Buffer, bool IncreaseBuffer)
-{
-	if (IncreaseBuffer)
-	{
-		return Angle >= MinAngle - Buffer && Angle <= MaxAngle + Buffer;
-	}
-	return Angle >= MinAngle + Buffer && Angle <= MaxAngle - Buffer;
-}
-
-EALSMovementDirection UALSCharacterAnimInstance::CalculateMovementDirection()
+EALSMovementDirection UALSCharacterAnimInstance::CalculateMovementDirection() const
 {
 	// Calculate the Movement Direction. This value represents the direction the character is moving relative to the camera
 	// during the Looking Cirection / Aiming rotation modes, and is used in the Cycle Blending Anim Layers to blend to the
@@ -764,33 +755,7 @@ EALSMovementDirection UALSCharacterAnimInstance::CalculateMovementDirection()
 
 	FRotator Delta = CharacterInformation.Velocity.ToOrientationRotator() - CharacterInformation.AimingRotation;
 	Delta.Normalize();
-	return CalculateQuadrant(Grounded.MovementDirection, 70.0f, -70.0f, 110.0f, -110.0f, 5.0f, Delta.Yaw);
-}
-
-EALSMovementDirection UALSCharacterAnimInstance::CalculateQuadrant(EALSMovementDirection Current, float FRThreshold, float FLThreshold,
-                                                                 float BRThreshold, float BLThreshold, float Buffer, float Angle)
-{
-	// Take the input angle and determine its quadrant (direction). Use the current Movement Direction to increase or
-	// decrease the buffers on the angle ranges for each quadrant.
-	if (AngleInRange(Angle, FLThreshold, FRThreshold, Buffer,
-	                 Current != EALSMovementDirection::Forward || Current != EALSMovementDirection::Backward))
-	{
-		return EALSMovementDirection::Forward;
-	}
-
-	if (AngleInRange(Angle, FRThreshold, BRThreshold, Buffer,
-	                 Current != EALSMovementDirection::Right || Current != EALSMovementDirection::Left))
-	{
-		return EALSMovementDirection::Right;
-	}
-
-	if (AngleInRange(Angle, BLThreshold, FLThreshold, Buffer,
-	                 Current != EALSMovementDirection::Right || Current != EALSMovementDirection::Left))
-	{
-		return EALSMovementDirection::Left;
-	}
-
-	return EALSMovementDirection::Backward;
+	return UALSMathLibrary::CalculateQuadrant(Grounded.MovementDirection, 70.0f, -70.0f, 110.0f, -110.0f, 5.0f, Delta.Yaw);
 }
 
 void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayRateScale, float StartTime,

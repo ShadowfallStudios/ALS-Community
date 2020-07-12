@@ -23,14 +23,14 @@ public:
 	void OnPossess(AALSBaseCharacter* NewCharacter);
 
 	UFUNCTION(BlueprintCallable)
-	float GetCameraBehaviorParam(FName CurveName);
+	float GetCameraBehaviorParam(FName CurveName) const;
 
 	/** Implement debug logic in BP */
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void DrawDebugTargets(FVector PivotTargetLocation);
 
 protected:
-	virtual void UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime);
+	virtual void UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
 	FVector CalculateAxisIndependentLag(
