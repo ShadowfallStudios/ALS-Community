@@ -206,7 +206,7 @@ void AALSBaseCharacter::RagdollStart()
 	SetReplicateMovement(false);
 	TargetRagdollLocation = GetMesh()->GetSocketLocation(FName(TEXT("Pelvis")));
 
-	// Step 1: Clear the Character Movement Mode and set teh Movement State to Ragdoll
+	// Step 1: Clear the Character Movement Mode and set the Movement State to Ragdoll
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	SetMovementState(EALSMovementState::Ragdoll);
 
