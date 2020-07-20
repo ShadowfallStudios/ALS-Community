@@ -14,7 +14,7 @@ class ALSV4_CPP_API AALSCharacter : public AALSBaseCharacter
 {
 	GENERATED_BODY()
 
-	AALSCharacter();
+	AALSCharacter(const FObjectInitializer& ObjectInitializer);
 
 public:
 	/** Implement on BP to update held objects */

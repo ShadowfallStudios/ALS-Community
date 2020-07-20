@@ -10,7 +10,6 @@
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-
 #include "ALSBaseCharacter.generated.h"
 
 class UTimelineComponent;
@@ -27,7 +26,10 @@ class ALSV4_CPP_API AALSBaseCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	AALSBaseCharacter();
+	AALSBaseCharacter(const FObjectInitializer& ObjectInitializer);
+
+	UFUNCTION(BlueprintCallable, Category= "Movement")
+		FORCEINLINE class UALSCharacterMovementComponent* GetMyMovementComponent() const { return MyCharacterMovementComponent; }
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -38,6 +40,8 @@ public:
 	virtual void Restart() override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	virtual void PostInitializeComponents() override;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -316,9 +320,9 @@ public:
 protected:
 	/** Ragdoll System */
 
-	void RagdollUpdate();
+	void RagdollUpdate(float DeltaTime);
 
-	void SetActorLocationDuringRagdoll();
+	void SetActorLocationDuringRagdoll(float DeltaTime);
 
 	/** Stace Changes */
 
@@ -432,6 +436,9 @@ protected:
 	void OnRep_OverlayState(EALSOverlayState PrevOverlayState);
 
 protected:
+	/* Custom movement component*/
+	UALSCharacterMovementComponent* MyCharacterMovementComponent;
+
 	/** Input */
 
 	UPROPERTY(EditAnywhere, replicated, BlueprintReadWrite, Category = "Input")
@@ -609,6 +616,12 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, replicated, Category = "Ragdoll System")
 	FVector TargetRagdollLocation;
+
+	/* Server ragdoll pull force storage*/
+	float ServerRagdollPull = 0.0f;
+
+	/* Dedicated server mesh default visibility based anim tick option*/
+	EVisibilityBasedAnimTickOption DefVisBasedTickOp = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 
 	/** Cached Variables */
 

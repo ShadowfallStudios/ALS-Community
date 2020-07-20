@@ -2,9 +2,11 @@
 
 
 #include "Character/ALSCharacter.h"
+#include "Engine/StaticMesh.h"
 #include "Character/AI/ALSAIController.h"
 
-AALSCharacter::AALSCharacter()
+AALSCharacter::AALSCharacter(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer)
 {
 	HeldObjectRoot = CreateDefaultSubobject<USceneComponent>(TEXT("HeldObjectRoot"));
 	HeldObjectRoot->SetupAttachment(GetMesh());
