@@ -905,6 +905,12 @@ void AALSBaseCharacter::SetEssentialValues(float DeltaTime)
 	{
 		ReplicatedCurrentAcceleration = GetCharacterMovement()->GetCurrentAcceleration();
 		ReplicatedControlRotation = GetControlRotation();
+		EasedMaxAcceleration = GetCharacterMovement()->GetMaxAcceleration();
+	}
+
+	else
+	{
+		EasedMaxAcceleration = GetCharacterMovement()->GetMaxAcceleration() != 0 ? GetCharacterMovement()->GetMaxAcceleration() : EasedMaxAcceleration / 2;
 	}
 
 	// Interp AimingRotation to current control rotation for smooth character rotation movement. Decrease InterpSpeed
@@ -935,7 +941,7 @@ void AALSBaseCharacter::SetEssentialValues(float DeltaTime)
 	// The Movement Input Amount is equal to the current acceleration divided by the max acceleration so that
 	// it has a range of 0-1, 1 being the maximum possible amount of input, and 0 beiung none.
 	// If the character has movement input, update the Last Movement Input Rotation.
-	SetMovementInputAmount(ReplicatedCurrentAcceleration.Size() / GetCharacterMovement()->GetMaxAcceleration());
+	SetMovementInputAmount(ReplicatedCurrentAcceleration.Size() / EasedMaxAcceleration);
 	SetHasMovementInput(MovementInputAmount > 0.0f);
 	if (bHasMovementInput)
 	{

@@ -541,6 +541,10 @@ protected:
 	float AimYawRate = 0.0f;
 
 	/** Replicated Essential Information*/
+
+	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
+	float EasedMaxAcceleration;
+
 	UPROPERTY(BlueprintReadOnly, replicated, Category = "Essential Information")
 	FVector ReplicatedCurrentAcceleration;
 
@@ -629,6 +633,7 @@ protected:
 
 	float PreviousAimYaw = 0.0f;
 
+	UPROPERTY(BlueprintReadOnly)
 	UALSCharacterAnimInstance* MainAnimInstance = nullptr;
 
 	/** Last time the 'first' crouch/roll button is pressed */
