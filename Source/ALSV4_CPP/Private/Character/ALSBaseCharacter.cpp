@@ -17,13 +17,15 @@
 #include "Components/TimelineComponent.h"
 #include "Curves/CurveVector.h"
 #include "Curves/CurveFloat.h"
+#include "Character/ALSCharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "Net/UnrealNetwork.h"
 
-AALSBaseCharacter::AALSBaseCharacter()
+AALSBaseCharacter::AALSBaseCharacter(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer.SetDefaultSubobjectClass<UALSCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	PrimaryActorTick.bCanEverTick = true;
 	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(FName(TEXT("MantleTimeline")));
@@ -66,6 +68,12 @@ void AALSBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("CameraAction", IE_Released, this, &AALSBaseCharacter::CameraReleasedAction);
 }
 
+void AALSBaseCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	MyCharacterMovementComponent = Cast<UALSCharacterMovementComponent>(Super::GetMovementComponent());
+}
+
 void AALSBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -74,8 +82,8 @@ void AALSBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME_CONDITION(AALSBaseCharacter, ReplicatedCurrentAcceleration, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(AALSBaseCharacter, ReplicatedControlRotation, COND_SkipOwner);
 
+	DOREPLIFETIME(AALSBaseCharacter, DesiredGait);
 	DOREPLIFETIME_CONDITION(AALSBaseCharacter, DesiredStance, COND_SkipOwner);
-	DOREPLIFETIME_CONDITION(AALSBaseCharacter, DesiredGait, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(AALSBaseCharacter, DesiredRotationMode, COND_SkipOwner);
 
 	DOREPLIFETIME_CONDITION(AALSBaseCharacter, RotationMode, COND_SkipOwner);
@@ -190,7 +198,7 @@ void AALSBaseCharacter::Tick(float DeltaTime)
 	}
 	else if (MovementState == EALSMovementState::Ragdoll)
 	{
-		RagdollUpdate();
+		RagdollUpdate(DeltaTime);
 	}
 
 	// Cache values
@@ -202,9 +210,15 @@ void AALSBaseCharacter::Tick(float DeltaTime)
 
 void AALSBaseCharacter::RagdollStart()
 {
-	//** When Networked, disables replicate movement and reset TargetRagdollLocation variable*/
-	SetReplicateMovement(false);
+	/** Reset TargetRagdollLocation and ServerRagdollPull variable
+	and if the host is a dedicated server, change character mesh optimisation option to avoid z-location bug*/
+	if (UKismetSystemLibrary::IsDedicatedServer(GetWorld()))
+	{
+		DefVisBasedTickOp = GetMesh()->VisibilityBasedAnimTickOption;
+		GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+	}
 	TargetRagdollLocation = GetMesh()->GetSocketLocation(FName(TEXT("Pelvis")));
+	ServerRagdollPull = 0;
 
 	// Step 1: Clear the Character Movement Mode and set the Movement State to Ragdoll
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
@@ -218,11 +232,20 @@ void AALSBaseCharacter::RagdollStart()
 
 	// Step 3: Stop any active montages.
 	MainAnimInstance->Montage_Stop(0.2f);
+
+	//When Networked, disables replicate movement
+	SetReplicateMovement(false);
 }
 
 void AALSBaseCharacter::RagdollEnd()
 {
-	//** Re-enable Replicate Movement*/
+	/** Re-enable Replicate Movement and if the host is a dedicated server set mesh visibility based anim
+	tick option back to default*/
+	if (UKismetSystemLibrary::IsDedicatedServer(GetWorld()))
+	{
+		GetMesh()->VisibilityBasedAnimTickOption = DefVisBasedTickOp;
+	}
+
 	SetReplicateMovement(true);
 
 	if (!MainAnimInstance)
@@ -234,7 +257,7 @@ void AALSBaseCharacter::RagdollEnd()
 	MainAnimInstance->SavePoseSnapshot(FName(TEXT("RagdollPose")));
 
 	// Step 2: If the ragdoll is on the ground, set the movement mode to walking and play a Get Up animation.
-	// If not, set the movement mode to falling and update teh character movement velocity to match the last ragdoll velocity.
+	// If not, set the movement mode to falling and update the character movement velocity to match the last ragdoll velocity.
 	if (bRagdollOnGround)
 	{
 		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
@@ -660,10 +683,11 @@ void AALSBaseCharacter::SetAcceleration(const FVector& NewAcceleration)
 	MainAnimInstance->GetCharacterInformationMutable().Acceleration = Acceleration;
 }
 
-void AALSBaseCharacter::RagdollUpdate()
+void AALSBaseCharacter::RagdollUpdate(float DeltaTime)
 {
 	// Set the Last Ragdoll Velocity.
 	FVector NewRagdollVel = GetMesh()->GetPhysicsLinearVelocity(FName(TEXT("root")));
+	LastRagdollVelocity = (NewRagdollVel != FVector(0, 0, 0) || IsLocallyControlled()) ? NewRagdollVel : LastRagdollVelocity / 2;
 	LastRagdollVelocity = (NewRagdollVel != FVector(0, 0, 0) || IsLocallyControlled()) ? NewRagdollVel : LastRagdollVelocity / 2;
 
 	// Use the Ragdoll Velocity to scale the ragdoll's joint strength for physical animation.
@@ -677,10 +701,10 @@ void AALSBaseCharacter::RagdollUpdate()
 	GetMesh()->SetEnableGravity(bEnableGrav);
 
 	// Update the Actor location to follow the ragdoll.
-	SetActorLocationDuringRagdoll();
+	SetActorLocationDuringRagdoll(DeltaTime);
 }
 
-void AALSBaseCharacter::SetActorLocationDuringRagdoll()
+void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 {
 	if (HasAuthority())
 	{
@@ -718,7 +742,10 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll()
 	}
 	if (!HasAuthority())
 	{
-		GetMesh()->AddForce((TargetRagdollLocation - GetMesh()->GetSocketLocation(FName(TEXT("Pelvis")))) * (1000), FName(TEXT("Pelvis")), true);
+		ServerRagdollPull = FMath::FInterpTo(ServerRagdollPull, 750, DeltaTime, 0.6);
+		float RagdollSpeed = FVector(LastRagdollVelocity.X, LastRagdollVelocity.Y, 0).Size();
+		FName RagdollSocketPullName = RagdollSpeed > 300 ? FName(TEXT("spine_03")) : FName(TEXT("pelvis"));
+		GetMesh()->AddForce((TargetRagdollLocation - GetMesh()->GetSocketLocation(RagdollSocketPullName)) * ServerRagdollPull, RagdollSocketPullName, true);
 	}
 	SetActorLocationAndTargetRotation(bRagdollOnGround ? NewRagdollLoc : TargetRagdollLocation, TargetRagdollRotation);
 }
@@ -880,10 +907,16 @@ void AALSBaseCharacter::OnLandFrictionReset()
 void AALSBaseCharacter::SetEssentialValues(float DeltaTime)
 {
 
-	if (HasAuthority() || IsLocallyControlled())
+	if (GetLocalRole() != ROLE_SimulatedProxy)
 	{
 		ReplicatedCurrentAcceleration = GetCharacterMovement()->GetCurrentAcceleration();
 		ReplicatedControlRotation = GetControlRotation();
+		EasedMaxAcceleration = GetCharacterMovement()->GetMaxAcceleration();
+	}
+
+	else
+	{
+		EasedMaxAcceleration = GetCharacterMovement()->GetMaxAcceleration() != 0 ? GetCharacterMovement()->GetMaxAcceleration() : EasedMaxAcceleration / 2;
 	}
 
 	// Interp AimingRotation to current control rotation for smooth character rotation movement. Decrease InterpSpeed
@@ -914,7 +947,7 @@ void AALSBaseCharacter::SetEssentialValues(float DeltaTime)
 	// The Movement Input Amount is equal to the current acceleration divided by the max acceleration so that
 	// it has a range of 0-1, 1 being the maximum possible amount of input, and 0 beiung none.
 	// If the character has movement input, update the Last Movement Input Rotation.
-	SetMovementInputAmount(ReplicatedCurrentAcceleration.Size() / GetCharacterMovement()->GetMaxAcceleration());
+	SetMovementInputAmount(ReplicatedCurrentAcceleration.Size() / EasedMaxAcceleration);
 	SetHasMovementInput(MovementInputAmount > 0.0f);
 	if (bHasMovementInput)
 	{
@@ -947,18 +980,32 @@ void AALSBaseCharacter::UpdateDynamicMovementSettings(EALSGait AllowedGait)
 {
 	// Get the Current Movement Settings.
 	CurrentMovementSettings = GetTargetMovementSettings();
-
-	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
-	GetCharacterMovement()->MaxWalkSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
-	GetCharacterMovement()->MaxWalkSpeedCrouched = GetCharacterMovement()->MaxWalkSpeed;
+	float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
 
 	// Update the Acceleration, Deceleration, and Ground Friction using the Movement Curve.
 	// This allows for fine control over movement behavior at each speed (May not be suitable for replication).
 	const float MappedSpeed = GetMappedSpeed();
 	const FVector CurveVec = CurrentMovementSettings.MovementCurve->GetVectorValue(MappedSpeed);
-	GetCharacterMovement()->MaxAcceleration = CurveVec.X;
-	GetCharacterMovement()->BrakingDecelerationWalking = CurveVec.Y;
-	GetCharacterMovement()->GroundFriction = CurveVec.Z;
+	
+
+	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
+	if ((GetCharacterMovement()->MaxWalkSpeed != NewMaxSpeed || GetCharacterMovement()->MaxAcceleration != FMath::RoundHalfFromZero(CurveVec.X)))
+	{
+		if (IsLocallyControlled() || HasAuthority())
+		{
+			MyCharacterMovementComponent->SetMaxWalkSpeedAndMaxAcceleration(NewMaxSpeed, FMath::RoundHalfFromZero(CurveVec.X));
+		}
+		else
+		{
+			GetCharacterMovement()->MaxWalkSpeed = NewMaxSpeed;
+			GetCharacterMovement()->MaxAcceleration = FMath::RoundHalfFromZero(CurveVec.X);
+		}
+	}
+
+	if (GetCharacterMovement()->BrakingDecelerationWalking != CurveVec.Y || GetCharacterMovement()->GroundFriction != CurveVec.Z)
+	{
+		MyCharacterMovementComponent->SetBrakingAndGroundFriction(CurveVec.Y, CurveVec.Z);
+	}
 }
 
 void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
@@ -1017,8 +1064,16 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 
 			if (FMath::Abs(RotAmountCurve) > 0.001f)
 			{
-				TargetRotation.Yaw += RotAmountCurve * (DeltaTime / (1.0f / 30.0f));
-				SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, SynchroInterpSpeed));
+				if (GetLocalRole() == ROLE_AutonomousProxy)
+				{
+					TargetRotation.Yaw += RotAmountCurve * (DeltaTime / (1.0f / 30.0f));
+					SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, SynchroInterpSpeed));
+				}
+				else
+				{
+					AddActorWorldRotation(FRotator(0, RotAmountCurve * (DeltaTime / (1.0f / 30.0f)), 0));
+					TargetRotation = GetActorRotation();
+				}
 			}
 		}
 	}
