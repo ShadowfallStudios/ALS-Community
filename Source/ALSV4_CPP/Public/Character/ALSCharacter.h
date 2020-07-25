@@ -20,9 +20,9 @@ class ALSV4_CPP_API AALSCharacter : public AALSBaseCharacter
 {
 	GENERATED_BODY()
 
+public:
 	AALSCharacter(const FObjectInitializer& ObjectInitializer);
 
-public:
 	/** Implement on BP to update held objects */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "HeldObject")
 	void UpdateHeldObject();

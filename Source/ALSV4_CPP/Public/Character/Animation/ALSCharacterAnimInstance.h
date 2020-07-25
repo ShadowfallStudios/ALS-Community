@@ -27,6 +27,7 @@ class ALSV4_CPP_API UALSCharacterAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
+public:
 	void NativeInitializeAnimation() override;
 
 	void NativeUpdateAnimation(float DeltaSeconds) override;
@@ -40,7 +41,6 @@ class ALSV4_CPP_API UALSCharacterAnimInstance : public UAnimInstance
 	UFUNCTION(BlueprintCallable)
 	void PlayDynamicTransition(float ReTriggerDelay, FALSDynamicMontageParams Parameters);
 
-public:
 	UFUNCTION(BlueprintCallable)
 	void OnJumped();
 

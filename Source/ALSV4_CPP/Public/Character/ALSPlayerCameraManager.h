@@ -22,9 +22,9 @@ class ALSV4_CPP_API AALSPlayerCameraManager : public APlayerCameraManager
 {
 	GENERATED_BODY()
 
+public:
 	AALSPlayerCameraManager();
 
-public:
 	UFUNCTION(BlueprintCallable)
 	void OnPossess(AALSBaseCharacter* NewCharacter);
 
