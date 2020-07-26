@@ -54,273 +54,273 @@ public:
 	/** Ragdoll System */
 
 	/** Implement on BP to get required get up animation according to character's state */
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Ragdoll System")
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ALS|Ragdoll System")
 	UAnimMontage* GetGetUpAnimation(bool bRagdollFaceUpState);
 
-	UFUNCTION(BlueprintCallable, Category = "Ragdoll System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Ragdoll System")
 	virtual void RagdollStart();
 
-	UFUNCTION(BlueprintCallable, Category = "Ragdoll System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Ragdoll System")
 	virtual void RagdollEnd();
 
 	/** Character States */
 
-	UFUNCTION(BlueprintCallable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void SetMovementState(EALSMovementState NewState);
 
-	UFUNCTION(BlueprintGetter, Category = "Character States")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Character States")
 	EALSMovementState GetMovementState() const { return MovementState; }
 
-	UFUNCTION(BlueprintGetter, Category = "Character States")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Character States")
 	EALSMovementState GetPrevMovementState() const { return PrevMovementState; }
 
-	UFUNCTION(BlueprintCallable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void SetMovementAction(EALSMovementAction NewAction);
 
-	UFUNCTION(BlueprintGetter, Category = "Character States")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Character States")
 	EALSMovementAction GetMovementAction() const { return MovementAction; }
 
-	UFUNCTION(BlueprintCallable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void SetStance(EALSStance NewStance);
 
-	UFUNCTION(BlueprintGetter, Category = "Character States")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Character States")
 	EALSStance GetStance() const { return Stance; }
 
-	UFUNCTION(BlueprintCallable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void SetGait(EALSGait NewGait);
 
-	UFUNCTION(BlueprintGetter, Category = "Character States")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Character States")
 	EALSGait GetGait() const { return Gait; }
 
-	UFUNCTION(BlueprintGetter, Category = "CharacterStates")
+	UFUNCTION(BlueprintGetter, Category = "ALS|CharacterStates")
 	EALSGait GetDesiredGait() const { return DesiredGait; }
 
-	UFUNCTION(BlueprintCallable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void SetRotationMode(EALSRotationMode NewRotationMode);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
 	void Server_SetRotationMode(EALSRotationMode NewRotationMode);
 
-	UFUNCTION(BlueprintGetter, Category = "Character States")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Character States")
 	EALSRotationMode GetRotationMode() const { return RotationMode; }
 
-	UFUNCTION(BlueprintCallable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void SetViewMode(EALSViewMode NewViewMode);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
 	void Server_SetViewMode(EALSViewMode NewViewMode);
 
-	UFUNCTION(BlueprintGetter, Category = "Character States")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Character States")
 	EALSViewMode GetViewMode() const { return ViewMode; }
 
-	UFUNCTION(BlueprintCallable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void SetOverlayState(EALSOverlayState NewState);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
 	void Server_SetOverlayState(EALSOverlayState NewState);
 
-	UFUNCTION(BlueprintGetter, Category = "Character States")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Character States")
 	EALSOverlayState GetOverlayState() const { return OverlayState; }
 
-	UFUNCTION(BlueprintGetter, Category = "Character States")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Character States")
 	EALSOverlayState SwitchRight() const { return OverlayState; }
 
 	/** Landed, Jumped, Rolling, Mantling and Ragdoll*/
 	/** On Landed*/
-	UFUNCTION(BlueprintCallable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void EventOnLanded();
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
 	void Multicast_OnLanded();
 
 	/** On Jumped*/
-	UFUNCTION(BlueprintCallable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void EventOnJumped();
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
 	void Multicast_OnJumped();
 
 	/** Rolling Montage Play Replication*/
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
 	void Server_PlayMontage(UAnimMontage* montage, float track);
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
 	void Multicast_PlayMontage(UAnimMontage* montage, float track);
 
 	/** Mantling*/
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
 	void Server_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS, EALSMantleType MantleType);
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
 	void Multicast_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS, EALSMantleType MantleType);
 
 	/** Ragolling*/
-	UFUNCTION(BlueprintCallable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void ReplicatedRagdollStart();
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
 	void Server_RagdollStart();
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
 	void Multicast_RagdollStart();
 
-	UFUNCTION(BlueprintCallable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void ReplicatedRagdollEnd();
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
 	void Server_RagdollEnd(FVector CharacterLocation);
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
 	void Multicast_RagdollEnd(FVector CharacterLocation);
 
 	/** Input */
 
-	UFUNCTION(BlueprintGetter, Category = "Input")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Input")
 	EALSStance GetDesiredStance() const { return DesiredStance; }
 
-	UFUNCTION(BlueprintSetter, Category = "Input")
+	UFUNCTION(BlueprintSetter, Category = "ALS|Input")
 	void SetDesiredStance(EALSStance NewStance);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Input")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Input")
 	void Server_SetDesiredStance(EALSStance NewStance);
 
-	UFUNCTION(BlueprintCallable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void SetDesiredGait(EALSGait NewGait);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
 	void Server_SetDesiredGait(EALSGait NewGait);
 	
-	UFUNCTION(BlueprintGetter, Category = "Input")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Input")
 	EALSRotationMode GetDesiredRotationMode() const { return DesiredRotationMode; }
 
-	UFUNCTION(BlueprintSetter, Category = "Input")
+	UFUNCTION(BlueprintSetter, Category = "ALS|Input")
 	void SetDesiredRotationMode(EALSRotationMode NewRotMode);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Character States")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
 	void Server_SetDesiredRotationMode(EALSRotationMode NewRotMode);
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	FVector GetPlayerMovementInput() const;
 
 	/** Rotation System */
 
-	UFUNCTION(BlueprintCallable, Category = "Rotation System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Rotation System")
 	void SetActorLocationAndTargetRotation(FVector NewLocation, FRotator NewRotation);
 
 	/** Mantle System */
 
 	/** Implement on BP to get correct mantle parameter set according to character state */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Mantle System")
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|Mantle System")
 	FALSMantleAsset GetMantleAsset(EALSMantleType MantleType);
 
-	UFUNCTION(BlueprintCallable, Category = "Mantle System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
 	virtual bool MantleCheckGrounded();
 
-	UFUNCTION(BlueprintCallable, Category = "Mantle System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
 	virtual bool MantleCheckFalling();
 
 	/** Movement System */
 
-	UFUNCTION(BlueprintGetter, Category = "Movement System")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Movement System")
 	bool HasMovementInput() const { return bHasMovementInput; }
 
-	UFUNCTION(BlueprintCallable, Category = "Movement System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
 	void SetHasMovementInput(bool bNewHasMovementInput);
 
-	UFUNCTION(BlueprintCallable, Category = "Movement System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
 	FALSMovementSettings GetTargetMovementSettings() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Movement System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
 	EALSGait GetAllowedGait() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Movement States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Movement States")
 	EALSGait GetActualGait(EALSGait AllowedGait) const;
 
-	UFUNCTION(BlueprintCallable, Category = "Movement System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
 	bool CanSprint() const;
 
 	/** BP implementable function that called when Breakfall starts */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Movement System")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Movement System")
 	void OnBreakfall();
 	virtual void OnBreakfall_Implementation();
 
 	/** BP implementable function that called when A Montage starts, e.g. during rolling */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Movement System")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Movement System")
 	void Replicated_PlayMontage(UAnimMontage* montage, float track);
 	virtual void Replicated_PlayMontage_Implementation(UAnimMontage* montage, float track);
 
 	/** Implement on BP to get required roll animation according to character's state */
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Movement System")
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ALS|Movement System")
 	UAnimMontage* GetRollAnimation();
 
 	/** Utility */
 
-	UFUNCTION(BlueprintCallable, Category = "Utility")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Utility")
 	float GetAnimCurveValue(FName CurveName) const;
 
 	/** Implement on BP to draw debug spheres */
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Debug")
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ALS|Debug")
 	void DrawDebugSpheres();
 
 	/** Camera System */
 
-	UFUNCTION(BlueprintGetter, Category = "Camera System")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Camera System")
 	bool IsRightShoulder() const { return bRightShoulder; }
 
-	UFUNCTION(BlueprintCallable, Category = "Camera System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
 	void SetRightShoulder(bool bNewRightShoulder) { bRightShoulder = bNewRightShoulder; }
 
-	UFUNCTION(BlueprintCallable, Category = "Camera System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
 	virtual ECollisionChannel GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius);
 
-	UFUNCTION(BlueprintCallable, Category = "Camera System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
 	virtual FTransform GetThirdPersonPivotTarget();
 
-	UFUNCTION(BlueprintCallable, Category = "Camera System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
 	virtual FVector GetFirstPersonCameraTarget();
 
-	UFUNCTION(BlueprintCallable, Category = "Camera System")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
 	void GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bool& bRightShoulderOut) const;
 
 	/** Essential Information Getters/Setters */
 
-	UFUNCTION(BlueprintGetter, Category = "Essential Information")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	FVector GetAcceleration() const { return Acceleration; }
 
-	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	void SetAcceleration(const FVector& NewAcceleration);
 
-	UFUNCTION(BlueprintGetter, Category = "Essential Information")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	bool IsMoving() const { return bIsMoving; }
 
-	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	void SetIsMoving(bool bNewIsMoving);
 
-	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	FVector GetMovementInput() const;
 
-	UFUNCTION(BlueprintGetter, Category = "Essential Information")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	float GetMovementInputAmount() const { return MovementInputAmount; }
 
-	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	void SetMovementInputAmount(float NewMovementInputAmount);
 
-	UFUNCTION(BlueprintGetter, Category = "Essential Information")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	float GetSpeed() const { return Speed; }
 
-	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	void SetSpeed(float NewSpeed);
 
 	UFUNCTION(BlueprintCallable)
 	FRotator GetAimingRotation() const { return AimingRotation; }
 
-	UFUNCTION(BlueprintGetter, Category = "Essential Information")
+	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	float GetAimYawRate() const { return AimYawRate; }
 
-	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	void SetAimYawRate(float NewAimYawRate);
 
-	UFUNCTION(BlueprintCallable, Category = "Essential Information")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	void GetControlForwardRightVector(FVector& Forward, FVector& Right) const;
 
 protected:
@@ -447,184 +447,202 @@ protected:
 
 	/** Input */
 
-	UPROPERTY(EditAnywhere, replicated, BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditAnywhere, replicated, BlueprintReadWrite, Category = "ALS|Input")
 	EALSRotationMode DesiredRotationMode = EALSRotationMode::LookingDirection;
 
-	UPROPERTY(EditAnywhere, replicated, BlueprintReadWrite, Category = "Input")
+	UPROPERTY(EditAnywhere, replicated, BlueprintReadWrite, Category = "ALS|Input")
 	EALSGait DesiredGait = EALSGait::Running;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, replicated, Category = "Input")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, replicated, Category = "ALS|Input")
 	EALSStance DesiredStance = EALSStance::Standing;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input", BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input", BlueprintReadOnly)
 	float LookUpDownRate = 1.25f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input", BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input", BlueprintReadOnly)
 	float LookLeftRightRate = 1.25f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input", BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input", BlueprintReadOnly)
 	float RollDoubleTapTimeout = 0.3f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Input", BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input", BlueprintReadOnly)
 	float ViewModeSwitchHoldTime = 0.2f;
 
-	UPROPERTY(Category = "Input", BlueprintReadOnly)
+	UPROPERTY(Category = "ALS|Input", BlueprintReadOnly)
 	int32 TimesPressedStance = 0;
 
-	UPROPERTY(Category = "Input", BlueprintReadOnly)
+	UPROPERTY(Category = "ALS|Input", BlueprintReadOnly)
 	bool bBreakFall = false;
 
-	UPROPERTY(Category = "Input", BlueprintReadOnly)
+	UPROPERTY(Category = "ALS|Input", BlueprintReadOnly)
 	bool bSprintHeld = false;
 
 	/** Camera System */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera System")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Camera System")
 	float ThirdPersonFOV = 90.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera System")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Camera System")
 	float FirstPersonFOV = 90.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera System")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Camera System")
 	bool bRightShoulder = false;
 
 	/** State Values */
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State Values", ReplicatedUsing = OnRep_OverlayState)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|State Values", ReplicatedUsing = OnRep_OverlayState)
 	EALSOverlayState OverlayState = EALSOverlayState::Default;
 
 	/** Movement System */
 
-	UPROPERTY(BlueprintReadOnly, Category = "Movement System")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Movement System")
 	FALSMovementSettings CurrentMovementSettings;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement System")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ALS|Movement System")
 	FDataTableRowHandle MovementModel;
 
 	/** Mantle System */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mantle System")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
 	FALSMantleTraceSettings GroundedTraceSettings;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mantle System")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
 	FALSMantleTraceSettings AutomaticTraceSettings;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mantle System")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
 	FALSMantleTraceSettings FallingTraceSettings;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mantle System")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
 	UCurveFloat* MantleTimelineCurve;
 
 	/** Components */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Components")
 	UTimelineComponent* MantleTimeline = nullptr;
 
 	/** Essential Information */
 
-	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	FVector Acceleration;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	bool bIsMoving = false;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	bool bHasMovementInput = false;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	FRotator LastVelocityRotation;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	FRotator LastMovementInputRotation;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	float Speed = 0.0f;
 
-	UPROPERTY(BlueprintReadOnly, replicated, Category = "Essential Information")
+	UPROPERTY(BlueprintReadOnly, replicated, Category = "ALS|Essential Information")
 	float MovementInputAmount = 0.0f;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	float AimYawRate = 0.0f;
 
 	/** Replicated Essential Information*/
 
-	UPROPERTY(BlueprintReadOnly, Category = "Essential Information")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	float EasedMaxAcceleration;
 
-	UPROPERTY(BlueprintReadOnly, replicated, Category = "Essential Information")
+	UPROPERTY(BlueprintReadOnly, replicated, Category = "ALS|Essential Information")
 	FVector ReplicatedCurrentAcceleration;
 
-	UPROPERTY(BlueprintReadOnly, replicated, Category = "Essential Information")
+	UPROPERTY(BlueprintReadOnly, replicated, Category = "ALS|Essential Information")
 	FRotator ReplicatedControlRotation;
 
 	/** State Values */
 
-	UPROPERTY(BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|State Values")
 	EALSMovementState MovementState = EALSMovementState::None;
 
-	UPROPERTY(BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|State Values")
 	EALSMovementState PrevMovementState = EALSMovementState::None;
 
-	UPROPERTY(BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|State Values")
 	EALSMovementAction MovementAction = EALSMovementAction::None;
 
-	UPROPERTY(BlueprintReadOnly, Category = "State Values", ReplicatedUsing = OnRep_RotationMode)
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|State Values", ReplicatedUsing = OnRep_RotationMode)
 	EALSRotationMode RotationMode = EALSRotationMode::LookingDirection;
 
-	UPROPERTY(BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|State Values")
 	EALSGait Gait = EALSGait::Walking;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ALS|State Values")
 	EALSStance Stance = EALSStance::Standing;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State Values", ReplicatedUsing = OnRep_ViewMode)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ALS|State Values", ReplicatedUsing = OnRep_ViewMode)
 	EALSViewMode ViewMode = EALSViewMode::ThirdPerson;
 
 	/** Movement System */
 
-	UPROPERTY(BlueprintReadOnly, Category = "Movement System")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Movement System")
 	FALSMovementStateSettings MovementData;
 
 	/** Rotation System */
 
-	UPROPERTY(BlueprintReadOnly, Category = "Rotation System")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Rotation System")
 	FRotator TargetRotation;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Rotation System")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Rotation System")
 	FRotator InAirRotation;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Rotation System")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Rotation System")
 	float YawOffset = 0.0f;
 
 	/** Mantle System */
 
-	UPROPERTY(BlueprintReadOnly, Category = "Mantle System")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
 	FALSMantleParams MantleParams;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Mantle System")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
 	FALSComponentAndTransform MantleLedgeLS;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Mantle System")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
 	FTransform MantleTarget;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Mantle System")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
 	FTransform MantleActualStartOffset;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Mantle System")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
 	FTransform MantleAnimatedStartOffset;
+
+	/** Breakfall System */
+
+	/** If player hits to the ground with a specified amount of velocity, switch to breakfall state */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Breakfall System")
+	bool bBreakfallOnLand = true;
+
+	/** If player hits to the ground with an amount of velocity greater than specified value, switch to breakfall state */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Breakfall System", meta = (EditCondition = "bBreakfallOnLand"))
+	float BreakfallOnLandVelocity = 600.0f;
 
 	/** Ragdoll System */
 
-	UPROPERTY(BlueprintReadOnly, Category = "Ragdoll System")
+	/** If player hits to the ground with a specified amount of velocity, switch to ragdoll state */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Ragdoll System")
+	bool bRagdollOnLand = false;
+
+	/** If player hits to the ground with an amount of velocity greater than specified value, switch to ragdoll state */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Ragdoll System", meta = (EditCondition = "bRagdollOnLand"))
+	float RagdollOnLandVelocity = 1000.0f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Ragdoll System")
 	bool bRagdollOnGround = false;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Ragdoll System")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Ragdoll System")
 	bool bRagdollFaceUp = false;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Ragdoll System")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Ragdoll System")
 	FVector LastRagdollVelocity;
 
-	UPROPERTY(BlueprintReadOnly, replicated, Category = "Ragdoll System")
+	UPROPERTY(BlueprintReadOnly, replicated, Category = "ALS|Ragdoll System")
 	FVector TargetRagdollLocation;
 
 	/* Server ragdoll pull force storage*/

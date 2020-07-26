@@ -430,13 +430,13 @@ void AALSBaseCharacter::EventOnLanded()
 {
 	const float VelZ = FMath::Abs(GetCharacterMovement()->Velocity.Z);
 
-	if (bHasMovementInput && VelZ >= 600.0f && VelZ <= 1000.0f)
-	{
-		OnBreakfall();
-	}
-	else if (VelZ > 1000.0f)
+	if (bRagdollOnLand && VelZ > RagdollOnLandVelocity)
 	{
 		ReplicatedRagdollStart();
+	}
+	else if (bBreakfallOnLand && bHasMovementInput && VelZ >= BreakfallOnLandVelocity)
+	{
+		OnBreakfall();
 	}
 	else
 	{
