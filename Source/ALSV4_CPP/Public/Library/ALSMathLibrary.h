@@ -22,7 +22,7 @@ UCLASS()
 class ALSV4_CPP_API UALSMathLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-	
+
 public:
 	UFUNCTION(BlueprintCallable)
 	static FTransform MantleComponentLocalToWorld(const FALSComponentAndTransform& CompAndTransform);
@@ -58,5 +58,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	static EALSMovementDirection CalculateQuadrant(EALSMovementDirection Current, float FRThreshold, float FLThreshold, float BRThreshold,
-	                                        float BLThreshold, float Buffer, float Angle);
+	                                               float BLThreshold, float Buffer, float Angle);
 };

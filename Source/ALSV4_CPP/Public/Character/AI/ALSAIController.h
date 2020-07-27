@@ -20,7 +20,7 @@ UCLASS()
 class ALSV4_CPP_API AALSAIController : public AAIController
 {
 	GENERATED_BODY()
-	
+
 public:
 	AALSAIController();
 

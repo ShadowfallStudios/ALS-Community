@@ -17,7 +17,7 @@ UCLASS(Category=ALS, meta=(DisplayName = "Get Random Location"))
 class ALSV4_CPP_API UALS_BTTask_GetRandomLocation : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
-	
+
 public:
 	UALS_BTTask_GetRandomLocation();
 

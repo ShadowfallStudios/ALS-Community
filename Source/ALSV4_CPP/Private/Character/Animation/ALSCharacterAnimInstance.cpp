@@ -277,7 +277,7 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 		SetPelvisIKOffset(DeltaSeconds, FVector::ZeroVector, FVector::ZeroVector);
 		ResetIKOffsets(DeltaSeconds);
 	}
-	else if(CharacterInformation.MovementState != EALSMovementState::Ragdoll)
+	else if (CharacterInformation.MovementState != EALSMovementState::Ragdoll)
 	{
 		// Update all Foot Lock and Foot Offset values when not In Air
 		FVector FootOffsetLTarget;
@@ -291,9 +291,9 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 }
 
 void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableFootIKCurve, FName FootLockCurve,
-                                              FName IKFootBone,
-                                              float& CurFootLockAlpha, FVector& CurFootLockLoc,
-                                              FRotator& CurFootLockRot)
+                                               FName IKFootBone,
+                                               float& CurFootLockAlpha, FVector& CurFootLockLoc,
+                                               FRotator& CurFootLockRot)
 {
 	if (GetCurveValue(EnableFootIKCurve) <= 0.0f)
 	{
@@ -354,7 +354,7 @@ void UALSCharacterAnimInstance::SetFootLockOffsets(float DeltaSeconds, FVector& 
 }
 
 void UALSCharacterAnimInstance::SetPelvisIKOffset(float DeltaSeconds, FVector FootOffsetLTarget,
-                                                 FVector FootOffsetRTarget)
+                                                  FVector FootOffsetRTarget)
 {
 	// Calculate the Pelvis Alpha by finding the average Foot IK weight. If the alpha is 0, clear the offset.
 	FootIKValues.PelvisAlpha =
@@ -391,8 +391,8 @@ void UALSCharacterAnimInstance::ResetIKOffsets(float DeltaSeconds)
 }
 
 void UALSCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableFootIKCurve, FName IKFootBone,
-                                              FName RootBone, FVector& CurLocationTarget, FVector& CurLocationOffset,
-                                              FRotator& CurRotationOffset)
+                                               FName RootBone, FVector& CurLocationTarget, FVector& CurLocationOffset,
+                                               FRotator& CurRotationOffset)
 {
 	// Only update Foot IK offset values if the Foot IK curve has a weight. If it equals 0, clear the offset values.
 	if (GetCurveValue(EnableFootIKCurve) <= 0)
@@ -430,7 +430,7 @@ void UALSCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableF
 		// These values are offset by the nomrmal multiplied by the
 		// foot height to get better behavior on angled surfaces.
 		CurLocationTarget = (ImpactPoint + ImpactNormal * Config.FootHeight) -
-			(IKFootFloorLoc + FVector(0,0, Config.FootHeight));
+			(IKFootFloorLoc + FVector(0, 0, Config.FootHeight));
 
 		// Step 1.2: Calculate the Rotation offset by getting the Atan2 of the Impact Normal.
 		TargetRotOffset.Pitch = -FMath::RadiansToDegrees(FMath::Atan2(ImpactNormal.X, ImpactNormal.Z));
@@ -713,7 +713,8 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 	VelocityClamped.Z = FMath::Clamp(VelocityZ, -4000.0f, -200.0f);
 	VelocityClamped.Normalize();
 
-	const FVector TraceLength = VelocityClamped * FMath::GetMappedRangeValueClamped(FVector2D(0.0f, -4000.0f), FVector2D(50.0f, 2000.0f), VelocityZ);
+	const FVector TraceLength = VelocityClamped * FMath::GetMappedRangeValueClamped(FVector2D(0.0f, -4000.0f), FVector2D(50.0f, 2000.0f),
+	                                                                                VelocityZ);
 
 	UWorld* World = GetWorld();
 	check(World);
@@ -724,7 +725,8 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 	FHitResult HitResult;
 
 	World->SweepSingleByProfile(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity, FName(TEXT("ALS_Character")),
-	                            FCollisionShape::MakeCapsule(CapsuleComp->GetUnscaledCapsuleRadius(), CapsuleComp->GetUnscaledCapsuleHalfHeight()), Params);
+	                            FCollisionShape::MakeCapsule(CapsuleComp->GetUnscaledCapsuleRadius(),
+	                                                         CapsuleComp->GetUnscaledCapsuleHalfHeight()), Params);
 
 	if (Character->GetCharacterMovement()->IsWalkable(HitResult))
 	{
@@ -764,7 +766,7 @@ EALSMovementDirection UALSCharacterAnimInstance::CalculateMovementDirection() co
 }
 
 void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayRateScale, float StartTime,
-                                           bool OverrideCurrent)
+                                            bool OverrideCurrent)
 {
 	// Step 1: Set Turn Angle
 	FRotator Delta = TargetRotation - CharacterInformation.CharacterActorRotation;
