@@ -683,7 +683,7 @@ void AALSBaseCharacter::GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bo
 
 void AALSBaseCharacter::SetAcceleration(const FVector& NewAcceleration)
 {
-	Acceleration = (NewAcceleration != FVector(0, 0, 0) || IsLocallyControlled()) ? NewAcceleration : Acceleration / 2;
+	Acceleration = (NewAcceleration != FVector::ZeroVector || IsLocallyControlled()) ? NewAcceleration : Acceleration / 2;
 	MainAnimInstance->GetCharacterInformationMutable().Acceleration = Acceleration;
 }
 
@@ -691,12 +691,11 @@ void AALSBaseCharacter::RagdollUpdate(float DeltaTime)
 {
 	// Set the Last Ragdoll Velocity.
 	FVector NewRagdollVel = GetMesh()->GetPhysicsLinearVelocity(FName(TEXT("root")));
-	LastRagdollVelocity = (NewRagdollVel != FVector(0, 0, 0) || IsLocallyControlled()) ? NewRagdollVel : LastRagdollVelocity / 2;
-	LastRagdollVelocity = (NewRagdollVel != FVector(0, 0, 0) || IsLocallyControlled()) ? NewRagdollVel : LastRagdollVelocity / 2;
+	LastRagdollVelocity = (NewRagdollVel != FVector::ZeroVector || IsLocallyControlled()) ? NewRagdollVel : LastRagdollVelocity / 2;
+	LastRagdollVelocity = (NewRagdollVel != FVector::ZeroVector || IsLocallyControlled()) ? NewRagdollVel : LastRagdollVelocity / 2;
 
 	// Use the Ragdoll Velocity to scale the ragdoll's joint strength for physical animation.
-	const float SpringValue = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 1000.0f),
-	                                                            FVector2D(0.0f, 25000.0f), LastRagdollVelocity.Size());
+	const float SpringValue = FMath::GetMappedRangeValueClamped({0.0f, 1000.0f}, {0.0f, 25000.0f}, LastRagdollVelocity.Size());
 	GetMesh()->SetAllMotorsAngularDriveParams(SpringValue, 0.0f, 0.0f, false);
 
 	// Disable Gravity if falling faster than -4000 to prevent continual acceleration.
@@ -725,8 +724,7 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 
 	bRagdollFaceUp = PelvisRot.Roll < 0.0f;
 
-	const FRotator TargetRagdollRotation =
-		FRotator(0.0f, bRagdollFaceUp ? PelvisRot.Yaw - 180.0f : PelvisRot.Yaw, 0.0f);
+	const FRotator TargetRagdollRotation(0.0f, bRagdollFaceUp ? PelvisRot.Yaw - 180.0f : PelvisRot.Yaw, 0.0f);
 
 	// Trace downward from the target location to offset the target location,
 	// preventing the lower half of the capsule from going through the floor when the ragdoll is laying on the ground.
@@ -1030,8 +1028,7 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 			if (RotationMode == EALSRotationMode::VelocityDirection)
 			{
 				// Velocity Direction Rotation
-				SmoothCharacterRotation(FRotator(0.0f, LastVelocityRotation.Yaw, 0.0f),
-				                        800.0f, GroundedRotationRate, DeltaTime);
+				SmoothCharacterRotation({0.0f, LastVelocityRotation.Yaw, 0.0f}, 800.0f, GroundedRotationRate, DeltaTime);
 			}
 			else if (RotationMode == EALSRotationMode::LookingDirection)
 			{
@@ -1047,14 +1044,12 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 					const float YawOffsetCurveVal = MainAnimInstance->GetCurveValue(FName(TEXT("YawOffset")));
 					YawValue = AimingRotation.Yaw + YawOffsetCurveVal;
 				}
-				SmoothCharacterRotation(FRotator(0.0f, YawValue, 0.0f),
-				                        500.0f, GroundedRotationRate, DeltaTime);
+				SmoothCharacterRotation({0.0f, YawValue, 0.0f}, 500.0f, GroundedRotationRate, DeltaTime);
 			}
 			else if (RotationMode == EALSRotationMode::Aiming)
 			{
 				const float ControlYaw = AimingRotation.Yaw;
-				SmoothCharacterRotation(FRotator(0.0f, ControlYaw, 0.0f),
-				                        1000.0f, 20.0f, DeltaTime);
+				SmoothCharacterRotation({0.0f, ControlYaw, 0.0f}, 1000.0f, 20.0f, DeltaTime);
 			}
 		}
 		else
@@ -1082,7 +1077,7 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 				}
 				else
 				{
-					AddActorWorldRotation(FRotator(0, RotAmountCurve * (DeltaTime / (1.0f / 30.0f)), 0));
+					AddActorWorldRotation({0, RotAmountCurve * (DeltaTime / (1.0f / 30.0f)), 0});
 					TargetRotation = GetActorRotation();
 				}
 			}
@@ -1094,8 +1089,7 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 
 		if (bHasMovementInput)
 		{
-			SmoothCharacterRotation(FRotator(0.0f, LastMovementInputRotation.Yaw, 0.0f),
-			                        0.0f, 2.0f, DeltaTime);
+			SmoothCharacterRotation({0.0f, LastMovementInputRotation.Yaw, 0.0f}, 0.0f, 2.0f, DeltaTime);
 		}
 	}
 
@@ -1107,14 +1101,12 @@ void AALSBaseCharacter::UpdateInAirRotation(float DeltaTime)
 	if (RotationMode == EALSRotationMode::VelocityDirection || RotationMode == EALSRotationMode::LookingDirection)
 	{
 		// Velocity / Looking Direction Rotation
-		SmoothCharacterRotation(FRotator(0.0f, InAirRotation.Yaw, 0.0f),
-		                        0.0f, 5.0f, DeltaTime);
+		SmoothCharacterRotation({0.0f, InAirRotation.Yaw, 0.0f}, 0.0f, 5.0f, DeltaTime);
 	}
 	else if (RotationMode == EALSRotationMode::Aiming)
 	{
 		// Aiming Rotation
-		SmoothCharacterRotation(FRotator(0.0f, AimingRotation.Yaw, 0.0f),
-		                        0.0f, 15.0f, DeltaTime);
+		SmoothCharacterRotation({0.0f, AimingRotation.Yaw, 0.0f}, 0.0f, 15.0f, DeltaTime);
 		InAirRotation = GetActorRotation();
 	}
 }
@@ -1127,12 +1119,11 @@ void AALSBaseCharacter::MantleStart(float MantleHeight, const FALSComponentAndTr
 	MantleParams.AnimMontage = MantleAsset.AnimMontage;
 	MantleParams.PositionCorrectionCurve = MantleAsset.PositionCorrectionCurve;
 	MantleParams.StartingOffset = MantleAsset.StartingOffset;
-	MantleParams.StartingPosition =
-		FMath::GetMappedRangeValueClamped(FVector2D(MantleAsset.LowHeight, MantleAsset.HighHeight),
-		                                  FVector2D(MantleAsset.LowStartPosition, MantleAsset.HighStartPosition), MantleHeight);
-	MantleParams.PlayRate =
-		FMath::GetMappedRangeValueClamped(FVector2D(MantleAsset.LowHeight, MantleAsset.HighHeight),
-		                                  FVector2D(MantleAsset.LowPlayRate, MantleAsset.HighPlayRate), MantleHeight);
+	MantleParams.StartingPosition = FMath::GetMappedRangeValueClamped({MantleAsset.LowHeight, MantleAsset.HighHeight},
+	                                                                  {MantleAsset.LowStartPosition, MantleAsset.HighStartPosition},
+	                                                                  MantleHeight);
+	MantleParams.PlayRate = FMath::GetMappedRangeValueClamped({MantleAsset.LowHeight, MantleAsset.HighHeight},
+	                                                          {MantleAsset.LowPlayRate, MantleAsset.HighPlayRate}, MantleHeight);
 
 	// Step 2: Convert the world space target to the mantle component's local space for use in moving objects.
 	MantleLedgeLS.Component = MantleLedgeWS.Component;
@@ -1298,7 +1289,7 @@ void AALSBaseCharacter::MantleUpdate(float BlendIn)
 		UKismetMathLibrary::TLerp(MantleActualStartOffset, TargetVtTransform, ZCorrectionAlpha);
 
 	const FTransform ResultTransform(HzLerpResult.GetRotation(),
-	                                 FVector(HzLerpResult.GetLocation().X, HzLerpResult.GetLocation().Y, VtLerpResult.GetLocation().Z),
+	                                 {HzLerpResult.GetLocation().X, HzLerpResult.GetLocation().Y, VtLerpResult.GetLocation().Z},
 	                                 FVector::OneVector);
 
 	// Blend from the currently blending transforms into the final mantle target using the X
@@ -1333,18 +1324,15 @@ float AALSBaseCharacter::GetMappedSpeed() const
 
 	if (Speed > LocRunSpeed)
 	{
-		return FMath::GetMappedRangeValueClamped(FVector2D(LocRunSpeed, LocSprintSpeed),
-		                                         FVector2D(2.0f, 3.0f), Speed);
+		return FMath::GetMappedRangeValueClamped({LocRunSpeed, LocSprintSpeed}, {2.0f, 3.0f}, Speed);
 	}
 
 	if (Speed > LocWalkSpeed)
 	{
-		return FMath::GetMappedRangeValueClamped(FVector2D(LocWalkSpeed, LocRunSpeed),
-		                                         FVector2D(1.0f, 2.0f), Speed);
+		return FMath::GetMappedRangeValueClamped({LocWalkSpeed, LocRunSpeed}, {1.0f, 2.0f}, Speed);
 	}
 
-	return FMath::GetMappedRangeValueClamped(FVector2D(0.0f, LocWalkSpeed),
-	                                         FVector2D(0.0f, 1.0f), Speed);
+	return FMath::GetMappedRangeValueClamped({0.0f, LocWalkSpeed}, {0.0f, 1.0f}, Speed);
 }
 
 EALSGait AALSBaseCharacter::GetAllowedGait() const
@@ -1420,8 +1408,7 @@ float AALSBaseCharacter::CalculateGroundedRotationRate() const
 	const float MappedSpeedVal = GetMappedSpeed();
 	const float CurveVal =
 		CurrentMovementSettings.RotationRateCurve->GetFloatValue(MappedSpeedVal);
-	const float ClampedAimYawRate = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 300.0f),
-	                                                                  FVector2D(1.0f, 3.0f), AimYawRate);
+	const float ClampedAimYawRate = FMath::GetMappedRangeValueClamped({0.0f, 300.0f}, {1.0f, 3.0f}, AimYawRate);
 	return CurveVal * ClampedAimYawRate;
 }
 
@@ -1436,8 +1423,7 @@ void AALSBaseCharacter::LimitRotation(float AimYawMin, float AimYawMax, float In
 	{
 		const float ControlRotYaw = AimingRotation.Yaw;
 		const float TargetYaw = ControlRotYaw + (RangeVal > 0.0f ? AimYawMin : AimYawMax);
-		SmoothCharacterRotation(FRotator(0.0f, TargetYaw, 0.0f),
-		                        0.0f, InterpSpeed, DeltaTime);
+		SmoothCharacterRotation({0.0f, TargetYaw, 0.0f}, 0.0f, InterpSpeed, DeltaTime);
 	}
 }
 

@@ -196,9 +196,7 @@ void UALSCharacterAnimInstance::UpdateAimingValues(float DeltaSeconds)
 	if (CharacterInformation.RotationMode != EALSRotationMode::VelocityDirection)
 	{
 		// Clamp the Aiming Pitch Angle to a range of 1 to 0 for use in the vertical aim sweeps.
-		AimingValues.AimSweepTime = FMath::GetMappedRangeValueClamped(FVector2D(-90.0f, 90.0f),
-		                                                              FVector2D(1.0f, 0.0f),
-		                                                              AimingValues.AimingAngle.Y);
+		AimingValues.AimSweepTime = FMath::GetMappedRangeValueClamped({-90.0f, 90.0f}, {1.0f, 0.0f}, AimingValues.AimingAngle.Y);
 
 		// Use the Aiming Yaw Angle divided by the number of spine+pelvis bones to get the amount of spine rotation
 		// needed to remain facing the camera direction.
@@ -212,8 +210,7 @@ void UALSCharacterAnimInstance::UpdateAimingValues(float DeltaSeconds)
 		// This value is used in the aim offset behavior to make the character look toward the Movement Input.
 		Delta = CharacterInformation.MovementInput.ToOrientationRotator() - CharacterInformation.CharacterActorRotation;
 		Delta.Normalize();
-		const float InterpTarget = FMath::GetMappedRangeValueClamped(FVector2D(-180.0f, 180.0f),
-		                                                             FVector2D(0.0f, 1.0f), Delta.Yaw);
+		const float InterpTarget = FMath::GetMappedRangeValueClamped({-180.0f, 180.0f}, {0.0f, 1.0f}, Delta.Yaw);
 
 		AimingValues.InputYawOffsetTime = FMath::FInterpTo(AimingValues.InputYawOffsetTime, InterpTarget,
 		                                                   DeltaSeconds, Config.InputYawOffsetInterpSpeed);
@@ -222,14 +219,11 @@ void UALSCharacterAnimInstance::UpdateAimingValues(float DeltaSeconds)
 	// Separate the Aiming Yaw Angle into 3 separate Yaw Times. These 3 values are used in the Aim Offset behavior
 	// to improve the blending of the aim offset when rotating completely around the character.
 	// This allows you to keep the aiming responsive but still smoothly blend from left to right or right to left.
-	AimingValues.LeftYawTime = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 180.0f),
-	                                                             FVector2D(0.5f, 0.0f),
+	AimingValues.LeftYawTime = FMath::GetMappedRangeValueClamped({0.0f, 180.0f}, {0.5f, 0.0f},
 	                                                             FMath::Abs(AimingValues.SmoothedAimingAngle.X));
-	AimingValues.RightYawTime = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 180.0f),
-	                                                              FVector2D(0.5f, 1.0f),
+	AimingValues.RightYawTime = FMath::GetMappedRangeValueClamped({0.0f, 180.0f}, {0.5f, 1.0f},
 	                                                              FMath::Abs(AimingValues.SmoothedAimingAngle.X));
-	AimingValues.ForwardYawTime = FMath::GetMappedRangeValueClamped(FVector2D(-180.0f, 180.0f),
-	                                                                FVector2D(0.0f, 1.0f),
+	AimingValues.ForwardYawTime = FMath::GetMappedRangeValueClamped({-180.0f, 180.0f}, {0.0f, 1.0f},
 	                                                                AimingValues.SmoothedAimingAngle.X);
 }
 
@@ -456,9 +450,9 @@ void UALSCharacterAnimInstance::RotateInPlaceCheck()
 	// This makes the character rotate faster when moving the camera faster.
 	if (Grounded.bRotateL || Grounded.bRotateR)
 	{
-		Grounded.RotateRate = FMath::GetMappedRangeValueClamped(
-			FVector2D(RotateInPlace.AimYawRateMinRange, RotateInPlace.AimYawRateMaxRange),
-			FVector2D(RotateInPlace.MinPlayRate, RotateInPlace.MaxPlayRate), CharacterInformation.AimYawRate);
+		Grounded.RotateRate = FMath::GetMappedRangeValueClamped({RotateInPlace.AimYawRateMinRange, RotateInPlace.AimYawRateMaxRange},
+		                                                        {RotateInPlace.MinPlayRate, RotateInPlace.MaxPlayRate},
+		                                                        CharacterInformation.AimYawRate);
 	}
 }
 
@@ -475,10 +469,9 @@ void UALSCharacterAnimInstance::TurnInPlaceCheck(float DeltaSeconds)
 	}
 
 	TurnInPlaceValues.ElapsedDelayTime += DeltaSeconds;
-	const float ClampedAimAngle = FMath::GetMappedRangeValueClamped(
-		FVector2D(TurnInPlaceValues.TurnCheckMinAngle, 180.0f),
-		FVector2D(TurnInPlaceValues.MinAngleDelay, TurnInPlaceValues.MaxAngleDelay),
-		AimingValues.AimingAngle.X);
+	const float ClampedAimAngle = FMath::GetMappedRangeValueClamped({TurnInPlaceValues.TurnCheckMinAngle, 180.0f},
+	                                                                {TurnInPlaceValues.MinAngleDelay, TurnInPlaceValues.MaxAngleDelay},
+	                                                                AimingValues.AimingAngle.X);
 
 	// Step 2: Check if the Elapsed Delay time exceeds the set delay (mapped to the turn angle range). If so, trigger a Turn In Place.
 	if (TurnInPlaceValues.ElapsedDelayTime > ClampedAimAngle)
@@ -598,7 +591,7 @@ void UALSCharacterAnimInstance::UpdateRagdollValues()
 {
 	// Scale the Flail Rate by the velocity length. The faster the ragdoll moves, the faster the character will flail.
 	const float VelocityLength = GetOwningComponent()->GetPhysicsLinearVelocity(FName(TEXT("root"))).Size();
-	FlailRate = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 1000.0f), FVector2D(0.0f, 1.0f), VelocityLength);
+	FlailRate = FMath::GetMappedRangeValueClamped({0.0f, 1000.0f}, {0.0f, 1.0f}, VelocityLength);
 }
 
 float UALSCharacterAnimInstance::GetAnimCurveClamped(const FName& Name, float Bias, float ClampMin, float ClampMax) const
@@ -713,8 +706,7 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 	VelocityClamped.Z = FMath::Clamp(VelocityZ, -4000.0f, -200.0f);
 	VelocityClamped.Normalize();
 
-	const FVector TraceLength = VelocityClamped * FMath::GetMappedRangeValueClamped(FVector2D(0.0f, -4000.0f), FVector2D(50.0f, 2000.0f),
-	                                                                                VelocityZ);
+	const FVector TraceLength = VelocityClamped * FMath::GetMappedRangeValueClamped({0.0f, -4000.0f}, {50.0f, 2000.0f}, VelocityZ);
 
 	UWorld* World = GetWorld();
 	check(World);
@@ -828,8 +820,7 @@ void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayR
 void UALSCharacterAnimInstance::OnJumped()
 {
 	InAir.bJumped = true;
-	InAir.JumpPlayRate = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 600.0f),
-	                                                       FVector2D(1.2f, 1.5f), CharacterInformation.Speed);
+	InAir.JumpPlayRate = FMath::GetMappedRangeValueClamped({0.0f, 600.0f}, {1.2f, 1.5f}, CharacterInformation.Speed);
 
 	UWorld* World = GetWorld();
 	check(World);
