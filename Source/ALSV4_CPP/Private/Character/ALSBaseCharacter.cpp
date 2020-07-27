@@ -1050,7 +1050,7 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 		{
 			// Not Moving
 
-			if (ViewMode == EALSViewMode::ThirdPerson && RotationMode == EALSRotationMode::Aiming ||
+			if ((ViewMode == EALSViewMode::ThirdPerson && RotationMode == EALSRotationMode::Aiming) ||
 				ViewMode == EALSViewMode::FirstPerson)
 			{
 				LimitRotation(-100.0f, 100.0f, 20.0f, DeltaTime);
