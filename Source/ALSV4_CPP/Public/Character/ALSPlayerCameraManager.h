@@ -1,4 +1,10 @@
-// Copyright (C) 2020, Doga Can Yanikoglu
+// Project:         Advanced Locomotion System V4 on C++
+// Copyright:       Copyright (C) 2020 Doğa Can Yanıkoğlu
+// License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
+// Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
+// Original Author: Doğa Can Yanıkoğlu
+// Contributors:    
+
 
 #pragma once
 
@@ -16,9 +22,9 @@ class ALSV4_CPP_API AALSPlayerCameraManager : public APlayerCameraManager
 {
 	GENERATED_BODY()
 
+public:
 	AALSPlayerCameraManager();
 
-public:
 	UFUNCTION(BlueprintCallable)
 	void OnPossess(AALSBaseCharacter* NewCharacter);
 

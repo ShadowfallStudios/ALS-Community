@@ -1,7 +1,12 @@
-// Copyright (C) 2020, Doga Can Yanikoglu
-// @author: Jens Bjarne Myhre
+// Project:         Advanced Locomotion System V4 on C++
+// Copyright:       Copyright (C) 2020 Doğa Can Yanıkoğlu
+// License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
+// Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
+// Original Author: Jens Bjarne Myhre
+// Contributors:    
 
 #include "Character/AI/ALSAIController.h"
+#include "UObject/ConstructorHelpers.h"
 
 AALSAIController::AALSAIController()
 {

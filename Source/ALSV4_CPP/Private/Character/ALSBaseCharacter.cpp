@@ -1,4 +1,10 @@
-// Copyright (C) 2020, Doga Can Yanikoglu
+// Project:         Advanced Locomotion System V4 on C++
+// Copyright:       Copyright (C) 2020 Doğa Can Yanıkoğlu
+// License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
+// Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
+// Original Author: Doğa Can Yanıkoğlu
+// Contributors:    senfkorn92
+
 
 
 #include "Character/ALSBaseCharacter.h"
@@ -424,13 +430,13 @@ void AALSBaseCharacter::EventOnLanded()
 {
 	const float VelZ = FMath::Abs(GetCharacterMovement()->Velocity.Z);
 
-	if (bHasMovementInput && VelZ >= 600.0f && VelZ <= 1000.0f)
-	{
-		OnBreakfall();
-	}
-	else if (VelZ > 1000.0f)
+	if (bRagdollOnLand && VelZ > RagdollOnLandVelocity)
 	{
 		ReplicatedRagdollStart();
+	}
+	else if (bBreakfallOnLand && bHasMovementInput && VelZ >= BreakfallOnLandVelocity)
+	{
+		OnBreakfall();
 	}
 	else
 	{
