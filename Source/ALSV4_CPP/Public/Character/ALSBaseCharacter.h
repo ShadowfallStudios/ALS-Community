@@ -63,6 +63,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Ragdoll System")
 	virtual void RagdollEnd();
 
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "ALS|Ragdoll System")
+	void Server_SetMeshLocationDuringRagdoll(FVector MeshLocation);
+
 	/** Character States */
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")

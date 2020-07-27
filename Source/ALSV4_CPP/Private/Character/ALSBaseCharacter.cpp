@@ -210,8 +210,10 @@ void AALSBaseCharacter::Tick(float DeltaTime)
 
 void AALSBaseCharacter::RagdollStart()
 {
-	/** Reset TargetRagdollLocation and ServerRagdollPull variable
+	/** When Networked, disables replicate movement reset TargetRagdollLocation and ServerRagdollPull variable
 	and if the host is a dedicated server, change character mesh optimisation option to avoid z-location bug*/
+	SetReplicateMovement(false);
+
 	if (UKismetSystemLibrary::IsDedicatedServer(GetWorld()))
 	{
 		DefVisBasedTickOp = GetMesh()->VisibilityBasedAnimTickOption;
@@ -232,9 +234,6 @@ void AALSBaseCharacter::RagdollStart()
 
 	// Step 3: Stop any active montages.
 	MainAnimInstance->Montage_Stop(0.2f);
-
-	//When Networked, disables replicate movement
-	SetReplicateMovement(false);
 }
 
 void AALSBaseCharacter::RagdollEnd()
@@ -275,6 +274,11 @@ void AALSBaseCharacter::RagdollEnd()
 	GetMesh()->SetCollisionObjectType(ECC_Pawn);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetMesh()->SetAllBodiesSimulatePhysics(false);
+}
+
+void AALSBaseCharacter::Server_SetMeshLocationDuringRagdoll_Implementation(FVector MeshLocation)
+{
+	TargetRagdollLocation = MeshLocation;
 }
 
 void AALSBaseCharacter::SetMovementState(const EALSMovementState NewState)
@@ -706,10 +710,14 @@ void AALSBaseCharacter::RagdollUpdate(float DeltaTime)
 
 void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 {
-	if (HasAuthority())
+	if (IsLocallyControlled())
 	{
 		// Set the pelvis as the target location.
 		TargetRagdollLocation = GetMesh()->GetSocketLocation(FName(TEXT("Pelvis")));
+		if (!HasAuthority())
+		{
+			Server_SetMeshLocationDuringRagdoll(TargetRagdollLocation);
+		}
 	}
 
 	// Determine wether the ragdoll is facing up or down and set the target rotation accordingly.
@@ -740,7 +748,7 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 		const float ImpactDistZ = FMath::Abs(HitResult.ImpactPoint.Z - HitResult.TraceStart.Z);
 		NewRagdollLoc.Z += GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - ImpactDistZ + 2.0f;
 	}
-	if (!HasAuthority())
+	if (!IsLocallyControlled())
 	{
 		ServerRagdollPull = FMath::FInterpTo(ServerRagdollPull, 750, DeltaTime, 0.6);
 		float RagdollSpeed = FVector(LastRagdollVelocity.X, LastRagdollVelocity.Y, 0).Size();
