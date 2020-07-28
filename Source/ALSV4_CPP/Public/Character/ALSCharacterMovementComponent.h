@@ -14,7 +14,7 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 {
 	GENERATED_UCLASS_BODY()
 
-		class FSavedMove_My : public FSavedMove_Character
+	class FSavedMove_My : public FSavedMove_Character
 	{
 	public:
 
@@ -23,7 +23,8 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 		virtual bool CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* Character, float MaxDelta) const override;
 		virtual void Clear() override;
 		virtual uint8 GetCompressedFlags() const override;
-		virtual void SetMoveFor(ACharacter* Character, float InDeltaTime, FVector const& NewAccel, class FNetworkPredictionData_Client_Character& ClientData) override;
+		virtual void SetMoveFor(ACharacter* Character, float InDeltaTime, FVector const& NewAccel,
+		                        class FNetworkPredictionData_Client_Character& ClientData) override;
 		virtual void PrepMoveFor(class ACharacter* Character) override;
 
 		//Walk Speed Update
@@ -66,4 +67,3 @@ public:
 	UFUNCTION(reliable, Server, WithValidation)
 	void Server_SetMaxWalkSpeedAndMaxAcceleration(const float NewMaxWalkSpeed, const float NewMaxAcceleration);
 };
-

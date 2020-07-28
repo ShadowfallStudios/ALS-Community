@@ -24,13 +24,13 @@ public:
 	AALSCharacter(const FObjectInitializer& ObjectInitializer);
 
 	/** Implement on BP to update held objects */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "HeldObject")
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|HeldObject")
 	void UpdateHeldObject();
 
-	UFUNCTION(BlueprintCallable, Category = "HeldObject")
+	UFUNCTION(BlueprintCallable, Category = "ALS|HeldObject")
 	void ClearHeldObject();
 
-	UFUNCTION(BlueprintCallable, Category = "HeldObject")
+	UFUNCTION(BlueprintCallable, Category = "ALS|HeldObject")
 	void AttachToHand(UStaticMesh* NewStaticMesh, USkeletalMesh* NewSkeletalMesh,
 	                  class UClass* NewAnimClass, bool bLeftHand, FVector Offset);
 
@@ -57,7 +57,7 @@ protected:
 	virtual void MantleEnd() override;
 
 	/** Implement on BP to update animation states of held objects */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "HeldObject")
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|HeldObject")
 	void UpdateHeldObjectAnimations();
 
 public:

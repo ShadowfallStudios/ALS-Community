@@ -68,7 +68,7 @@ void AALSPlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, floa
 }
 
 FVector AALSPlayerCameraManager::CalculateAxisIndependentLag(FVector CurrentLocation, FVector TargetLocation,
-                                                            FRotator CameraRotation, FVector LagSpeeds, float DeltaTime)
+                                                             FRotator CameraRotation, FVector LagSpeeds, float DeltaTime)
 {
 	CameraRotation.Roll = 0.0f;
 	CameraRotation.Pitch = 0.0f;
@@ -89,7 +89,7 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 	{
 		return false;
 	}
-	
+
 	// Step 1: Get Camera Parameters from CharacterBP via the Camera Interface
 	const FTransform& PivotTarget = ControlledCharacter->GetThirdPersonPivotTarget();
 	const FVector& FPTarget = ControlledCharacter->GetFirstPersonCameraTarget();
