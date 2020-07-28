@@ -35,7 +35,7 @@ public:
 	AALSBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION(BlueprintCallable, Category= "Movement")
-		FORCEINLINE class UALSCharacterMovementComponent* GetMyMovementComponent() const { return MyCharacterMovementComponent; }
+	FORCEINLINE class UALSCharacterMovementComponent* GetMyMovementComponent() const { return MyCharacterMovementComponent; }
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -192,7 +192,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
 	void Server_SetDesiredGait(EALSGait NewGait);
-	
+
 	UFUNCTION(BlueprintGetter, Category = "ALS|Input")
 	EALSRotationMode GetDesiredRotationMode() const { return DesiredRotationMode; }
 
@@ -376,7 +376,7 @@ protected:
 	virtual void MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS, EALSMantleType MantleType);
 
 	virtual bool MantleCheck(const FALSMantleTraceSettings& TraceSettings,
-		EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::ForOneFrame);
+	                         EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::ForOneFrame);
 
 	UFUNCTION()
 	virtual void MantleUpdate(float BlendIn);

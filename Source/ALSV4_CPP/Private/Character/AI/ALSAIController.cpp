@@ -10,7 +10,8 @@
 
 AALSAIController::AALSAIController()
 {
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BehaviourDefault(TEXT("/ALSV4_CPP/AdvancedLocomotionV4/Blueprints/CharacterLogic/AI/ALS_BT_AICharacter"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BehaviourDefault(
+		TEXT("/ALSV4_CPP/AdvancedLocomotionV4/Blueprints/CharacterLogic/AI/ALS_BT_AICharacter"));
 
 	Behaviour = BehaviourDefault.Object;
 }
@@ -19,7 +20,7 @@ void AALSAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	if(Behaviour && InPawn)
+	if (Behaviour && InPawn)
 	{
 		RunBehaviorTree(Behaviour);
 	}

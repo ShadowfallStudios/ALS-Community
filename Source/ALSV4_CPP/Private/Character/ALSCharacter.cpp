@@ -11,7 +11,7 @@
 #include "Character/AI/ALSAIController.h"
 
 AALSCharacter::AALSCharacter(const FObjectInitializer& ObjectInitializer)
-	:Super(ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	HeldObjectRoot = CreateDefaultSubobject<USceneComponent>(TEXT("HeldObjectRoot"));
 	HeldObjectRoot->SetupAttachment(GetMesh());
@@ -33,7 +33,7 @@ void AALSCharacter::ClearHeldObject()
 }
 
 void AALSCharacter::AttachToHand(UStaticMesh* NewStaticMesh, USkeletalMesh* NewSkeletalMesh, UClass* NewAnimClass,
-                                bool bLeftHand, FVector Offset)
+                                 bool bLeftHand, FVector Offset)
 {
 	ClearHeldObject();
 
@@ -125,7 +125,7 @@ void AALSCharacter::BeginPlay()
 }
 
 void AALSCharacter::MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
-                               EALSMantleType MantleType)
+                                EALSMantleType MantleType)
 {
 	Super::MantleStart(MantleHeight, MantleLedgeWS, MantleType);
 	if (MantleType != EALSMantleType::LowMantle)

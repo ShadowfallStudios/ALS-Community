@@ -20,9 +20,9 @@ class ALSV4_CPP_API UALSNotifyStateOverlayOverride : public UAnimNotifyState
 {
 	GENERATED_BODY()
 
-	virtual void NotifyBegin(USkeletalMeshComponent * MeshComp, UAnimSequenceBase * Animation, float TotalDuration);
-	
-	virtual void NotifyEnd(USkeletalMeshComponent * MeshComp, UAnimSequenceBase * Animation);
+	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration);
+
+	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation);
 
 	FString GetNotifyName_Implementation() const override;
 

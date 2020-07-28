@@ -5,7 +5,7 @@
 #include "Character/ALSBaseCharacter.h"
 
 UALSCharacterMovementComponent::UALSCharacterMovementComponent(const FObjectInitializer& ObjectInitializer)
-	:Super(ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 }
 
@@ -30,7 +30,7 @@ void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FV
 	}
 }
 
-void UALSCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags)//Client only
+void UALSCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags) //Client only
 {
 	Super::UpdateFromCompressedFlags(Flags);
 
@@ -72,7 +72,8 @@ uint8 UALSCharacterMovementComponent::FSavedMove_My::GetCompressedFlags() const
 	return Result;
 }
 
-bool UALSCharacterMovementComponent::FSavedMove_My::CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* Character, float MaxDelta) const
+bool UALSCharacterMovementComponent::FSavedMove_My::CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* Character,
+                                                                   float MaxDelta) const
 {
 	//Set which moves can be combined together. This will depend on the bit flags that are used.	
 	if (bSavedRequestMaxWalkSpeedChange != ((FSavedMove_My*)&NewMove)->bSavedRequestMaxWalkSpeedChange)
@@ -83,7 +84,8 @@ bool UALSCharacterMovementComponent::FSavedMove_My::CanCombineWith(const FSavedM
 	return Super::CanCombineWith(NewMove, Character, MaxDelta);
 }
 
-void UALSCharacterMovementComponent::FSavedMove_My::SetMoveFor(ACharacter* Character, float InDeltaTime, FVector const& NewAccel, class FNetworkPredictionData_Client_Character& ClientData)
+void UALSCharacterMovementComponent::FSavedMove_My::SetMoveFor(ACharacter* Character, float InDeltaTime, FVector const& NewAccel,
+                                                               class FNetworkPredictionData_Client_Character& ClientData)
 {
 	Super::SetMoveFor(Character, InDeltaTime, NewAccel, ClientData);
 
@@ -101,10 +103,10 @@ void UALSCharacterMovementComponent::FSavedMove_My::PrepMoveFor(class ACharacter
 	UALSCharacterMovementComponent* CharacterMovement = Cast<UALSCharacterMovementComponent>(Character->GetCharacterMovement());
 }
 
-UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::FNetworkPredictionData_Client_My(const UCharacterMovementComponent& ClientMovement)
+UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::FNetworkPredictionData_Client_My(
+	const UCharacterMovementComponent& ClientMovement)
 	: Super(ClientMovement)
 {
-
 }
 
 FSavedMovePtr UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::AllocateNewMove()
@@ -113,7 +115,8 @@ FSavedMovePtr UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::
 }
 
 //Set Max Walk Speed RPC to transfer the current Max Walk Speed from the Owning Client to the Server
-bool UALSCharacterMovementComponent::Server_SetMaxWalkSpeedAndMaxAcceleration_Validate(const float NewMaxWalkSpeed, const float NewMaxAcceleration)
+bool UALSCharacterMovementComponent::Server_SetMaxWalkSpeedAndMaxAcceleration_Validate(
+	const float NewMaxWalkSpeed, const float NewMaxAcceleration)
 {
 	if (NewMaxWalkSpeed < 0.f || NewMaxWalkSpeed > 2000.f)
 		return false;
@@ -121,7 +124,8 @@ bool UALSCharacterMovementComponent::Server_SetMaxWalkSpeedAndMaxAcceleration_Va
 		return true;
 }
 
-void UALSCharacterMovementComponent::Server_SetMaxWalkSpeedAndMaxAcceleration_Implementation(const float NewMaxWalkSpeed, const float NewMaxAcceleration)
+void UALSCharacterMovementComponent::Server_SetMaxWalkSpeedAndMaxAcceleration_Implementation(
+	const float NewMaxWalkSpeed, const float NewMaxAcceleration)
 {
 	MyNewMaxWalkSpeed = NewMaxWalkSpeed;
 	MyNewMaxAcceleration = NewMaxAcceleration;
