@@ -148,7 +148,7 @@ private:
 
 public:
 	FALSMovementDirection() {}
-	FALSMovementDirection(const EALSRotationMode InitialRotationMode) { *this = InitialRotationMode; }
+	FALSMovementDirection(const EALSMovementDirection InitialMovementDirection) { *this = InitialMovementDirection; }
 
 	FORCEINLINE const bool& Forward() const { return Forward_; }
 	FORCEINLINE const bool& Right() const { return Right_; }

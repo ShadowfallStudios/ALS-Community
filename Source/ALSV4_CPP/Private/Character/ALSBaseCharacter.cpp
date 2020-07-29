@@ -123,13 +123,13 @@ void AALSBaseCharacter::BeginPlay()
 
 	// Once, force set variables in anim bp. This ensures anim instance & character starts synchronized
 	FALSAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
-	AnimData.Gait = DesiredGait;
-	AnimData.Stance = DesiredStance;
-	AnimData.RotationMode = DesiredRotationMode;
+	MainAnimInstance->Gait = DesiredGait;
+	MainAnimInstance->Stance = DesiredStance;
+	MainAnimInstance->RotationMode = DesiredRotationMode;
 	AnimData.ViewMode = ViewMode;
-	AnimData.OverlayState = OverlayState;
+	MainAnimInstance->OverlayState = OverlayState;
 	AnimData.PrevMovementState = PrevMovementState;
-	AnimData.MovementState = MovementState;
+	MainAnimInstance->MovementState = MovementState;
 
 	// Update states to use the initial desired values.
 	SetGait(DesiredGait);
@@ -288,7 +288,7 @@ void AALSBaseCharacter::SetMovementState(const EALSMovementState NewState)
 		MovementState = NewState;
 		FALSAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
 		AnimData.PrevMovementState = PrevMovementState;
-		AnimData.MovementState = MovementState;
+		MainAnimInstance->MovementState = MovementState;
 		OnMovementStateChanged(PrevMovementState);
 	}
 }
@@ -299,7 +299,7 @@ void AALSBaseCharacter::SetMovementAction(const EALSMovementAction NewAction)
 	{
 		const EALSMovementAction Prev = MovementAction;
 		MovementAction = NewAction;
-		MainAnimInstance->GetCharacterInformationMutable().MovementAction = MovementAction;
+		MainAnimInstance->MovementAction = MovementAction;
 		OnMovementActionChanged(Prev);
 	}
 }
@@ -310,7 +310,7 @@ void AALSBaseCharacter::SetStance(const EALSStance NewStance)
 	{
 		const EALSStance Prev = Stance;
 		Stance = NewStance;
-		MainAnimInstance->GetCharacterInformationMutable().Stance = Stance;
+		MainAnimInstance->Stance = Stance;
 		OnStanceChanged(Prev);
 	}
 }
@@ -320,7 +320,7 @@ void AALSBaseCharacter::SetGait(const EALSGait NewGait)
 	if (Gait != NewGait)
 	{
 		Gait = NewGait;
-		MainAnimInstance->GetCharacterInformationMutable().Gait = Gait;
+		MainAnimInstance->Gait = Gait;
 	}
 }
 
@@ -828,7 +828,7 @@ void AALSBaseCharacter::OnStanceChanged(const EALSStance PreviousStance)
 
 void AALSBaseCharacter::OnRotationModeChanged(EALSRotationMode PreviousRotationMode)
 {
-	MainAnimInstance->GetCharacterInformationMutable().RotationMode = RotationMode;
+	MainAnimInstance->RotationMode = RotationMode;
 	if (RotationMode == EALSRotationMode::VelocityDirection && ViewMode == EALSViewMode::FirstPerson)
 	{
 		// If the new rotation mode is Velocity Direction and the character is in First Person,
@@ -861,7 +861,7 @@ void AALSBaseCharacter::OnViewModeChanged(const EALSViewMode PreviousViewMode)
 
 void AALSBaseCharacter::OnOverlayStateChanged(const EALSOverlayState PreviousState)
 {
-	MainAnimInstance->GetCharacterInformationMutable().OverlayState = OverlayState;
+	MainAnimInstance->OverlayState = OverlayState;
 }
 
 void AALSBaseCharacter::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
