@@ -1076,7 +1076,7 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 			{
 				if (GetLocalRole() == ROLE_AutonomousProxy)
 				{
-					TargetRotation.Yaw += RotAmountCurve * (DeltaTime / (1.0f / 30.0f));
+					TargetRotation.Yaw = UKismetMathLibrary::NormalizeAxis(TargetRotation.Yaw + (RotAmountCurve * (DeltaTime / (1.0f / 30.0f))));
 					SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, SynchroInterpSpeed));
 				}
 				else
