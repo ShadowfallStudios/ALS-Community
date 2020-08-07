@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    senfkorn92, Jens Bjarne Myhre
+// Contributors:    Haziq Fadhil, Jens Bjarne Myhre
 
 
 #include "Character/Animation/ALSCharacterAnimInstance.h"
@@ -291,7 +291,8 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
 {
 	FootIKValues.bReverseFootAsset = ((Character->HasAuthority() && !Character->IsLocallyControlled())
 								   || Character->GetLocalRole() == ROLE_AutonomousProxy)
-								   && !CharacterInformation.bIsMoving;
+								   && !CharacterInformation.bIsMoving
+								   && CharacterInformation.RotationMode == EALSRotationMode::LookingDirection;
 
 	if (GetCurveValue(EnableFootIKCurve) <= 0.0f)
 	{
@@ -779,14 +780,14 @@ void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayR
 			if (FootIKValues.bReverseFootAsset)
 			{
 				TargetTurnAsset = (TurnAngle < 0.0f)
-					? TurnInPlaceValues.N_TurnIP_L90
-					: TurnInPlaceValues.N_TurnIP_R90;
+								? TurnInPlaceValues.N_TurnIP_L90
+								: TurnInPlaceValues.N_TurnIP_R90;
 			}
 			else
 			{
 				TargetTurnAsset = (TurnAngle < 0.0f)
-					? TurnInPlaceValues.N_TurnIP_R90
-					: TurnInPlaceValues.N_TurnIP_L90;
+								? TurnInPlaceValues.N_TurnIP_R90
+								: TurnInPlaceValues.N_TurnIP_L90;
 			}
 		}
 		else

@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    senfkorn92
+// Contributors:    Haziq Fadhil
 
 
 #include "Character/ALSBaseCharacter.h"

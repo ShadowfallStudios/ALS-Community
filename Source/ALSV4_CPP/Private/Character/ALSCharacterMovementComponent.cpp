@@ -1,4 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Project:         Advanced Locomotion System V4 on C++
+// Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
+// Original Author: Haziq Fadhil
+// Contributors:    
 
 
 #include "Character/ALSCharacterMovementComponent.h"
@@ -18,7 +21,7 @@ void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FV
 		return;
 	}
 
-	//Set Max Walk Speed
+	// Set Movement Settings
 	if (bRequestMaxWalkSpeedChange)
 	{
 		MaxWalkSpeed = MyNewMaxWalkSpeed;
@@ -26,11 +29,13 @@ void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FV
 		MaxAcceleration = MyNewMaxAcceleration;
 		BrakingDecelerationWalking = MyNewBraking;
 		GroundFriction = MyNewGroundFriction;
+
+		// Ensures server Max Acceleration value updates to latest
 		bRequestMaxWalkSpeedChange = MaxAcceleration != MyNewMaxAcceleration;
 	}
 }
 
-void UALSCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags) //Client only
+void UALSCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags) // Client only
 {
 	Super::UpdateFromCompressedFlags(Flags);
 
@@ -75,7 +80,7 @@ uint8 UALSCharacterMovementComponent::FSavedMove_My::GetCompressedFlags() const
 bool UALSCharacterMovementComponent::FSavedMove_My::CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* Character,
                                                                    float MaxDelta) const
 {
-	//Set which moves can be combined together. This will depend on the bit flags that are used.	
+	// Set which moves can be combined together. This will depend on the bit flags that are used.	
 	if (bSavedRequestMaxWalkSpeedChange != ((FSavedMove_My*)&NewMove)->bSavedRequestMaxWalkSpeedChange)
 	{
 		return false;
@@ -114,7 +119,7 @@ FSavedMovePtr UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::
 	return FSavedMovePtr(new FSavedMove_My());
 }
 
-//Set Max Walk Speed RPC to transfer the current Max Walk Speed from the Owning Client to the Server
+// Set Max Walk Speed RPC to transfer the current Max Walk Speed from the Owning Client to the Server
 bool UALSCharacterMovementComponent::Server_SetMaxWalkSpeedAndMaxAcceleration_Validate(
 	const float NewMaxWalkSpeed, const float NewMaxAcceleration)
 {
