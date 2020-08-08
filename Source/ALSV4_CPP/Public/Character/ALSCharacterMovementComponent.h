@@ -1,4 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Project:         Advanced Locomotion System V4 on C++
+// Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
+// Original Author: Haziq Fadhil
+// Contributors:    
 
 #pragma once
 
@@ -7,7 +10,7 @@
 #include "ALSCharacterMovementComponent.generated.h"
 
 /**
- * 
+ * Authoritative networked Character Movement
  */
 UCLASS()
 class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementComponent
@@ -27,7 +30,7 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 		                        class FNetworkPredictionData_Client_Character& ClientData) override;
 		virtual void PrepMoveFor(class ACharacter* Character) override;
 
-		//Walk Speed Update
+		// Walk Speed Update
 		uint8 bSavedRequestMaxWalkSpeedChange : 1;
 	};
 
@@ -48,7 +51,7 @@ public:
 	void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity);
 
 
-	//Set Max Walk Speed
+	// Set Max Walk Speed
 	uint8 bRequestMaxWalkSpeedChange : 1;
 
 	float MyNewBraking;
@@ -56,11 +59,12 @@ public:
 	float MyNewMaxWalkSpeed;
 	float MyNewMaxAcceleration;
 
-	//Set Max Walk Speed (Called from the owning client)
+	// Set Max Braking Deceleration Walking and Ground Friction
 
 	UFUNCTION(BlueprintCallable, Category = "Movement Settings")
 	void SetBrakingAndGroundFriction(float NewBraking, float NewGroundFriction);
 
+	// Set Max Walk Speed (Called from the owning client)
 	UFUNCTION(BlueprintCallable, Category = "Movement Settings")
 	void SetMaxWalkSpeedAndMaxAcceleration(float NewMaxWalkSpeed, float NewMaxAcceleration);
 

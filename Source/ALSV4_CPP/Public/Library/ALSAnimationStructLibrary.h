@@ -393,6 +393,9 @@ struct FALSAnimGraphFootIK
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	float PelvisAlpha = 0.0f;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	bool bReverseFootAsset = false;
 };
 
 USTRUCT(BlueprintType)

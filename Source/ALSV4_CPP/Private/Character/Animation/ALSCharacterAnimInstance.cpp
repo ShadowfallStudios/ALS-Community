@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    senfkorn92, Jens Bjarne Myhre
+// Contributors:    Haziq Fadhil, Jens Bjarne Myhre
 
 
 #include "Character/Animation/ALSCharacterAnimInstance.h"
@@ -289,13 +289,18 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
                                                float& CurFootLockAlpha, FVector& CurFootLockLoc,
                                                FRotator& CurFootLockRot)
 {
+	FootIKValues.bReverseFootAsset = ((Character->HasAuthority() && !Character->IsLocallyControlled())
+								   || Character->GetLocalRole() == ROLE_AutonomousProxy)
+								   && !CharacterInformation.bIsMoving
+								   && CharacterInformation.RotationMode == EALSRotationMode::LookingDirection;
+
 	if (GetCurveValue(EnableFootIKCurve) <= 0.0f)
 	{
 		return;
 	}
 
 	// Step 1: Set Local FootLock Curve value
-	const float FootLockCurveVal = FMath::FInterpTo(CurFootLockAlpha, GetCurveValue(FootLockCurve), DeltaSeconds, 20);
+	const float FootLockCurveVal = FootIKValues.bReverseFootAsset ? 0 : GetCurveValue(FootLockCurve);
 
 	// Step 2: Only update the FootLock Alpha if the new value is less than the current, or it equals 1. This makes it
 	// so that the foot can only blend out of the locked position or lock to a new position, and never blend in.
@@ -767,34 +772,44 @@ void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayR
 
 	FALSTurnInPlaceAsset TargetTurnAsset;
 	// Step 2: Choose Turn Asset based on the Turn Angle and Stance
-	if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
+
+	if (CharacterInformation.Stance == EALSStance::Standing)
 	{
-		if (TurnAngle < 0.0f)
+		if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
 		{
-			TargetTurnAsset = CharacterInformation.Stance == EALSStance::Standing
-				                  ? TurnInPlaceValues.N_TurnIP_R90
-				                  : TurnInPlaceValues.CLF_TurnIP_L90;
+			if (FootIKValues.bReverseFootAsset)
+			{
+				TargetTurnAsset = (TurnAngle < 0.0f)
+								? TurnInPlaceValues.N_TurnIP_L90
+								: TurnInPlaceValues.N_TurnIP_R90;
+			}
+			else
+			{
+				TargetTurnAsset = (TurnAngle < 0.0f)
+								? TurnInPlaceValues.N_TurnIP_R90
+								: TurnInPlaceValues.N_TurnIP_L90;
+			}
 		}
 		else
 		{
-			TargetTurnAsset = CharacterInformation.Stance == EALSStance::Standing
-				                  ? TurnInPlaceValues.N_TurnIP_L90
-				                  : TurnInPlaceValues.CLF_TurnIP_R90;
+			TargetTurnAsset = TurnAngle < 0.0f
+							? TurnInPlaceValues.N_TurnIP_L180
+							: TurnInPlaceValues.N_TurnIP_R180;
 		}
 	}
 	else
 	{
-		if (TurnAngle < 0.0f)
+		if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
 		{
-			TargetTurnAsset = CharacterInformation.Stance == EALSStance::Standing
-				                  ? TurnInPlaceValues.N_TurnIP_L180
-				                  : TurnInPlaceValues.CLF_TurnIP_L180;
+			TargetTurnAsset = TurnAngle < 0.0f
+							? TurnInPlaceValues.CLF_TurnIP_L90
+							: TurnInPlaceValues.CLF_TurnIP_R90;
 		}
 		else
 		{
-			TargetTurnAsset = CharacterInformation.Stance == EALSStance::Standing
-				                  ? TurnInPlaceValues.N_TurnIP_R180
-				                  : TurnInPlaceValues.CLF_TurnIP_R180;
+			TargetTurnAsset = TurnAngle < 0.0f
+							? TurnInPlaceValues.CLF_TurnIP_L180
+							: TurnInPlaceValues.CLF_TurnIP_R180;
 		}
 	}
 
