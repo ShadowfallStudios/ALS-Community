@@ -497,7 +497,7 @@ void UALSCharacterAnimInstance::DynamicTransitionCheck()
 	FTransform SocketTransformA = GetOwningComponent()->GetSocketTransform(FName(TEXT("ik_foot_l")), RTS_Component);
 	FTransform SocketTransformB = GetOwningComponent()->GetSocketTransform(FName(TEXT("VB foot_target_l")), RTS_Component);
 	float Distance = (SocketTransformB.GetLocation() - SocketTransformA.GetLocation()).Size();
-	if (Distance > 12.0f)
+	if (Distance > Config.DynamicTransitionThreshold)
 	{
 		FALSDynamicMontageParams Params;
 		Params.Animation = TransitionAnim_L;
@@ -511,7 +511,7 @@ void UALSCharacterAnimInstance::DynamicTransitionCheck()
 	SocketTransformA = GetOwningComponent()->GetSocketTransform(FName(TEXT("ik_foot_r")), RTS_Component);
 	SocketTransformB = GetOwningComponent()->GetSocketTransform(FName(TEXT("VB foot_target_r")), RTS_Component);
 	Distance = (SocketTransformB.GetLocation() - SocketTransformA.GetLocation()).Size();
-	if (Distance > 12.0f)
+	if (Distance > Config.DynamicTransitionThreshold)
 	{
 		FALSDynamicMontageParams Params;
 		Params.Animation = TransitionAnim_R;
