@@ -357,6 +357,9 @@ struct FALSAnimGraphFootIK
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	float PelvisAlpha = 0.0f;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	bool bReverseFootAsset = false;
 };
 
 USTRUCT(BlueprintType)
@@ -468,6 +471,10 @@ struct FALSAnimConfiguration
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float FootHeight = 13.5f;
+
+	/** Threshold value for activating dynamic transition on various animations */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float DynamicTransitionThreshold = 12.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float IK_TraceDistanceAboveFoot = 50.0f;

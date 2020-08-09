@@ -289,13 +289,18 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
                                                float& CurFootLockAlpha, FVector& CurFootLockLoc,
                                                FRotator& CurFootLockRot)
 {
+	FootIKValues.bReverseFootAsset = ((Character->HasAuthority() && !Character->IsLocallyControlled())
+								   || Character->GetLocalRole() == ROLE_AutonomousProxy)
+								   && !CharacterInformation.bIsMoving
+								   && RotationMode.LookingDirection();
+
 	if (GetCurveValue(EnableFootIKCurve) <= 0.0f)
 	{
 		return;
 	}
 
 	// Step 1: Set Local FootLock Curve value
-	const float FootLockCurveVal = FMath::FInterpTo(CurFootLockAlpha, GetCurveValue(FootLockCurve), DeltaSeconds, 20);
+	const float FootLockCurveVal = FootIKValues.bReverseFootAsset ? 0 : GetCurveValue(FootLockCurve);
 
 	// Step 2: Only update the FootLock Alpha if the new value is less than the current, or it equals 1. This makes it
 	// so that the foot can only blend out of the locked position or lock to a new position, and never blend in.
@@ -492,7 +497,7 @@ void UALSCharacterAnimInstance::DynamicTransitionCheck()
 	FTransform SocketTransformA = GetOwningComponent()->GetSocketTransform(FName(TEXT("ik_foot_l")), RTS_Component);
 	FTransform SocketTransformB = GetOwningComponent()->GetSocketTransform(FName(TEXT("VB foot_target_l")), RTS_Component);
 	float Distance = (SocketTransformB.GetLocation() - SocketTransformA.GetLocation()).Size();
-	if (Distance > 12.0f)
+	if (Distance > Config.DynamicTransitionThreshold)
 	{
 		FALSDynamicMontageParams Params;
 		Params.Animation = TransitionAnim_L;
@@ -506,7 +511,7 @@ void UALSCharacterAnimInstance::DynamicTransitionCheck()
 	SocketTransformA = GetOwningComponent()->GetSocketTransform(FName(TEXT("ik_foot_r")), RTS_Component);
 	SocketTransformB = GetOwningComponent()->GetSocketTransform(FName(TEXT("VB foot_target_r")), RTS_Component);
 	Distance = (SocketTransformB.GetLocation() - SocketTransformA.GetLocation()).Size();
-	if (Distance > 12.0f)
+	if (Distance > Config.DynamicTransitionThreshold)
 	{
 		FALSDynamicMontageParams Params;
 		Params.Animation = TransitionAnim_R;
@@ -759,34 +764,44 @@ void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayR
 
 	FALSTurnInPlaceAsset TargetTurnAsset;
 	// Step 2: Choose Turn Asset based on the Turn Angle and Stance
-	if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
+
+	if (Stance.Standing())
 	{
-		if (TurnAngle < 0.0f)
+		if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
 		{
-			TargetTurnAsset = Stance.Standing()
-				                  ? TurnInPlaceValues.N_TurnIP_R90
-				                  : TurnInPlaceValues.CLF_TurnIP_L90;
+			if (FootIKValues.bReverseFootAsset)
+			{
+				TargetTurnAsset = (TurnAngle < 0.0f)
+								? TurnInPlaceValues.N_TurnIP_L90
+								: TurnInPlaceValues.N_TurnIP_R90;
+			}
+			else
+			{
+				TargetTurnAsset = (TurnAngle < 0.0f)
+								? TurnInPlaceValues.N_TurnIP_R90
+								: TurnInPlaceValues.N_TurnIP_L90;
+			}
 		}
 		else
 		{
-			TargetTurnAsset = Stance.Standing()
-				                  ? TurnInPlaceValues.N_TurnIP_L90
-				                  : TurnInPlaceValues.CLF_TurnIP_R90;
+			TargetTurnAsset = TurnAngle < 0.0f
+							? TurnInPlaceValues.N_TurnIP_L180
+							: TurnInPlaceValues.N_TurnIP_R180;
 		}
 	}
 	else
 	{
-		if (TurnAngle < 0.0f)
+		if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
 		{
-			TargetTurnAsset = Stance.Standing()
-				                  ? TurnInPlaceValues.N_TurnIP_L180
-				                  : TurnInPlaceValues.CLF_TurnIP_L180;
+			TargetTurnAsset = TurnAngle < 0.0f
+							? TurnInPlaceValues.CLF_TurnIP_L90
+							: TurnInPlaceValues.CLF_TurnIP_R90;
 		}
 		else
 		{
-			TargetTurnAsset = Stance.Standing()
-				                  ? TurnInPlaceValues.N_TurnIP_R180
-				                  : TurnInPlaceValues.CLF_TurnIP_R180;
+			TargetTurnAsset = TurnAngle < 0.0f
+							? TurnInPlaceValues.CLF_TurnIP_L180
+							: TurnInPlaceValues.CLF_TurnIP_R180;
 		}
 	}
 

@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    senfkorn92
+// Contributors:    Haziq Fadhil
 
 
 #include "Character/ALSBaseCharacter.h"
@@ -211,7 +211,7 @@ void AALSBaseCharacter::RagdollStart()
 {
 	/** When Networked, disables replicate movement reset TargetRagdollLocation and ServerRagdollPull variable
 	and if the host is a dedicated server, change character mesh optimisation option to avoid z-location bug*/
-	SetReplicateMovement(false);
+	MyCharacterMovementComponent->bIgnoreClientMovementErrorChecksAndCorrection = 1;
 
 	if (UKismetSystemLibrary::IsDedicatedServer(GetWorld()))
 	{
@@ -233,17 +233,21 @@ void AALSBaseCharacter::RagdollStart()
 
 	// Step 3: Stop any active montages.
 	MainAnimInstance->Montage_Stop(0.2f);
+
+	SetReplicateMovement(false);
 }
 
 void AALSBaseCharacter::RagdollEnd()
 {
 	/** Re-enable Replicate Movement and if the host is a dedicated server set mesh visibility based anim
 	tick option back to default*/
+
 	if (UKismetSystemLibrary::IsDedicatedServer(GetWorld()))
 	{
 		GetMesh()->VisibilityBasedAnimTickOption = DefVisBasedTickOp;
 	}
 
+	MyCharacterMovementComponent->bIgnoreClientMovementErrorChecksAndCorrection = 0;
 	SetReplicateMovement(true);
 
 	if (!MainAnimInstance)
@@ -1072,7 +1076,7 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 			{
 				if (GetLocalRole() == ROLE_AutonomousProxy)
 				{
-					TargetRotation.Yaw += RotAmountCurve * (DeltaTime / (1.0f / 30.0f));
+					TargetRotation.Yaw = UKismetMathLibrary::NormalizeAxis(TargetRotation.Yaw + (RotAmountCurve * (DeltaTime / (1.0f / 30.0f))));
 					SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, SynchroInterpSpeed));
 				}
 				else
