@@ -130,28 +130,10 @@ struct FALSAnimCharacterInformation
 	float ZoomAmount = 0.0f;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	EALSMovementState MovementState = EALSMovementState::None;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	EALSMovementState PrevMovementState = EALSMovementState::None;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	EALSMovementAction MovementAction = EALSMovementAction::None;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	EALSRotationMode RotationMode = EALSRotationMode::LookingDirection;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	EALSGait Gait = EALSGait::Walking;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	EALSStance Stance = EALSStance::Standing;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	EALSViewMode ViewMode = EALSViewMode::ThirdPerson;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	EALSOverlayState OverlayState = EALSOverlayState::Default;
 };
 
 
@@ -160,17 +142,8 @@ struct FALSAnimGraphGrounded
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	EALSGroundedEntryState GroundedEntryState = EALSGroundedEntryState::None;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	EALSMovementDirection MovementDirection = EALSMovementDirection::Forward;
-
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
 	EALSHipsDirection TrackedHipsDirection = EALSHipsDirection::F;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	FVector RelativeAccelerationAmount;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	bool bShouldMove = false; // Should be false initially
@@ -204,12 +177,6 @@ struct FALSAnimGraphGrounded
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	float StrideBlend = 0.0f;
-
-	UPROPERTY(BlueprintReadWrite)
-	FALSVelocityBlend VelocityBlend;
-
-	UPROPERTY(BlueprintReadWrite)
-	FALSLeanAmount LeanAmount;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	float FYaw = 0.0f;
@@ -255,9 +222,6 @@ struct FALSAnimGraphAimingValues
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	FVector2D AimingAngle;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	FVector2D SmoothedAimingAngle;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	float AimSweepTime = 0.5f;
