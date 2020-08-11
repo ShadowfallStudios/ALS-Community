@@ -11,6 +11,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "Library/ALSAnimationStructLibrary.h"
+#include "Library/ALSStructEnumLibrary.h"
 
 #include "ALSCharacterAnimInstance.generated.h"
 
@@ -48,9 +49,9 @@ public:
 	void OnPivot();
 
 	UFUNCTION(BlueprintCallable, Category = "Grounded")
-	void SetGroundedEntryState(EALSGroundedEntryState GroundedEntryState)
+	void SetGroundedEntryState(EALSGroundedEntryState NewGroundedEntryState)
 	{
-		Grounded.GroundedEntryState = GroundedEntryState;
+		GroundedEntryState = NewGroundedEntryState;
 	}
 
 	UFUNCTION(BlueprintCallable, Category = "Grounded")
@@ -176,11 +177,44 @@ protected:
 	/** Character Information */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information", Meta = (ShowOnlyInnerProperties))
 	FALSAnimCharacterInformation CharacterInformation;
+public:
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information")
+	FALSMovementState MovementState = EALSMovementState::None;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information")
+	FALSMovementAction MovementAction = EALSMovementAction::None;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information")
+	FALSRotationMode RotationMode = EALSRotationMode::LookingDirection;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information")
+	FALSGait Gait = EALSGait::Walking;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information")
+	FALSStance Stance = EALSStance::Standing;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information")
+	FALSOverlayState OverlayState = EALSOverlayState::Default;
+protected:
 	/** Anim Graph - Grounded */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded", Meta = (ShowOnlyInnerProperties))
 	FALSAnimGraphGrounded Grounded;
+public:
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded")
+	FALSVelocityBlend VelocityBlend;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded")
+	FALSLeanAmount LeanAmount;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded")
+	FVector RelativeAccelerationAmount;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded")
+	FALSGroundedEntryState GroundedEntryState = EALSGroundedEntryState::None;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded")
+	FALSMovementDirection MovementDirection = EALSMovementDirection::Forward;
+protected:
 	/** Anim Graph - In Air */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - In Air", Meta = (ShowOnlyInnerProperties))
 	FALSAnimGraphInAir InAir;
@@ -189,7 +223,10 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Aiming Values", Meta = (
 		ShowOnlyInnerProperties))
 	FALSAnimGraphAimingValues AimingValues;
-
+public:
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Aiming Values")
+	FVector2D SmoothedAimingAngle;
+protected:
 	/** Anim Graph - Ragdoll */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Ragdoll")
 	float FlailRate = 0.0f;
