@@ -156,6 +156,7 @@ void UALSCharacterMovementComponent::Server_SetMovementSettings_Implementation(c
 	MyNewMaxAcceleration = NewMovementSettings.X;
 	MyNewBraking = NewMovementSettings.Y;
 	MyNewGroundFriction = NewMovementSettings.Z;
+	bRequestMovementSettingsChange = true;
 }
 
 void UALSCharacterMovementComponent::SetMovementSettings(FVector NewMovementSettings)
