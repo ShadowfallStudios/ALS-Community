@@ -151,6 +151,11 @@ void AALSBaseCharacter::BeginPlay()
 	TargetRotation = GetActorRotation();
 	LastVelocityRotation = TargetRotation;
 	LastMovementInputRotation = TargetRotation;
+
+	if (GetLocalRole() == ROLE_SimulatedProxy)
+	{
+		MainAnimInstance->SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);
+	}
 }
 
 void AALSBaseCharacter::PreInitializeComponents()
@@ -999,25 +1004,26 @@ void AALSBaseCharacter::UpdateDynamicMovementSettings(EALSGait AllowedGait)
 	const float MappedSpeed = GetMappedSpeed();
 	const FVector CurveVec = CurrentMovementSettings.MovementCurve->GetVectorValue(MappedSpeed);
 
-
 	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
-	if ((GetCharacterMovement()->MaxWalkSpeed != NewMaxSpeed || GetCharacterMovement()->MaxAcceleration !=
-		FMath::RoundHalfFromZero(CurveVec.X)))
+	if (IsLocallyControlled() || HasAuthority())
 	{
-		if (IsLocallyControlled() || HasAuthority())
+		if (GetCharacterMovement()->MaxWalkSpeed != NewMaxSpeed)
 		{
-			MyCharacterMovementComponent->SetMaxWalkSpeedAndMaxAcceleration(NewMaxSpeed, FMath::RoundHalfFromZero(CurveVec.X));
+			MyCharacterMovementComponent->SetMaxWalkingSpeed(NewMaxSpeed);
 		}
-		else
+		if	(GetCharacterMovement()->MaxAcceleration != CurveVec.X
+		  || GetCharacterMovement()->BrakingDecelerationWalking != CurveVec.Y
+		  || GetCharacterMovement()->GroundFriction != CurveVec.Z)
 		{
-			GetCharacterMovement()->MaxWalkSpeed = NewMaxSpeed;
-			GetCharacterMovement()->MaxAcceleration = FMath::RoundHalfFromZero(CurveVec.X);
+			MyCharacterMovementComponent->SetMovementSettings(CurveVec);
 		}
 	}
-
-	if (GetCharacterMovement()->BrakingDecelerationWalking != CurveVec.Y || GetCharacterMovement()->GroundFriction != CurveVec.Z)
+	else
 	{
-		MyCharacterMovementComponent->SetBrakingAndGroundFriction(CurveVec.Y, CurveVec.Z);
+		GetCharacterMovement()->MaxWalkSpeed = NewMaxSpeed;
+		GetCharacterMovement()->MaxAcceleration = CurveVec.X;
+		GetCharacterMovement()->BrakingDecelerationWalking = CurveVec.Y;
+		GetCharacterMovement()->GroundFriction = CurveVec.Z;
 	}
 }
 

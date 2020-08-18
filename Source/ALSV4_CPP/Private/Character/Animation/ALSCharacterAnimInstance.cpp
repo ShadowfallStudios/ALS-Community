@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    senfkorn92, Jens Bjarne Myhre
+// Contributors:    Haziq Fadhil, Jens Bjarne Myhre
 
 
 #include "Character/Animation/ALSCharacterAnimInstance.h"
@@ -291,8 +291,7 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
 {
 	FootIKValues.bReverseFootAsset = ((Character->HasAuthority() && !Character->IsLocallyControlled())
 								   || Character->GetLocalRole() == ROLE_AutonomousProxy)
-								   && !CharacterInformation.bIsMoving
-								   && RotationMode.LookingDirection();
+								   && !CharacterInformation.bIsMoving;
 
 	if (GetCurveValue(EnableFootIKCurve) <= 0.0f)
 	{
