@@ -22,7 +22,7 @@ void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FV
 	}
 
 	// Set Movement Settings
-	if (bRequestMaxWalkSpeedChange)
+	if (bRequestMovementSettingsChange)
 	{
 		MaxWalkSpeed = MyNewMaxWalkSpeed;
 		MaxWalkSpeedCrouched = MyNewMaxWalkSpeed;
@@ -30,8 +30,10 @@ void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FV
 		BrakingDecelerationWalking = MyNewBraking;
 		GroundFriction = MyNewGroundFriction;
 
-		// Ensures server Max Acceleration value updates to latest
-		bRequestMaxWalkSpeedChange = MaxAcceleration != MyNewMaxAcceleration;
+		// Ensures server Movement Settings values updates to latest
+		bRequestMovementSettingsChange = MaxAcceleration != RealMaxAcceleration
+									  || BrakingDecelerationWalking != RealBraking
+									  || GroundFriction != RealGroundFriction;
 	}
 }
 
@@ -39,7 +41,7 @@ void UALSCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags) // C
 {
 	Super::UpdateFromCompressedFlags(Flags);
 
-	bRequestMaxWalkSpeedChange = (Flags & FSavedMove_Character::FLAG_Custom_0) != 0;
+	bRequestMovementSettingsChange = (Flags & FSavedMove_Character::FLAG_Custom_0) != 0;
 }
 
 class FNetworkPredictionData_Client* UALSCharacterMovementComponent::GetPredictionData_Client() const
@@ -62,14 +64,14 @@ void UALSCharacterMovementComponent::FSavedMove_My::Clear()
 {
 	Super::Clear();
 
-	bSavedRequestMaxWalkSpeedChange = false;
+	bSavedRequestMovementSettingsChange = false;
 }
 
 uint8 UALSCharacterMovementComponent::FSavedMove_My::GetCompressedFlags() const
 {
 	uint8 Result = Super::GetCompressedFlags();
 
-	if (bSavedRequestMaxWalkSpeedChange)
+	if (bSavedRequestMovementSettingsChange)
 	{
 		Result |= FLAG_Custom_0;
 	}
@@ -81,7 +83,7 @@ bool UALSCharacterMovementComponent::FSavedMove_My::CanCombineWith(const FSavedM
                                                                    float MaxDelta) const
 {
 	// Set which moves can be combined together. This will depend on the bit flags that are used.	
-	if (bSavedRequestMaxWalkSpeedChange != ((FSavedMove_My*)&NewMove)->bSavedRequestMaxWalkSpeedChange)
+	if (bSavedRequestMovementSettingsChange != ((FSavedMove_My*)&NewMove)->bSavedRequestMovementSettingsChange)
 	{
 		return false;
 	}
@@ -97,7 +99,7 @@ void UALSCharacterMovementComponent::FSavedMove_My::SetMoveFor(ACharacter* Chara
 	UALSCharacterMovementComponent* CharacterMovement = Cast<UALSCharacterMovementComponent>(Character->GetCharacterMovement());
 	if (CharacterMovement)
 	{
-		bSavedRequestMaxWalkSpeedChange = CharacterMovement->bRequestMaxWalkSpeedChange;
+		bSavedRequestMovementSettingsChange = CharacterMovement->bRequestMovementSettingsChange;
 	}
 }
 
@@ -119,9 +121,8 @@ FSavedMovePtr UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::
 	return FSavedMovePtr(new FSavedMove_My());
 }
 
-// Set Max Walk Speed RPC to transfer the current Max Walk Speed from the Owning Client to the Server
-bool UALSCharacterMovementComponent::Server_SetMaxWalkSpeedAndMaxAcceleration_Validate(
-	const float NewMaxWalkSpeed, const float NewMaxAcceleration)
+// Set Movement Settings RPC to transfer the current Movement Settings from the Owning Client to the Server
+bool UALSCharacterMovementComponent::Server_SetMaxWalkingSpeed_Validate(const float NewMaxWalkSpeed)
 {
 	if (NewMaxWalkSpeed < 0.f || NewMaxWalkSpeed > 2000.f)
 		return false;
@@ -129,29 +130,48 @@ bool UALSCharacterMovementComponent::Server_SetMaxWalkSpeedAndMaxAcceleration_Va
 		return true;
 }
 
-void UALSCharacterMovementComponent::Server_SetMaxWalkSpeedAndMaxAcceleration_Implementation(
-	const float NewMaxWalkSpeed, const float NewMaxAcceleration)
+void UALSCharacterMovementComponent::Server_SetMaxWalkingSpeed_Implementation(const float NewMaxWalkSpeed)
 {
 	MyNewMaxWalkSpeed = NewMaxWalkSpeed;
-	MyNewMaxAcceleration = NewMaxAcceleration;
 }
 
-void UALSCharacterMovementComponent::SetMaxWalkSpeedAndMaxAcceleration(float NewMaxWalkSpeed, float NewMaxAcceleration)
+void UALSCharacterMovementComponent::SetMaxWalkingSpeed(float NewMaxWalkSpeed)
 {
 	if (PawnOwner->IsLocallyControlled())
 	{
 		MyNewMaxWalkSpeed = NewMaxWalkSpeed;
-		MyNewMaxAcceleration = NewMaxAcceleration;
-		Server_SetMaxWalkSpeedAndMaxAcceleration(NewMaxWalkSpeed, NewMaxAcceleration);
+		Server_SetMaxWalkingSpeed(NewMaxWalkSpeed);
 	}
-
-	bRequestMaxWalkSpeedChange = true;
+	bRequestMovementSettingsChange = true;
 }
 
-void UALSCharacterMovementComponent::SetBrakingAndGroundFriction(float NewBraking, float NewGroundFriction)
+// Set Max Walking Speed RPC to transfer the current Max Walking Speed from the Owning Client to the Server
+bool UALSCharacterMovementComponent::Server_SetMovementSettings_Validate(const FVector NewMovementSettings)
 {
-	MyNewBraking = NewBraking;
-	MyNewGroundFriction = NewGroundFriction;
+		return true;
+}
 
-	bRequestMaxWalkSpeedChange = true;
+void UALSCharacterMovementComponent::Server_SetMovementSettings_Implementation(const FVector NewMovementSettings)
+{
+	MyNewMaxAcceleration = NewMovementSettings.X;
+	MyNewBraking = NewMovementSettings.Y;
+	MyNewGroundFriction = NewMovementSettings.Z;
+	bRequestMovementSettingsChange = true;
+}
+
+void UALSCharacterMovementComponent::SetMovementSettings(FVector NewMovementSettings)
+{
+	if (PawnOwner->IsLocallyControlled())
+	{
+		MyNewMaxAcceleration = NewMovementSettings.X;
+		MyNewBraking = NewMovementSettings.Y;
+		MyNewGroundFriction = NewMovementSettings.Z;
+		Server_SetMovementSettings(NewMovementSettings);
+	}
+	bRequestMovementSettingsChange = true;
+
+	// Save Server Movement Settings for comparison during movement update
+	RealMaxAcceleration = NewMovementSettings.X;
+	RealBraking = NewMovementSettings.Y;
+	RealGroundFriction = NewMovementSettings.Z;
 }
