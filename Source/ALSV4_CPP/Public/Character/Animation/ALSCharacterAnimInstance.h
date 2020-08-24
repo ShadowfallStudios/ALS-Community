@@ -122,7 +122,8 @@ private:
 	/** Foot IK */
 
 	void SetFootLocking(float DeltaSeconds, FName EnableFootIKCurve, FName FootLockCurve, FName IKFootBone,
-	                    float& CurFootLockAlpha, FVector& CurFootLockLoc, FRotator& CurFootLockRot);
+	                    float& CurFootLockAlpha, FVector& TargetFootLockLoc, FRotator& TargetFootLockRot,
+						FVector& CurFootLockLoc, FRotator& CurFootLockRot);
 
 	void SetFootLockOffsets(float DeltaSeconds, FVector& LocalLoc, FRotator& LocalRot);
 

@@ -329,13 +329,25 @@ struct FALSAnimGraphFootIK
 	float FootLock_R_Alpha = 0.0f;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	FVector TargetFootLock_L_Location;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	FVector FootLock_L_Location;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	FVector TargetFootLock_R_Location;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	FVector FootLock_R_Location;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	FRotator TargetFootLock_L_Rotation;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	FRotator FootLock_L_Rotation;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	FRotator TargetFootLock_R_Rotation;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	FRotator FootLock_R_Rotation;
@@ -357,9 +369,6 @@ struct FALSAnimGraphFootIK
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	float PelvisAlpha = 0.0f;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	bool bReverseFootAsset = false;
 };
 
 USTRUCT(BlueprintType)

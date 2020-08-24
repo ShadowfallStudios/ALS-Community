@@ -938,7 +938,7 @@ void AALSBaseCharacter::SetEssentialValues(float DeltaTime)
 
 	// Interp AimingRotation to current control rotation for smooth character rotation movement. Decrease InterpSpeed
 	// for slower but smoother movement.
-	AimingRotation = FMath::RInterpTo(AimingRotation, ReplicatedControlRotation, DeltaTime, SynchroInterpSpeed);
+	AimingRotation = FMath::RInterpTo(AimingRotation, ReplicatedControlRotation, DeltaTime, 30);
 
 	// These values represent how the capsule is moving as well as how it wants to move, and therefore are essential
 	// for any data driven animation system. They are also used throughout the system for various functions,
@@ -1083,13 +1083,13 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 				if (GetLocalRole() == ROLE_AutonomousProxy)
 				{
 					TargetRotation.Yaw = UKismetMathLibrary::NormalizeAxis(TargetRotation.Yaw + (RotAmountCurve * (DeltaTime / (1.0f / 30.0f))));
-					SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, SynchroInterpSpeed));
+					SetActorRotation(TargetRotation);
 				}
 				else
 				{
 					AddActorWorldRotation({0, RotAmountCurve * (DeltaTime / (1.0f / 30.0f)), 0});
-					TargetRotation = GetActorRotation();
 				}
+				TargetRotation = GetActorRotation();
 			}
 		}
 	}
