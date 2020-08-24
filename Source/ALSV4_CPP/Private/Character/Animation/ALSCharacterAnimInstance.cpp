@@ -265,9 +265,11 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 	// Update Foot Locking values.
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("FootLock_L")),
 	               FName(TEXT("ik_foot_l")), FootIKValues.FootLock_L_Alpha,
+				   FootIKValues.TargetFootLock_L_Location, FootIKValues.TargetFootLock_L_Rotation,
 	               FootIKValues.FootLock_L_Location, FootIKValues.FootLock_L_Rotation);
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("FootLock_R")),
 	               FName(TEXT("ik_foot_r")), FootIKValues.FootLock_R_Alpha,
+				   FootIKValues.TargetFootLock_R_Location, FootIKValues.TargetFootLock_R_Rotation,
 	               FootIKValues.FootLock_R_Location, FootIKValues.FootLock_R_Rotation);
 
 	if (MovementState.InAir())
@@ -290,39 +292,52 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 }
 
 void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableFootIKCurve, FName FootLockCurve,
-                                               FName IKFootBone,
-                                               float& CurFootLockAlpha, FVector& CurFootLockLoc,
-                                               FRotator& CurFootLockRot)
+                                               FName IKFootBone, float& CurFootLockAlpha, 
+											   FVector& TargetFootLockLoc, FRotator& TargetFootLockRot,
+											   FVector& CurFootLockLoc, FRotator& CurFootLockRot)
 {
-	FootIKValues.bReverseFootAsset = ((Character->HasAuthority() && !Character->IsLocallyControlled())
-			|| Character->GetLocalRole() == ROLE_AutonomousProxy)
-		&& !CharacterInformation.bIsMoving;
-
 	if (GetCurveValue(EnableFootIKCurve) <= 0.0f)
 	{
 		return;
 	}
 
 	// Step 1: Set Local FootLock Curve value
-	const float FootLockCurveVal = FootIKValues.bReverseFootAsset ? 0 : GetCurveValue(FootLockCurve);
+	const float FootLockCurveVal = GetCurveValue(FootLockCurve);
 
 	// Step 2: Only update the FootLock Alpha if the new value is less than the current, or it equals 1. This makes it
 	// so that the foot can only blend out of the locked position or lock to a new position, and never blend in.
-	if (FootLockCurveVal > 0.99f || FootLockCurveVal < CurFootLockAlpha)
+	if (FootLockCurveVal >= 0.99f || FootLockCurveVal < CurFootLockAlpha)
 	{
 		CurFootLockAlpha = FootLockCurveVal;
 	}
-
-	// Step 3: If the Foot Lock curve equals 1, save the new lock location and rotation in component space.
+	
+	// Step 3: If the Foot Lock curve equals 1, save the new lock location and rotation in component space as the target.
 	if (CurFootLockAlpha >= 0.99f)
 	{
 		const FTransform& OwnerTransform =
 			GetOwningComponent()->GetSocketTransform(IKFootBone, ERelativeTransformSpace::RTS_Component);
-		CurFootLockLoc = OwnerTransform.GetLocation();
-		CurFootLockRot = OwnerTransform.Rotator();
+		TargetFootLockLoc = OwnerTransform.GetLocation();
+		TargetFootLockRot = OwnerTransform.Rotator();
 	}
 
-	// Step 4: If the Foot Lock Alpha has a weight,
+	// Step 4: Once the new lock location and rotation is set as the target, Interp current foot lock values into the
+	// target values so that in multiplayer, where there is differing frame delta values between server and client, the
+	// foot doesn't 'jump' into the new value causing stuttering or in the worst case, bending the character's legs
+	// unnaturally.
+	const float InterpSpeed = 90.0f;
+
+	if (CurFootLockLoc == FVector::ZeroVector)
+	{
+		CurFootLockLoc = TargetFootLockLoc;
+		CurFootLockRot = TargetFootLockRot;
+	}
+	else
+	{
+		CurFootLockLoc = UKismetMathLibrary::VInterpTo(CurFootLockLoc, TargetFootLockLoc, DeltaSeconds, InterpSpeed);
+		CurFootLockRot = UKismetMathLibrary::RInterpTo(CurFootLockRot, TargetFootLockRot, DeltaSeconds, InterpSpeed);
+	}
+
+	// Step 5: If the Foot Lock Alpha has a weight,
 	// update the Foot Lock offsets to keep the foot planted in place while the capsule moves.
 	if (CurFootLockAlpha > 0.0f)
 	{
@@ -773,18 +788,9 @@ void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayR
 	{
 		if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
 		{
-			if (FootIKValues.bReverseFootAsset)
-			{
-				TargetTurnAsset = (TurnAngle < 0.0f)
-					                  ? TurnInPlaceValues.N_TurnIP_L90
-					                  : TurnInPlaceValues.N_TurnIP_R90;
-			}
-			else
-			{
-				TargetTurnAsset = (TurnAngle < 0.0f)
-					                  ? TurnInPlaceValues.N_TurnIP_R90
-					                  : TurnInPlaceValues.N_TurnIP_L90;
-			}
+			TargetTurnAsset = TurnAngle < 0.0f
+					              ? TurnInPlaceValues.N_TurnIP_L90
+					              : TurnInPlaceValues.N_TurnIP_R90;
 		}
 		else
 		{
