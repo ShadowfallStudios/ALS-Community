@@ -257,6 +257,11 @@ void UALSCharacterAnimInstance::UpdateLayerValues()
 
 void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 {
+	if (MovementState.Mantling())
+	{
+		return;
+	}
+
 	// Update Foot Locking values.
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("FootLock_L")),
 	               FName(TEXT("ik_foot_l")), FootIKValues.FootLock_L_Alpha,
@@ -290,8 +295,8 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
                                                FRotator& CurFootLockRot)
 {
 	FootIKValues.bReverseFootAsset = ((Character->HasAuthority() && !Character->IsLocallyControlled())
-								   || Character->GetLocalRole() == ROLE_AutonomousProxy)
-								   && !CharacterInformation.bIsMoving;
+			|| Character->GetLocalRole() == ROLE_AutonomousProxy)
+		&& !CharacterInformation.bIsMoving;
 
 	if (GetCurveValue(EnableFootIKCurve) <= 0.0f)
 	{
@@ -771,21 +776,21 @@ void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayR
 			if (FootIKValues.bReverseFootAsset)
 			{
 				TargetTurnAsset = (TurnAngle < 0.0f)
-								? TurnInPlaceValues.N_TurnIP_L90
-								: TurnInPlaceValues.N_TurnIP_R90;
+					                  ? TurnInPlaceValues.N_TurnIP_L90
+					                  : TurnInPlaceValues.N_TurnIP_R90;
 			}
 			else
 			{
 				TargetTurnAsset = (TurnAngle < 0.0f)
-								? TurnInPlaceValues.N_TurnIP_R90
-								: TurnInPlaceValues.N_TurnIP_L90;
+					                  ? TurnInPlaceValues.N_TurnIP_R90
+					                  : TurnInPlaceValues.N_TurnIP_L90;
 			}
 		}
 		else
 		{
 			TargetTurnAsset = TurnAngle < 0.0f
-							? TurnInPlaceValues.N_TurnIP_L180
-							: TurnInPlaceValues.N_TurnIP_R180;
+				                  ? TurnInPlaceValues.N_TurnIP_L180
+				                  : TurnInPlaceValues.N_TurnIP_R180;
 		}
 	}
 	else
@@ -793,14 +798,14 @@ void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayR
 		if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
 		{
 			TargetTurnAsset = TurnAngle < 0.0f
-							? TurnInPlaceValues.CLF_TurnIP_L90
-							: TurnInPlaceValues.CLF_TurnIP_R90;
+				                  ? TurnInPlaceValues.CLF_TurnIP_L90
+				                  : TurnInPlaceValues.CLF_TurnIP_R90;
 		}
 		else
 		{
 			TargetTurnAsset = TurnAngle < 0.0f
-							? TurnInPlaceValues.CLF_TurnIP_L180
-							: TurnInPlaceValues.CLF_TurnIP_R180;
+				                  ? TurnInPlaceValues.CLF_TurnIP_L180
+				                  : TurnInPlaceValues.CLF_TurnIP_R180;
 		}
 	}
 
