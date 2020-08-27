@@ -326,7 +326,7 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
 	// unnaturally.
 	const float InterpSpeed = 90.0f;
 
-	if (CurFootLockLoc == FVector::ZeroVector)
+	if (CurFootLockLoc == FVector::ZeroVector || Character->GetLocalRole() != ROLE_AutonomousProxy)
 	{
 		CurFootLockLoc = TargetFootLockLoc;
 		CurFootLockRot = TargetFootLockRot;
@@ -519,7 +519,7 @@ void UALSCharacterAnimInstance::DynamicTransitionCheck()
 	if (Distance > Config.DynamicTransitionThreshold)
 	{
 		FALSDynamicMontageParams Params;
-		Params.Animation = TransitionAnim_L;
+		Params.Animation = TransitionAnim_R;
 		Params.BlendInTime = 0.2f;
 		Params.BlendOutTime = 0.2f;
 		Params.PlayRate = 1.5f;
@@ -533,7 +533,7 @@ void UALSCharacterAnimInstance::DynamicTransitionCheck()
 	if (Distance > Config.DynamicTransitionThreshold)
 	{
 		FALSDynamicMontageParams Params;
-		Params.Animation = TransitionAnim_R;
+		Params.Animation = TransitionAnim_L;
 		Params.BlendInTime = 0.2f;
 		Params.BlendOutTime = 0.2f;
 		Params.PlayRate = 1.5f;

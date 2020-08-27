@@ -483,7 +483,7 @@ struct FALSAnimConfiguration
 
 	/** Threshold value for activating dynamic transition on various animations */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float DynamicTransitionThreshold = 12.0f;
+	float DynamicTransitionThreshold = 8.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float IK_TraceDistanceAboveFoot = 50.0f;
