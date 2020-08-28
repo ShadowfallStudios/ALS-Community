@@ -38,7 +38,7 @@ public:
 
 	virtual void RagdollEnd() override;
 
-	virtual ECollisionChannel GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius) override;
+	virtual ECollisionChannel GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius, bool& UseBlockingHit) override;
 
 	virtual FTransform GetThirdPersonPivotTarget() override;
 

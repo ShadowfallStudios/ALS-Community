@@ -666,10 +666,11 @@ float AALSBaseCharacter::GetAnimCurveValue(FName CurveName) const
 	return 0.0f;
 }
 
-ECollisionChannel AALSBaseCharacter::GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius)
+ECollisionChannel AALSBaseCharacter::GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius, bool& UseBlockingHit)
 {
 	TraceOrigin = GetActorLocation();
 	TraceRadius = 10.0f;
+	UseBlockingHit = MovementAction != EALSMovementAction::Rolling;
 	return ECC_Visibility;
 }
 

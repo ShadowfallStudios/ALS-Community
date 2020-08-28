@@ -274,7 +274,7 @@ public:
 	void SetRightShoulder(bool bNewRightShoulder) { bRightShoulder = bNewRightShoulder; }
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
-	virtual ECollisionChannel GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius);
+	virtual ECollisionChannel GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius, bool& UseBlockingHit);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
 	virtual FTransform GetThirdPersonPivotTarget();
@@ -543,7 +543,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	float Speed = 0.0f;
 
-	UPROPERTY(BlueprintReadOnly, replicated, Category = "ALS|Essential Information")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	float MovementInputAmount = 0.0f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")

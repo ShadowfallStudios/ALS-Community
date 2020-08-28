@@ -77,7 +77,7 @@ void AALSCharacter::RagdollEnd()
 	UpdateHeldObject();
 }
 
-ECollisionChannel AALSCharacter::GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius)
+ECollisionChannel AALSCharacter::GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius, bool& UseBlockingHit)
 {
 	if (bRightShoulder)
 	{
@@ -90,6 +90,7 @@ ECollisionChannel AALSCharacter::GetThirdPersonTraceParams(FVector& TraceOrigin,
 		TraceRadius = 15.0f;
 	}
 
+	UseBlockingHit = MovementAction != EALSMovementAction::Rolling;
 	return ECC_Camera;
 }
 
