@@ -264,12 +264,10 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 
 	// Update Foot Locking values.
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("FootLock_L")),
-	               FName(TEXT("ik_foot_l")), FootIKValues.FootLock_L_Alpha,
-				   FootIKValues.TargetFootLock_L_Location, FootIKValues.TargetFootLock_L_Rotation,
+	               FName(TEXT("ik_foot_l")), FootIKValues.FootLock_L_Alpha, FootIKValues.UseFootLockCurve_L,
 	               FootIKValues.FootLock_L_Location, FootIKValues.FootLock_L_Rotation);
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("FootLock_R")),
-	               FName(TEXT("ik_foot_r")), FootIKValues.FootLock_R_Alpha,
-				   FootIKValues.TargetFootLock_R_Location, FootIKValues.TargetFootLock_R_Rotation,
+	               FName(TEXT("ik_foot_r")), FootIKValues.FootLock_R_Alpha, FootIKValues.UseFootLockCurve_R,
 	               FootIKValues.FootLock_R_Location, FootIKValues.FootLock_R_Rotation);
 
 	if (MovementState.InAir())
@@ -292,8 +290,7 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 }
 
 void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableFootIKCurve, FName FootLockCurve,
-                                               FName IKFootBone, float& CurFootLockAlpha, 
-											   FVector& TargetFootLockLoc, FRotator& TargetFootLockRot,
+                                               FName IKFootBone, float& CurFootLockAlpha, bool& UseFootLockCurve,
 											   FVector& CurFootLockLoc, FRotator& CurFootLockRot)
 {
 	if (GetCurveValue(EnableFootIKCurve) <= 0.0f)
@@ -302,7 +299,19 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
 	}
 
 	// Step 1: Set Local FootLock Curve value
-	const float FootLockCurveVal = GetCurveValue(FootLockCurve);
+	float FootLockCurveVal;
+
+	if (UseFootLockCurve)
+	{
+		UseFootLockCurve = FMath::Abs(GetCurveValue(FName(TEXT("RotationAmount")))) <= 0.001f || 
+						   Character->GetLocalRole() != ROLE_AutonomousProxy;
+		FootLockCurveVal = GetCurveValue(FootLockCurve);
+	}
+	else
+	{
+		UseFootLockCurve = GetCurveValue(FootLockCurve) >= 0.99f;
+		FootLockCurveVal = 0.0f;
+	}
 
 	// Step 2: Only update the FootLock Alpha if the new value is less than the current, or it equals 1. This makes it
 	// so that the foot can only blend out of the locked position or lock to a new position, and never blend in.
@@ -316,28 +325,11 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
 	{
 		const FTransform& OwnerTransform =
 			GetOwningComponent()->GetSocketTransform(IKFootBone, ERelativeTransformSpace::RTS_Component);
-		TargetFootLockLoc = OwnerTransform.GetLocation();
-		TargetFootLockRot = OwnerTransform.Rotator();
+		CurFootLockLoc = OwnerTransform.GetLocation();
+		CurFootLockRot = OwnerTransform.Rotator();
 	}
 
-	// Step 4: Once the new lock location and rotation is set as the target, Interp current foot lock values into the
-	// target values so that in multiplayer, where there is differing frame delta values between server and client, the
-	// foot doesn't 'jump' into the new value causing stuttering or in the worst case, bending the character's legs
-	// unnaturally.
-	const float InterpSpeed = 90.0f;
-
-	if (CurFootLockLoc == FVector::ZeroVector || Character->GetLocalRole() != ROLE_AutonomousProxy)
-	{
-		CurFootLockLoc = TargetFootLockLoc;
-		CurFootLockRot = TargetFootLockRot;
-	}
-	else
-	{
-		CurFootLockLoc = UKismetMathLibrary::VInterpTo(CurFootLockLoc, TargetFootLockLoc, DeltaSeconds, InterpSpeed);
-		CurFootLockRot = UKismetMathLibrary::RInterpTo(CurFootLockRot, TargetFootLockRot, DeltaSeconds, InterpSpeed);
-	}
-
-	// Step 5: If the Foot Lock Alpha has a weight,
+	// Step 4: If the Foot Lock Alpha has a weight,
 	// update the Foot Lock offsets to keep the foot planted in place while the capsule moves.
 	if (CurFootLockAlpha > 0.0f)
 	{

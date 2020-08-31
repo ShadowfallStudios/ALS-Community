@@ -274,7 +274,7 @@ public:
 	void SetRightShoulder(bool bNewRightShoulder) { bRightShoulder = bNewRightShoulder; }
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
-	virtual ECollisionChannel GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius, bool& UseBlockingHit);
+	virtual ECollisionChannel GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
 	virtual FTransform GetThirdPersonPivotTarget();
