@@ -148,6 +148,7 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(ControlledCharacter);
 
 	FHitResult HitResult;
 	World->SweepSingleByChannel(HitResult, TraceOrigin, TargetCameraLocation, FQuat::Identity,
