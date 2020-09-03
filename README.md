@@ -1,7 +1,7 @@
 # Advanced Locomotion System V4 on C++
-![image](https://github.com/dyanikoglu/ALSV4_CPP/raw/master/Resources/Readme_Content_2.gif)
+![image](https://github.com/dyanikoglu/ALSV4_CPP/raw/main/Resources/Readme_Content_2.gif)
 
-Performance optimized & replicated C++ port of [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1) for **Unreal Engine 4.25+**
+Performance optimized & replicated C++ port of [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1) for **Unreal Engine 4.25.3**
 
 ## Features
 - Converted into plugin structure (by [AHGS-Jens](https://github.com/AHGS-Jens)). You can immediately start using it in your project without doing any serious change in your project configuration.
@@ -82,7 +82,7 @@ Netprofiler benchmark by @Scragnog
 +DefaultChannelResponses=(Channel=ECC_GameTraceChannel2,DefaultResponse=ECR_Block,bTraceType=True,bStaticObject=False,Name="Climbable")
 ```
 - Launch your project, and enable plugin content viewer as seen below. This will show contents of the ALS in your content browser:
-![image](https://github.com/dyanikoglu/ALSV4_CPP/raw/master/Resources/Readme_Content_1.png)
+![image](https://github.com/dyanikoglu/ALSV4_CPP/raw/main/Resources/Readme_Content_1.png)
 
 ## License & Contribution
 **Source code** of the plugin is licensed under MIT license, and other developers are encouraged to fork the repository, open issues & pull requests to help the development.
