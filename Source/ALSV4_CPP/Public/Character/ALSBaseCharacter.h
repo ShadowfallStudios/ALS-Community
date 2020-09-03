@@ -543,7 +543,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	float Speed = 0.0f;
 
-	UPROPERTY(BlueprintReadOnly, replicated, Category = "ALS|Essential Information")
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	float MovementInputAmount = 0.0f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
