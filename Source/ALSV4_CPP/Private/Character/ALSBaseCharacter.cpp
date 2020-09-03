@@ -156,6 +156,10 @@ void AALSBaseCharacter::BeginPlay()
 	{
 		MainAnimInstance->SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);
 	}
+
+	UWorld* World = GetWorld();
+	check(World);
+	PlayerController = Cast<AALSPlayerController>(World->GetFirstPlayerController());
 }
 
 void AALSBaseCharacter::PreInitializeComponents()

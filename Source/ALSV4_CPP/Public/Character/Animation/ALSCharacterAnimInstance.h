@@ -16,6 +16,7 @@
 #include "ALSCharacterAnimInstance.generated.h"
 
 class AALSBaseCharacter;
+class AALSPlayerController;
 class UCurveFloat;
 class UAnimSequence;
 class UCurveVector;
@@ -160,20 +161,26 @@ private:
 
 	float CalculateCrouchingPlayRate() const;
 
-	float CalculateLandPrediction() const;
-
 	FALSLeanAmount CalculateAirLeanAmount() const;
 
 	EALSMovementDirection CalculateMovementDirection() const;
+
+	float CalculateLandPrediction();
 
 	/** Util */
 
 	float GetAnimCurveClamped(const FName& Name, float Bias, float ClampMin, float ClampMax) const;
 
+	/** Debug*/
+	void ShowDebugTraces(FHitResult HitResult, bool UseCapsule);
+
 protected:
 	/** References */
 	UPROPERTY(BlueprintReadOnly)
 	AALSBaseCharacter* Character = nullptr;
+
+	UPROPERTY(BlueprintReadOnly)
+	AALSPlayerController* Controller = nullptr;
 
 	/** Character Information */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information", Meta = (ShowOnlyInnerProperties))

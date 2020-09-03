@@ -15,6 +15,7 @@
 #include "Engine/DataTable.h"
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #include "ALSBaseCharacter.generated.h"
 
@@ -22,6 +23,7 @@ class UTimelineComponent;
 class UAnimInstance;
 class UAnimMontage;
 class UALSCharacterAnimInstance;
+class AALSPlayerController;
 
 /*
  * Base character class
@@ -659,6 +661,9 @@ protected:
 	FVector PreviousVelocity;
 
 	float PreviousAimYaw = 0.0f;
+
+	UPROPERTY(BlueprintReadOnly)
+	AALSPlayerController* PlayerController = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
 	UALSCharacterAnimInstance* MainAnimInstance = nullptr;

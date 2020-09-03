@@ -8,15 +8,21 @@
 
 #include "Character/Animation/ALSCharacterAnimInstance.h"
 #include "Character/ALSBaseCharacter.h"
+#include "Character/ALSPlayerController.h"
 #include "Library/ALSMathLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Curves/CurveVector.h"
 #include "Components/CapsuleComponent.h"
+#include "DrawDebugHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 void UALSCharacterAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 	Character = Cast<AALSBaseCharacter>(TryGetPawnOwner());
+	UWorld* World = GetWorld();
+	check(World);
+	Controller = Cast<AALSPlayerController>(World->GetFirstPlayerController());
 }
 
 void UALSCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -430,6 +436,8 @@ void UALSCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableF
 	                                IKFootFloorLoc - FVector(0.0, 0.0, Config.IK_TraceDistanceBelowFoot),
 	                                ECollisionChannel::ECC_Visibility, Params);
 
+	ShowDebugTraces(HitResult, false);
+
 	FRotator TargetRotOffset = FRotator::ZeroRotator;
 	if (Character->GetCharacterMovement()->IsWalkable(HitResult))
 	{
@@ -607,6 +615,35 @@ float UALSCharacterAnimInstance::GetAnimCurveClamped(const FName& Name, float Bi
 	return FMath::Clamp(GetCurveValue(Name) + Bias, ClampMin, ClampMax);
 }
 
+// Turn on character trace debugging. UseCapsule is true for capsule trace and false for line trace.
+void UALSCharacterAnimInstance::ShowDebugTraces(FHitResult HitResult, bool UseCapsule)
+{
+	if (!Controller)
+	{
+		return;
+	}
+
+	if (Controller->GetShowTraces())
+	{
+		UWorld* World = GetWorld();
+		check(World);
+		FVector ImpactPoint = HitResult.ImpactPoint;
+
+		if (UseCapsule)
+		{
+			const float HalfHeight = Character->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+			const float Radius = Character->GetCapsuleComponent()->GetScaledCapsuleRadius();
+			ImpactPoint.Z += HalfHeight;
+			DrawDebugCapsule(World, HitResult.TraceStart, HalfHeight, Radius, FQuat::Identity, FColor::Red, false, 0.0f);
+			DrawDebugCapsule(World, ImpactPoint, HalfHeight, Radius, FQuat::Identity, FColor::Red, false, 0.0f);
+			DrawDebugCapsule(World, HitResult.TraceEnd, HalfHeight, Radius, FQuat::Identity, FColor::Green, false, 0.0f);
+		}
+		DrawDebugLine(World, HitResult.TraceStart, ImpactPoint, FColor::Red, false, 0.0f);
+		DrawDebugLine(World, HitResult.ImpactPoint, HitResult.ImpactPoint, FColor::Red, false, 0.0f, 0, 10);
+		DrawDebugLine(World, ImpactPoint, HitResult.TraceEnd, FColor::Green, false, 0.0f);
+	}
+}
+
 FALSVelocityBlend UALSCharacterAnimInstance::CalculateVelocityBlend() const
 {
 	// Calculate the Velocity Blend. This value represents the velocity amount of the actor in each direction (normalized so that
@@ -697,7 +734,7 @@ float UALSCharacterAnimInstance::CalculateCrouchingPlayRate() const
 		0.0f, 2.0f);
 }
 
-float UALSCharacterAnimInstance::CalculateLandPrediction() const
+float UALSCharacterAnimInstance::CalculateLandPrediction()
 {
 	// Calculate the land prediction weight by tracing in the velocity direction to find a walkable surface the character
 	// is falling toward, and getting the 'Time' (range of 0-1, 1 being maximum, 0 being about to land) till impact.
@@ -727,6 +764,7 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 	World->SweepSingleByProfile(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity, FName(TEXT("ALS_Character")),
 	                            FCollisionShape::MakeCapsule(CapsuleComp->GetUnscaledCapsuleRadius(),
 	                                                         CapsuleComp->GetUnscaledCapsuleHalfHeight()), Params);
+	ShowDebugTraces(HitResult, true);
 
 	if (Character->GetCharacterMovement()->IsWalkable(HitResult))
 	{

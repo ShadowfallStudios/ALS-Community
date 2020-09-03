@@ -25,6 +25,16 @@ class ALSV4_CPP_API AALSPlayerController : public APlayerController
 public:
 	void OnRestartPawn(APawn* NewPawn);
 
+	bool GetShowTraces() { return bShowTraces; }
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bShowTraces = false;
+
+	bool GetShowLayerColors() { return bShowLayerColors; }
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bShowLayerColors = false;
+
 private:
 	/** Main character reference */
 	AALSBaseCharacter* PossessedCharacter = nullptr;

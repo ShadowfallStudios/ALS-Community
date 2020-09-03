@@ -3,9 +3,10 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    
+// Contributors:    Haziq Fadhil
 
 
+#include "Character/ALSPlayerController.h"
 #include "Character/ALSCharacter.h"
 #include "Engine/StaticMesh.h"
 #include "Character/AI/ALSAIController.h"
@@ -23,6 +24,86 @@ AALSCharacter::AALSCharacter(const FObjectInitializer& ObjectInitializer)
 	StaticMesh->SetupAttachment(HeldObjectRoot);
 
 	AIControllerClass = AALSAIController::StaticClass();
+}
+
+void AALSCharacter::UpdateColoringSystem()
+{
+	if (!PlayerController)
+	{
+		return;
+	}
+	if (PlayerController->GetShowLayerColors() && GetMesh()->IsVisible())
+	{
+		UpdateLayeringColors();
+		bCanSetColors = true;
+	}
+	else
+	{
+		if (bCanSetColors)
+		{
+			bCanSetColors = false;
+			SetOrResetColors();
+		}
+	}
+}
+
+void AALSCharacter::UpdateLayeringColors()
+{
+	Head->SetVectorParameterValue(FName(TEXT("BaseColor")), GetLayerColor(true, FName(TEXT("Layering_Head")), 
+								  FName(TEXT("Layering_Head_Add"))));
+	Torso->SetVectorParameterValue(FName(TEXT("BaseColor")), GetLayerColor(true, FName(TEXT("Layering_Spine")), 
+								   FName(TEXT("Layering_Spine_Add"))));
+	Pelvis->SetVectorParameterValue(FName(TEXT("BaseColor")), GetLayerColor(false, 
+									FName(TEXT("Layering_Pelvis")), FName(TEXT("None"))));
+	
+	const FLinearColor LegsColor = GetLayerColor(false, FName(TEXT("Layering_Legs")), FName(TEXT("None")));
+	UpperLegs->SetVectorParameterValue(FName(TEXT("BaseColor")), LegsColor);
+	LowerLegs->SetVectorParameterValue(FName(TEXT("BaseColor")), LegsColor);
+	Feet->SetVectorParameterValue(FName(TEXT("BaseColor")), LegsColor);
+
+	SetArmsLayerColor(true);
+	SetArmsLayerColor(false);
+}
+
+/** If UseOverlay is true include LinearColor Lerp for OverlayColor*/
+FLinearColor AALSCharacter::GetLayerColor(bool UseOverlay, FName BaseCurveName, FName AdditiveCurveName)
+{
+	const float BaseAlpha = GetAnimCurveValue(BaseCurveName);
+	if (UseOverlay)
+	{
+		const float LayeringAlpha = GetAnimCurveValue(AdditiveCurveName);
+		FLinearColor OverlayColor = UKismetMathLibrary::LinearColorLerp(
+			OverlayLayerColor, AdditiveAmount_Color, LayeringAlpha);
+		return UKismetMathLibrary::LinearColorLerp(BaseLayerColor, OverlayColor, BaseAlpha);
+	}
+	else
+	{
+		return UKismetMathLibrary::LinearColorLerp(BaseLayerColor, AdditiveAmount_Color, BaseAlpha);
+	}
+}
+
+void AALSCharacter::SetArmsLayerColor(bool LeftArm)
+{
+	FName BaseArmCurve = LeftArm ? FName(TEXT("Layering_Arm_L")) : FName(TEXT("Layering_Arm_R"));
+	FName BaseHandCurve = LeftArm ? FName(TEXT("Layering_Hand_L")) : FName(TEXT("Layering_Hand_R"));
+	FName BaseHand_IK_Curve = LeftArm ? FName(TEXT("Layering_HandIK_L")) : FName(TEXT("Layering_HandIK_R"));
+	FName AdditiveArmCurve = LeftArm ? FName(TEXT("Layering_Arm_L_Add")) : FName(TEXT("Layering_Arm_R_Add"));
+
+	UMaterialInstanceDynamic* Shoulder = LeftArm ? Shoulder_L : Shoulder_R;
+	UMaterialInstanceDynamic* UpperArm = LeftArm ? UpperArm_L : UpperArm_R;
+	UMaterialInstanceDynamic* LowerArm = LeftArm ? LowerArm_L : LowerArm_R;
+	UMaterialInstanceDynamic* Hand = LeftArm ? Hand_L : Hand_R;
+
+	const FLinearColor ArmsColor = GetLayerColor(true, BaseArmCurve, AdditiveArmCurve);
+	Shoulder->SetVectorParameterValue(FName(TEXT("BaseColor")), ArmsColor);
+	UpperArm->SetVectorParameterValue(FName(TEXT("BaseColor")), ArmsColor);
+	LowerArm->SetVectorParameterValue(FName(TEXT("BaseColor")), ArmsColor);
+
+	const FLinearColor BaseHand_Color = UKismetMathLibrary::LinearColorLerp(ArmsColor, 
+										 Hand_Color, GetAnimCurveValue(BaseHandCurve));
+	const FLinearColor FinalHand_Color = UKismetMathLibrary::LinearColorLerp(BaseHand_Color,
+										  HandIK_Color, GetAnimCurveValue(BaseHand_IK_Curve));
+	Hand->SetVectorParameterValue(FName(TEXT("BaseColor")), FinalHand_Color);
 }
 
 void AALSCharacter::ClearHeldObject()
@@ -65,6 +146,101 @@ void AALSCharacter::AttachToHand(UStaticMesh* NewStaticMesh, USkeletalMesh* NewS
 	HeldObjectRoot->SetRelativeLocation(Offset);
 }
 
+void AALSCharacter::SetOrResetColors()
+{
+	FLinearColor TorsoColor;
+	FLinearColor UpperArmsColor;
+	FLinearColor LowerArmsColor; 
+	FLinearColor PelvisColor;
+	FLinearColor UpperLegsColor;
+	FLinearColor LowerLegsColor;
+	if (bSolidColor)
+	{
+		TorsoColor = ALSDefaultColor;
+		UpperArmsColor = ALSDefaultColor;
+		LowerArmsColor = ALSDefaultColor;
+		PelvisColor = ALSDefaultColor;
+		UpperLegsColor = ALSDefaultColor;
+		LowerLegsColor = ALSDefaultColor;
+		Head->SetVectorParameterValue(FName(TEXT("BaseColor")), ALSDefaultColor);
+		Hand_L->SetVectorParameterValue(FName(TEXT("BaseColor")), ALSDefaultColor);
+		Hand_R->SetVectorParameterValue(FName(TEXT("BaseColor")), ALSDefaultColor);
+		Feet->SetVectorParameterValue(FName(TEXT("BaseColor")), ALSDefaultColor);
+	}
+	else
+	{
+		Head->SetVectorParameterValue(FName(TEXT("BaseColor")), ALSSkinColor);
+		switch (ALSShirtType)
+		{
+		case 0:
+			TorsoColor = ALSSkinColor;
+			UpperArmsColor = ALSSkinColor;
+			LowerArmsColor = ALSSkinColor;
+			break;
+
+		case 1:
+			TorsoColor = ALSShirtColor;
+			UpperArmsColor = ALSSkinColor;
+			LowerArmsColor = ALSSkinColor;
+			break;
+
+		case 2:
+			TorsoColor = ALSShirtColor;
+			UpperArmsColor = ALSShirtColor;
+			LowerArmsColor = ALSSkinColor;
+			break;
+
+		case 3:
+			TorsoColor = ALSShirtColor;
+			UpperArmsColor = ALSShirtColor;
+			LowerArmsColor = ALSShirtColor;
+			break;
+
+		default:
+			break;
+		}
+
+		switch (ALSPantsType)
+		{
+		case 0:
+			PelvisColor = ALSPantsColor;
+			UpperLegsColor = ALSSkinColor;
+			LowerLegsColor = ALSSkinColor;
+			break;
+
+		case 1:
+			PelvisColor = ALSPantsColor;
+			UpperLegsColor = ALSPantsColor;
+			LowerLegsColor = ALSSkinColor;
+			break;
+
+		case 2:
+			PelvisColor = ALSPantsColor;
+			UpperLegsColor = ALSPantsColor;
+			LowerLegsColor = ALSPantsColor;
+			break;
+
+		default:
+			break;
+		}
+
+		Feet->SetVectorParameterValue(FName(TEXT("BaseColor")), bShoes ? ALSShoesColor : ALSSkinColor);
+		Hand_L->SetVectorParameterValue(FName(TEXT("BaseColor")), bGloves ? ALSGlovesColor : ALSSkinColor);
+		Hand_R->SetVectorParameterValue(FName(TEXT("BaseColor")), bGloves ? ALSGlovesColor : ALSSkinColor);
+	}
+
+	Torso->SetVectorParameterValue(FName(TEXT("BaseColor")), TorsoColor);
+	Shoulder_L->SetVectorParameterValue(FName(TEXT("BaseColor")), TorsoColor);
+	Shoulder_R->SetVectorParameterValue(FName(TEXT("BaseColor")), TorsoColor);
+	UpperArm_L->SetVectorParameterValue(FName(TEXT("BaseColor")), UpperArmsColor);
+	UpperArm_R->SetVectorParameterValue(FName(TEXT("BaseColor")), UpperArmsColor);
+	LowerArm_L->SetVectorParameterValue(FName(TEXT("BaseColor")), LowerArmsColor);
+	LowerArm_R->SetVectorParameterValue(FName(TEXT("BaseColor")), LowerArmsColor);
+	Pelvis->SetVectorParameterValue(FName(TEXT("BaseColor")), PelvisColor);
+	UpperLegs->SetVectorParameterValue(FName(TEXT("BaseColor")), UpperLegsColor);
+	LowerLegs->SetVectorParameterValue(FName(TEXT("BaseColor")), LowerLegsColor);
+}
+
 void AALSCharacter::RagdollStart()
 {
 	ClearHeldObject();
@@ -75,6 +251,7 @@ void AALSCharacter::RagdollEnd()
 {
 	Super::RagdollEnd();
 	UpdateHeldObject();
+	UpdateColoringSystem();
 }
 
 ECollisionChannel AALSCharacter::GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius)
@@ -109,6 +286,7 @@ void AALSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateHeldObjectAnimations();
+	UpdateColoringSystem();
 }
 
 void AALSCharacter::BeginPlay()
