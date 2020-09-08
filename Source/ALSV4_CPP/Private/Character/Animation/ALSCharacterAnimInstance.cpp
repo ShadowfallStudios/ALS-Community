@@ -325,28 +325,11 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
 	{
 		const FTransform& OwnerTransform =
 			GetOwningComponent()->GetSocketTransform(IKFootBone, ERelativeTransformSpace::RTS_Component);
-		TargetFootLockLoc = OwnerTransform.GetLocation();
-		TargetFootLockRot = OwnerTransform.Rotator();
+		CurFootLockLoc = OwnerTransform.GetLocation();
+		CurFootLockRot = OwnerTransform.Rotator();
 	}
 
-	// Step 4: Once the new lock location and rotation is set as the target, Interp current foot lock values into the
-	// target values so that in multiplayer, where there is differing frame delta values between server and client, the
-	// foot doesn't 'jump' into the new value causing stuttering or in the worst case, bending the character's legs
-	// unnaturally.
-	const float InterpSpeed = 90.0f;
-
-	if (CurFootLockLoc == FVector::ZeroVector || Character->GetLocalRole() != ROLE_AutonomousProxy)
-	{
-		CurFootLockLoc = TargetFootLockLoc;
-		CurFootLockRot = TargetFootLockRot;
-	}
-	else
-	{
-		CurFootLockLoc = UKismetMathLibrary::VInterpTo(CurFootLockLoc, TargetFootLockLoc, DeltaSeconds, InterpSpeed);
-		CurFootLockRot = UKismetMathLibrary::RInterpTo(CurFootLockRot, TargetFootLockRot, DeltaSeconds, InterpSpeed);
-	}
-
-	// Step 5: If the Foot Lock Alpha has a weight,
+	// Step 4: If the Foot Lock Alpha has a weight,
 	// update the Foot Lock offsets to keep the foot planted in place while the capsule moves.
 	if (CurFootLockAlpha > 0.0f)
 	{
