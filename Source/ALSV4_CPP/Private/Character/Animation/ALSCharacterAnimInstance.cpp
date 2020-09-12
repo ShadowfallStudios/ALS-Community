@@ -40,11 +40,10 @@ void UALSCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	UpdateAimingValues(DeltaSeconds);
 	UpdateLayerValues();
+	UpdateFootIK(DeltaSeconds);
 	
 	if (MovementState.Grounded())
 	{
-		UpdateFootIK(DeltaSeconds);
-		
 		// Check If Moving Or Not & Enable Movement Animations if IsMoving and HasMovementInput, or if the Speed is greater than 150.
 		const bool prevShouldMove = Grounded.bShouldMove;
 		Grounded.bShouldMove = ShouldMoveCheck();
@@ -258,13 +257,16 @@ void UALSCharacterAnimInstance::UpdateLayerValues()
 
 void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 {
-	// Update Foot Locking values.
-	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("FootLock_L")),
-	               FName(TEXT("ik_foot_l")), FootIKValues.FootLock_L_Alpha, FootIKValues.UseFootLockCurve_L,
-	               FootIKValues.FootLock_L_Location, FootIKValues.FootLock_L_Rotation);
-	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("FootLock_R")),
-	               FName(TEXT("ik_foot_r")), FootIKValues.FootLock_R_Alpha, FootIKValues.UseFootLockCurve_R,
-	               FootIKValues.FootLock_R_Location, FootIKValues.FootLock_R_Rotation);
+	if (MovementState.Grounded())
+	{
+		// Update Foot Locking values.
+		SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("FootLock_L")),
+					FName(TEXT("ik_foot_l")), FootIKValues.FootLock_L_Alpha, FootIKValues.UseFootLockCurve_L,
+					FootIKValues.FootLock_L_Location, FootIKValues.FootLock_L_Rotation);
+		SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("FootLock_R")),
+					FName(TEXT("ik_foot_r")), FootIKValues.FootLock_R_Alpha, FootIKValues.UseFootLockCurve_R,
+					FootIKValues.FootLock_R_Location, FootIKValues.FootLock_R_Rotation);
+	}
 
 	if (MovementState.InAir())
 	{
@@ -272,7 +274,7 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 		SetPelvisIKOffset(DeltaSeconds, FVector::ZeroVector, FVector::ZeroVector);
 		ResetIKOffsets(DeltaSeconds);
 	}
-	else if (!MovementState.Ragdoll())
+	else if (MovementState.Grounded())
 	{
 		// Update all Foot Lock and Foot Offset values when not In Air
 		FVector FootOffsetLTarget;
