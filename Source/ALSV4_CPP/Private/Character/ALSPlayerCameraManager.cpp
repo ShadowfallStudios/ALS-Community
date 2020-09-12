@@ -140,7 +140,7 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 	// Trace origins are set within the Character BP via the Camera Interface.
 	// Functions like the normal spring arm, but can allow for different trace origins regardless of the pivot
 	FVector TraceOrigin;
-	float TraceRadius = 0.0f;
+	float TraceRadius;
 	ECollisionChannel TraceChannel = ControlledCharacter->GetThirdPersonTraceParams(TraceOrigin, TraceRadius);
 
 	UWorld* World = GetWorld();
@@ -148,12 +148,13 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(ControlledCharacter);
 
 	FHitResult HitResult;
 	World->SweepSingleByChannel(HitResult, TraceOrigin, TargetCameraLocation, FQuat::Identity,
-	                            TraceChannel, FCollisionShape::MakeSphere(TraceRadius), Params);
+                                TraceChannel, FCollisionShape::MakeSphere(TraceRadius), Params);
 
-	if (HitResult.IsValidBlockingHit())
+	if (HitResult.bBlockingHit)
 	{
 		TargetCameraLocation += (HitResult.Location - HitResult.TraceEnd);
 	}

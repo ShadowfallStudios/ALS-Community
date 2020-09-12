@@ -329,13 +329,28 @@ struct FALSAnimGraphFootIK
 	float FootLock_R_Alpha = 0.0f;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+  bool UseFootLockCurve_L;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	bool UseFootLockCurve_R;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	FVector FootLock_L_Location;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	FVector TargetFootLock_R_Location;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	FVector FootLock_R_Location;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	FRotator TargetFootLock_L_Rotation;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	FRotator FootLock_L_Rotation;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	FRotator TargetFootLock_R_Rotation;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	FRotator FootLock_R_Rotation;
@@ -357,9 +372,6 @@ struct FALSAnimGraphFootIK
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	float PelvisAlpha = 0.0f;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	bool bReverseFootAsset = false;
 };
 
 USTRUCT(BlueprintType)
@@ -474,7 +486,7 @@ struct FALSAnimConfiguration
 
 	/** Threshold value for activating dynamic transition on various animations */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float DynamicTransitionThreshold = 12.0f;
+	float DynamicTransitionThreshold = 8.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float IK_TraceDistanceAboveFoot = 50.0f;

@@ -40,10 +40,11 @@ void UALSCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	UpdateAimingValues(DeltaSeconds);
 	UpdateLayerValues();
-	UpdateFootIK(DeltaSeconds);
-
+	
 	if (MovementState.Grounded())
 	{
+		UpdateFootIK(DeltaSeconds);
+		
 		// Check If Moving Or Not & Enable Movement Animations if IsMoving and HasMovementInput, or if the Speed is greater than 150.
 		const bool prevShouldMove = Grounded.bShouldMove;
 		Grounded.bShouldMove = ShouldMoveCheck();
@@ -257,17 +258,12 @@ void UALSCharacterAnimInstance::UpdateLayerValues()
 
 void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 {
-	if (MovementState.Mantling())
-	{
-		return;
-	}
-
 	// Update Foot Locking values.
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("FootLock_L")),
-	               FName(TEXT("ik_foot_l")), FootIKValues.FootLock_L_Alpha,
+	               FName(TEXT("ik_foot_l")), FootIKValues.FootLock_L_Alpha, FootIKValues.UseFootLockCurve_L,
 	               FootIKValues.FootLock_L_Location, FootIKValues.FootLock_L_Rotation);
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("FootLock_R")),
-	               FName(TEXT("ik_foot_r")), FootIKValues.FootLock_R_Alpha,
+	               FName(TEXT("ik_foot_r")), FootIKValues.FootLock_R_Alpha, FootIKValues.UseFootLockCurve_R,
 	               FootIKValues.FootLock_R_Location, FootIKValues.FootLock_R_Rotation);
 
 	if (MovementState.InAir())
@@ -290,30 +286,37 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 }
 
 void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableFootIKCurve, FName FootLockCurve,
-                                               FName IKFootBone,
-                                               float& CurFootLockAlpha, FVector& CurFootLockLoc,
-                                               FRotator& CurFootLockRot)
+                                               FName IKFootBone, float& CurFootLockAlpha, bool& UseFootLockCurve,
+											   FVector& CurFootLockLoc, FRotator& CurFootLockRot)
 {
-	FootIKValues.bReverseFootAsset = ((Character->HasAuthority() && !Character->IsLocallyControlled())
-			|| Character->GetLocalRole() == ROLE_AutonomousProxy)
-		&& !CharacterInformation.bIsMoving;
-
 	if (GetCurveValue(EnableFootIKCurve) <= 0.0f)
 	{
 		return;
 	}
 
 	// Step 1: Set Local FootLock Curve value
-	const float FootLockCurveVal = FootIKValues.bReverseFootAsset ? 0 : GetCurveValue(FootLockCurve);
+	float FootLockCurveVal;
+
+	if (UseFootLockCurve)
+	{
+		UseFootLockCurve = FMath::Abs(GetCurveValue(FName(TEXT("RotationAmount")))) <= 0.001f || 
+						   Character->GetLocalRole() != ROLE_AutonomousProxy;
+		FootLockCurveVal = GetCurveValue(FootLockCurve);
+	}
+	else
+	{
+		UseFootLockCurve = GetCurveValue(FootLockCurve) >= 0.99f;
+		FootLockCurveVal = 0.0f;
+	}
 
 	// Step 2: Only update the FootLock Alpha if the new value is less than the current, or it equals 1. This makes it
 	// so that the foot can only blend out of the locked position or lock to a new position, and never blend in.
-	if (FootLockCurveVal > 0.99f || FootLockCurveVal < CurFootLockAlpha)
+	if (FootLockCurveVal >= 0.99f || FootLockCurveVal < CurFootLockAlpha)
 	{
 		CurFootLockAlpha = FootLockCurveVal;
 	}
-
-	// Step 3: If the Foot Lock curve equals 1, save the new lock location and rotation in component space.
+	
+	// Step 3: If the Foot Lock curve equals 1, save the new lock location and rotation in component space as the target.
 	if (CurFootLockAlpha >= 0.99f)
 	{
 		const FTransform& OwnerTransform =
@@ -504,7 +507,7 @@ void UALSCharacterAnimInstance::DynamicTransitionCheck()
 	if (Distance > Config.DynamicTransitionThreshold)
 	{
 		FALSDynamicMontageParams Params;
-		Params.Animation = TransitionAnim_L;
+		Params.Animation = TransitionAnim_R;
 		Params.BlendInTime = 0.2f;
 		Params.BlendOutTime = 0.2f;
 		Params.PlayRate = 1.5f;
@@ -518,7 +521,7 @@ void UALSCharacterAnimInstance::DynamicTransitionCheck()
 	if (Distance > Config.DynamicTransitionThreshold)
 	{
 		FALSDynamicMontageParams Params;
-		Params.Animation = TransitionAnim_R;
+		Params.Animation = TransitionAnim_L;
 		Params.BlendInTime = 0.2f;
 		Params.BlendOutTime = 0.2f;
 		Params.PlayRate = 1.5f;
@@ -773,18 +776,9 @@ void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayR
 	{
 		if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
 		{
-			if (FootIKValues.bReverseFootAsset)
-			{
-				TargetTurnAsset = (TurnAngle < 0.0f)
-					                  ? TurnInPlaceValues.N_TurnIP_L90
-					                  : TurnInPlaceValues.N_TurnIP_R90;
-			}
-			else
-			{
-				TargetTurnAsset = (TurnAngle < 0.0f)
-					                  ? TurnInPlaceValues.N_TurnIP_R90
-					                  : TurnInPlaceValues.N_TurnIP_L90;
-			}
+			TargetTurnAsset = TurnAngle < 0.0f
+					              ? TurnInPlaceValues.N_TurnIP_L90
+					              : TurnInPlaceValues.N_TurnIP_R90;
 		}
 		else
 		{
