@@ -40,10 +40,11 @@ void UALSCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	UpdateAimingValues(DeltaSeconds);
 	UpdateLayerValues();
-	UpdateFootIK(DeltaSeconds);
-
+	
 	if (MovementState.Grounded())
 	{
+		UpdateFootIK(DeltaSeconds);
+		
 		// Check If Moving Or Not & Enable Movement Animations if IsMoving and HasMovementInput, or if the Speed is greater than 150.
 		const bool prevShouldMove = Grounded.bShouldMove;
 		Grounded.bShouldMove = ShouldMoveCheck();
@@ -257,11 +258,6 @@ void UALSCharacterAnimInstance::UpdateLayerValues()
 
 void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 {
-	if (MovementState.Mantling())
-	{
-		return;
-	}
-
 	// Update Foot Locking values.
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("FootLock_L")),
 	               FName(TEXT("ik_foot_l")), FootIKValues.FootLock_L_Alpha, FootIKValues.UseFootLockCurve_L,
