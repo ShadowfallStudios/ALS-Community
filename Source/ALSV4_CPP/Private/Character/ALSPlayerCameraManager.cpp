@@ -33,8 +33,11 @@ void AALSPlayerCameraManager::OnPossess(AALSBaseCharacter* NewCharacter)
 	{
 		CastedBehv->PlayerController = GetOwningPlayerController();
 		CastedBehv->ControlledPawn = ControlledCharacter;
-		SetActorLocation(ControlledCharacter->GetActorLocation());
-		SmoothedPivotTarget.SetLocation(ControlledCharacter->GetActorLocation());
+
+		// Initial position
+		const FVector& TPSLoc = ControlledCharacter->GetThirdPersonPivotTarget().GetLocation();
+		SetActorLocation(TPSLoc);
+		SmoothedPivotTarget.SetLocation(TPSLoc);
 	}
 }
 
