@@ -8,6 +8,8 @@
 
 #include "Character/ALSPlayerCameraManager.h"
 
+
+#include "DrawDebugHelpers.h"
 #include "Character/ALSBaseCharacter.h"
 #include "Character/Animation/ALSPlayerCameraBehavior.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -31,6 +33,8 @@ void AALSPlayerCameraManager::OnPossess(AALSBaseCharacter* NewCharacter)
 	{
 		CastedBehv->PlayerController = GetOwningPlayerController();
 		CastedBehv->ControlledPawn = ControlledCharacter;
+		SetActorLocation(ControlledCharacter->GetActorLocation());
+		SmoothedPivotTarget.SetLocation(ControlledCharacter->GetActorLocation());
 	}
 }
 
@@ -152,7 +156,7 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 
 	FHitResult HitResult;
 	World->SweepSingleByChannel(HitResult, TraceOrigin, TargetCameraLocation, FQuat::Identity,
-                                TraceChannel, FCollisionShape::MakeSphere(TraceRadius), Params);
+	                            TraceChannel, FCollisionShape::MakeSphere(TraceRadius), Params);
 
 	if (HitResult.bBlockingHit)
 	{
