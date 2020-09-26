@@ -53,9 +53,6 @@ public:
 	USkeletalMeshComponent* CameraBehavior = nullptr;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FName CustomTag = FName(TEXT("ALS_Character"));
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector RootLocation;
 
