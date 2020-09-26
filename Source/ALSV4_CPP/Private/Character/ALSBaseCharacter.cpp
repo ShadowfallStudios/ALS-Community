@@ -133,7 +133,7 @@ void AALSBaseCharacter::BeginPlay()
 
 	// Update states to use the initial desired values.
 	SetGait(DesiredGait);
-	SetDesiredStance(DesiredStance);
+	SetStance(DesiredStance);
 	SetRotationMode(DesiredRotationMode);
 	SetViewMode(ViewMode);
 	SetOverlayState(OverlayState);

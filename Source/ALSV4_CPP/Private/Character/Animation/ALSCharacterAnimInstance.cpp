@@ -40,11 +40,10 @@ void UALSCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	UpdateAimingValues(DeltaSeconds);
 	UpdateLayerValues();
-	
+	UpdateFootIK(DeltaSeconds);
+
 	if (MovementState.Grounded())
 	{
-		UpdateFootIK(DeltaSeconds);
-		
 		// Check If Moving Or Not & Enable Movement Animations if IsMoving and HasMovementInput, or if the Speed is greater than 150.
 		const bool prevShouldMove = Grounded.bShouldMove;
 		Grounded.bShouldMove = ShouldMoveCheck();
@@ -275,19 +274,17 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 	else if (!MovementState.Ragdoll())
 	{
 		// Update all Foot Lock and Foot Offset values when not In Air
-		FVector FootOffsetLTarget;
-		FVector FootOffsetRTarget;
-		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("ik_foot_l")), FName(TEXT("Root")), FootOffsetLTarget,
+		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("ik_foot_l")), FName(TEXT("Root")), FootOffsetLTargetCached,
 		               FootIKValues.FootOffset_L_Location, FootIKValues.FootOffset_L_Rotation);
-		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("ik_foot_r")), FName(TEXT("Root")), FootOffsetRTarget,
+		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("ik_foot_r")), FName(TEXT("Root")), FootOffsetRTargetCached,
 		               FootIKValues.FootOffset_R_Location, FootIKValues.FootOffset_R_Rotation);
-		SetPelvisIKOffset(DeltaSeconds, FootOffsetLTarget, FootOffsetRTarget);
+		SetPelvisIKOffset(DeltaSeconds, FootOffsetLTargetCached, FootOffsetRTargetCached);
 	}
 }
 
 void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableFootIKCurve, FName FootLockCurve,
                                                FName IKFootBone, float& CurFootLockAlpha, bool& UseFootLockCurve,
-											   FVector& CurFootLockLoc, FRotator& CurFootLockRot)
+                                               FVector& CurFootLockLoc, FRotator& CurFootLockRot)
 {
 	if (GetCurveValue(EnableFootIKCurve) <= 0.0f)
 	{
@@ -299,8 +296,8 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
 
 	if (UseFootLockCurve)
 	{
-		UseFootLockCurve = FMath::Abs(GetCurveValue(FName(TEXT("RotationAmount")))) <= 0.001f || 
-						   Character->GetLocalRole() != ROLE_AutonomousProxy;
+		UseFootLockCurve = FMath::Abs(GetCurveValue(FName(TEXT("RotationAmount")))) <= 0.001f ||
+			Character->GetLocalRole() != ROLE_AutonomousProxy;
 		FootLockCurveVal = GetCurveValue(FootLockCurve);
 	}
 	else
@@ -315,7 +312,7 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
 	{
 		CurFootLockAlpha = FootLockCurveVal;
 	}
-	
+
 	// Step 3: If the Foot Lock curve equals 1, save the new lock location and rotation in component space as the target.
 	if (CurFootLockAlpha >= 0.99f)
 	{
@@ -777,8 +774,8 @@ void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayR
 		if (FMath::Abs(TurnAngle) < TurnInPlaceValues.Turn180Threshold)
 		{
 			TargetTurnAsset = TurnAngle < 0.0f
-					              ? TurnInPlaceValues.N_TurnIP_L90
-					              : TurnInPlaceValues.N_TurnIP_R90;
+				                  ? TurnInPlaceValues.N_TurnIP_L90
+				                  : TurnInPlaceValues.N_TurnIP_R90;
 		}
 		else
 		{

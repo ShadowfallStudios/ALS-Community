@@ -8,6 +8,8 @@
 
 #include "Character/ALSPlayerCameraManager.h"
 
+
+#include "DrawDebugHelpers.h"
 #include "Character/ALSBaseCharacter.h"
 #include "Character/Animation/ALSPlayerCameraBehavior.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -31,6 +33,11 @@ void AALSPlayerCameraManager::OnPossess(AALSBaseCharacter* NewCharacter)
 	{
 		CastedBehv->PlayerController = GetOwningPlayerController();
 		CastedBehv->ControlledPawn = ControlledCharacter;
+
+		// Initial position
+		const FVector& TPSLoc = ControlledCharacter->GetThirdPersonPivotTarget().GetLocation();
+		SetActorLocation(TPSLoc);
+		SmoothedPivotTarget.SetLocation(TPSLoc);
 	}
 }
 
@@ -54,15 +61,11 @@ void AALSPlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, floa
 		FRotator OutRotation;
 		float OutFOV;
 
-		if (OutVT.Target->ActorHasTag(CustomTag) && CustomCameraBehavior(DeltaTime, OutLocation, OutRotation, OutFOV))
+		if (CustomCameraBehavior(DeltaTime, OutLocation, OutRotation, OutFOV))
 		{
 			OutVT.POV.Location = OutLocation;
 			OutVT.POV.Rotation = OutRotation;
 			OutVT.POV.FOV = OutFOV;
-		}
-		else
-		{
-			OutVT.Target->CalcCamera(DeltaTime, OutVT.POV);
 		}
 	}
 }
@@ -152,7 +155,7 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 
 	FHitResult HitResult;
 	World->SweepSingleByChannel(HitResult, TraceOrigin, TargetCameraLocation, FQuat::Identity,
-                                TraceChannel, FCollisionShape::MakeSphere(TraceRadius), Params);
+	                            TraceChannel, FCollisionShape::MakeSphere(TraceRadius), Params);
 
 	if (HitResult.bBlockingHit)
 	{
