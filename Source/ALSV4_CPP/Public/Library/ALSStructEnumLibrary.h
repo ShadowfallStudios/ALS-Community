@@ -38,14 +38,17 @@ private:
 	bool Ragdoll_ = false;
 
 public:
-	FALSMovementState() {}
+	FALSMovementState()
+	{
+	}
+
 	FALSMovementState(const EALSMovementState InitialState) { *this = InitialState; }
 
-	FORCEINLINE const bool& None()     const { return None_; }
+	FORCEINLINE const bool& None() const { return None_; }
 	FORCEINLINE const bool& Grounded() const { return Grounded_; }
-	FORCEINLINE const bool& InAir()    const { return InAir_; }
+	FORCEINLINE const bool& InAir() const { return InAir_; }
 	FORCEINLINE const bool& Mantling() const { return Mantling_; }
-	FORCEINLINE const bool& Ragdoll()  const { return Ragdoll_; }
+	FORCEINLINE const bool& Ragdoll() const { return Ragdoll_; }
 
 	FORCEINLINE operator EALSMovementState() const { return State; }
 
@@ -76,10 +79,13 @@ private:
 	bool Crouching_ = false;
 
 public:
-	FALSStance() {}
+	FALSStance()
+	{
+	}
+
 	FALSStance(const EALSStance InitialStance) { *this = InitialStance; }
 
-	FORCEINLINE const bool& Standing()     const { return Standing_; }
+	FORCEINLINE const bool& Standing() const { return Standing_; }
 	FORCEINLINE const bool& Crouching() const { return Crouching_; }
 
 	FORCEINLINE operator EALSStance() const { return Stance; }
@@ -111,7 +117,10 @@ private:
 	bool Aiming_ = false;
 
 public:
-	FALSRotationMode() {}
+	FALSRotationMode()
+	{
+	}
+
 	FALSRotationMode(const EALSRotationMode InitialRotationMode) { *this = InitialRotationMode; }
 
 	FORCEINLINE const bool& VelocityDirection() const { return VelocityDirection_; }
@@ -151,7 +160,10 @@ private:
 	bool Backward_ = false;
 
 public:
-	FALSMovementDirection() {}
+	FALSMovementDirection()
+	{
+	}
+
 	FALSMovementDirection(const EALSMovementDirection InitialMovementDirection) { *this = InitialMovementDirection; }
 
 	FORCEINLINE const bool& Forward() const { return Forward_; }
@@ -196,7 +208,10 @@ private:
 	bool GettingUp_ = false;
 
 public:
-	FALSMovementAction() {}
+	FALSMovementAction()
+	{
+	}
+
 	FALSMovementAction(const EALSMovementAction InitialAction) { *this = InitialAction; }
 
 	FORCEINLINE const bool& None() const { return None_; }
@@ -237,7 +252,10 @@ private:
 	bool Sprinting_ = false;
 
 public:
-	FALSGait() {}
+	FALSGait()
+	{
+	}
+
 	FALSGait(const EALSGait InitialGait) { *this = InitialGait; }
 
 	FORCEINLINE const bool& Walking() const { return Walking_; }
@@ -251,7 +269,7 @@ public:
 		Gait = NewGait;
 		Walking_ = Gait == EALSGait::Walking;
 		Running_ = Gait == EALSGait::Running,
-		Sprinting_ = Gait == EALSGait::Sprinting;
+			Sprinting_ = Gait == EALSGait::Sprinting;
 	}
 };
 
@@ -304,7 +322,10 @@ private:
 	bool Barrel_ = false;
 
 public:
-	FALSOverlayState() {}
+	FALSOverlayState()
+	{
+	}
+
 	FALSOverlayState(const EALSOverlayState InitialState) { *this = InitialState; }
 
 	FORCEINLINE const bool& Default() const { return Default_; }
@@ -358,7 +379,10 @@ private:
 	bool Roll_ = false;
 
 public:
-	FALSGroundedEntryState() {}
+	FALSGroundedEntryState()
+	{
+	}
+
 	FALSGroundedEntryState(const EALSGroundedEntryState InitialState) { *this = InitialState; }
 
 	FORCEINLINE const bool& None() const { return None_; }
@@ -373,4 +397,3 @@ public:
 		Roll_ = State == EALSGroundedEntryState::Roll;
 	}
 };
-

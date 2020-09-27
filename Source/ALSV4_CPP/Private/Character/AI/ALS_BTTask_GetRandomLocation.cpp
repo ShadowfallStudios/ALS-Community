@@ -25,7 +25,7 @@ EBTNodeResult::Type UALS_BTTask_GetRandomLocation::ExecuteTask(UBehaviorTreeComp
 
 	if (NavSys && Pawn)
 	{
-		FSharedConstNavQueryFilter SharedFilter = 0;
+		FSharedConstNavQueryFilter SharedFilter = nullptr;
 
 		if (Filter)
 		{

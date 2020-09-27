@@ -157,7 +157,7 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 	World->SweepSingleByChannel(HitResult, TraceOrigin, TargetCameraLocation, FQuat::Identity,
 	                            TraceChannel, FCollisionShape::MakeSphere(TraceRadius), Params);
 
-	if (HitResult.bBlockingHit)
+	if (HitResult.IsValidBlockingHit())
 	{
 		TargetCameraLocation += (HitResult.Location - HitResult.TraceEnd);
 	}

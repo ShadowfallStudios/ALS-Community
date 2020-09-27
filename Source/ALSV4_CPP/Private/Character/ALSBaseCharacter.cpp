@@ -21,10 +21,11 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
+#include "Logging/TokenizedMessage.h"
 #include "Net/UnrealNetwork.h"
 
 AALSBaseCharacter::AALSBaseCharacter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer.SetDefaultSubobjectClass<UALSCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UALSCharacterMovementComponent>(CharacterMovementComponentName))
 {
 	PrimaryActorTick.bCanEverTick = true;
 	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(FName(TEXT("MantleTimeline")));
@@ -112,7 +113,7 @@ void AALSBaseCharacter::BeginPlay()
 	TimelineFinished.BindUFunction(this, FName(TEXT("MantleEnd")));
 	MantleTimeline->SetTimelineFinishedFunc(TimelineFinished);
 	MantleTimeline->SetLooping(false);
-	MantleTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
+	MantleTimeline->SetTimelineLengthMode(TL_TimelineLength);
 	MantleTimeline->AddInterpFloat(MantleTimelineCurve, TimelineUpdated);
 
 	// Make sure the mesh and animbp update after the CharacterBP to ensure it gets the most recent values.
@@ -227,7 +228,7 @@ void AALSBaseCharacter::RagdollStart()
 	ServerRagdollPull = 0;
 
 	// Step 1: Clear the Character Movement Mode and set the Movement State to Ragdoll
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	GetCharacterMovement()->SetMovementMode(MOVE_None);
 	SetMovementState(EALSMovementState::Ragdoll);
 
 	// Step 2: Disable capsule collision and enable mesh physics simulation starting from the pelvis.
@@ -1011,9 +1012,9 @@ void AALSBaseCharacter::UpdateDynamicMovementSettings(EALSGait AllowedGait)
 		{
 			MyCharacterMovementComponent->SetMaxWalkingSpeed(NewMaxSpeed);
 		}
-		if	(GetCharacterMovement()->MaxAcceleration != CurveVec.X
-		  || GetCharacterMovement()->BrakingDecelerationWalking != CurveVec.Y
-		  || GetCharacterMovement()->GroundFriction != CurveVec.Z)
+		if (GetCharacterMovement()->MaxAcceleration != CurveVec.X
+			|| GetCharacterMovement()->BrakingDecelerationWalking != CurveVec.Y
+			|| GetCharacterMovement()->GroundFriction != CurveVec.Z)
 		{
 			MyCharacterMovementComponent->SetMovementSettings(CurveVec);
 		}
@@ -1082,7 +1083,8 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 			{
 				if (GetLocalRole() == ROLE_AutonomousProxy)
 				{
-					TargetRotation.Yaw = UKismetMathLibrary::NormalizeAxis(TargetRotation.Yaw + (RotAmountCurve * (DeltaTime / (1.0f / 30.0f))));
+					TargetRotation.Yaw = UKismetMathLibrary::NormalizeAxis(
+						TargetRotation.Yaw + (RotAmountCurve * (DeltaTime / (1.0f / 30.0f))));
 					SetActorRotation(TargetRotation);
 				}
 				else

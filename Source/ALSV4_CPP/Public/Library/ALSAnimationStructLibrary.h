@@ -329,7 +329,7 @@ struct FALSAnimGraphFootIK
 	float FootLock_R_Alpha = 0.0f;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-  bool UseFootLockCurve_L;
+	bool UseFootLockCurve_L;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	bool UseFootLockCurve_R;

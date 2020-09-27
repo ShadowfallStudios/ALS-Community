@@ -31,6 +31,6 @@ void UALSNotifyStateOverlayOverride::NotifyEnd(USkeletalMeshComponent* MeshComp,
 FString UALSNotifyStateOverlayOverride::GetNotifyName_Implementation() const
 {
 	FString Name(TEXT("Overlay Override State: "));
-	Name.Append(GetEnumerationToString(EALSOverlayState(OverlayOverrideState)));
+	Name.Append(GetEnumerationToString(static_cast<EALSOverlayState>(OverlayOverrideState)));
 	return Name;
 }

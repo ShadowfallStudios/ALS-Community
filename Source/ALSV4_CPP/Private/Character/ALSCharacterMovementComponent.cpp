@@ -32,8 +32,8 @@ void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FV
 
 		// Ensures server Movement Settings values updates to latest
 		bRequestMovementSettingsChange = MaxAcceleration != RealMaxAcceleration
-									  || BrakingDecelerationWalking != RealBraking
-									  || GroundFriction != RealGroundFriction;
+			|| BrakingDecelerationWalking != RealBraking
+			|| GroundFriction != RealGroundFriction;
 	}
 }
 
@@ -118,7 +118,7 @@ UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::FNetworkPredic
 
 FSavedMovePtr UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::AllocateNewMove()
 {
-	return FSavedMovePtr(new FSavedMove_My());
+	return MakeShared<FSavedMove_My>();
 }
 
 // Set Movement Settings RPC to transfer the current Movement Settings from the Owning Client to the Server
@@ -126,8 +126,7 @@ bool UALSCharacterMovementComponent::Server_SetMaxWalkingSpeed_Validate(const fl
 {
 	if (NewMaxWalkSpeed < 0.f || NewMaxWalkSpeed > 2000.f)
 		return false;
-	else
-		return true;
+	return true;
 }
 
 void UALSCharacterMovementComponent::Server_SetMaxWalkingSpeed_Implementation(const float NewMaxWalkSpeed)
@@ -148,7 +147,7 @@ void UALSCharacterMovementComponent::SetMaxWalkingSpeed(float NewMaxWalkSpeed)
 // Set Max Walking Speed RPC to transfer the current Max Walking Speed from the Owning Client to the Server
 bool UALSCharacterMovementComponent::Server_SetMovementSettings_Validate(const FVector NewMovementSettings)
 {
-		return true;
+	return true;
 }
 
 void UALSCharacterMovementComponent::Server_SetMovementSettings_Implementation(const FVector NewMovementSettings)
