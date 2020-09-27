@@ -317,7 +317,7 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
 	if (CurFootLockAlpha >= 0.99f)
 	{
 		const FTransform& OwnerTransform =
-			GetOwningComponent()->GetSocketTransform(IKFootBone, ERelativeTransformSpace::RTS_Component);
+			GetOwningComponent()->GetSocketTransform(IKFootBone, RTS_Component);
 		CurFootLockLoc = OwnerTransform.GetLocation();
 		CurFootLockRot = OwnerTransform.Rotator();
 	}
@@ -421,7 +421,7 @@ void UALSCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableF
 	World->LineTraceSingleByChannel(HitResult,
 	                                IKFootFloorLoc + FVector(0.0, 0.0, Config.IK_TraceDistanceAboveFoot),
 	                                IKFootFloorLoc - FVector(0.0, 0.0, Config.IK_TraceDistanceBelowFoot),
-	                                ECollisionChannel::ECC_Visibility, Params);
+	                                ECC_Visibility, Params);
 
 	FRotator TargetRotOffset = FRotator::ZeroRotator;
 	if (Character->GetCharacterMovement()->IsWalkable(HitResult))

@@ -48,7 +48,7 @@ public:
 
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
-	void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity);
+	virtual void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity) override;
 
 
 	// Movement Settings Variables
@@ -68,12 +68,12 @@ public:
 	void SetMaxWalkingSpeed(float NewMaxWalkSpeed);
 
 	UFUNCTION(reliable, Server, WithValidation)
-	void Server_SetMaxWalkingSpeed(const float NewMaxWalkSpeed);
+	void Server_SetMaxWalkingSpeed(float NewMaxWalkSpeed);
 
 	// Set Movement Settings (Called from the owning client)
 	UFUNCTION(BlueprintCallable, Category = "Movement Settings")
 	void SetMovementSettings(FVector NewMovementSettings);
 
 	UFUNCTION(reliable, Server, WithValidation)
-	void Server_SetMovementSettings(const FVector NewMovementSettings);
+	void Server_SetMovementSettings(FVector NewMovementSettings);
 };
