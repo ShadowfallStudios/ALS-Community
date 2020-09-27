@@ -81,8 +81,6 @@ ECollisionChannel AALSCharacter::GetThirdPersonTraceParams(FVector& TraceOrigin,
 {
 	FName CameraSocketName = bRightShoulder ? TEXT("TP_CameraTrace_R") : TEXT("TP_CameraTrace_L");
 	TraceOrigin = GetMesh()->GetSocketLocation(CameraSocketName);
-	float Pelvis_Z_Offset = GetMesh()->GetSocketTransform(TEXT("pelvis")).GetLocation().Z - 96;
-	TraceOrigin.Z += Pelvis_Z_Offset;
 	TraceRadius = 15.0f;
 	return ECC_Camera;
 }
