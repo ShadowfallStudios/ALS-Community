@@ -36,15 +36,15 @@ Netprofiler benchmark by @Scragnog
 ```
 
 ## Setting Up The Plugin
-- Clone the repository if you're working on a C++ project, or download the latest release if you're on a BP project.
-- Move ALSV4_CPP folder into your project's `Plugins` folder
-- Put `Config/DefaultInput.ini` from the plugin inside your project's config folder. If your project already have this .ini file, merge it into yours.
+- Clone the repository inside your project's `Plugins` folder, or download the source code zip file for latest release and extract it into your project's `Plugins` folder.
+- Put `Config/DefaultInput.ini` from the plugin folder inside your project's config folder. If your project already have this .ini file, merge it into yours.
 - Add the lines below into your `DefaultEngine.ini`, below `[/Script/Engine.CollisionProfile]` tag (Create the tag if it doesn't exist):
 ```
 +Profiles=(Name="ALS_Character",CollisionEnabled=QueryAndPhysics,bCanModify=True,ObjectTypeName="Pawn",CustomResponses=((Channel="Visibility",Response=ECR_Ignore),(Channel="Camera",Response=ECR_Ignore),(Channel="Climbable",Response=ECR_Ignore)),HelpMessage="Custom collision settings for the capsule in the ALS_BaseCharacter.")
 +DefaultChannelResponses=(Channel=ECC_GameTraceChannel2,DefaultResponse=ECR_Block,bTraceType=True,bStaticObject=False,Name="Climbable")
 ```
-- Launch your project, and enable plugin content viewer as seen below. This will show contents of the ALS in your content browser:
+- Generate Visual Studio Project files, and compile your project. (Unreal Engine 4.25.2 & 4.25.3 update broke compiling distribution binaries for plugins, so you need to compile them yourself)
+- Launch the project, and enable plugin content viewer as seen below. This will show contents of the ALS in your content browser:
 ![image](https://github.com/dyanikoglu/ALSV4_CPP/raw/main/Resources/Readme_Content_1.png)
 - If you're getting problems with the plugin binaries, try compiling them yourself from the source.
 
