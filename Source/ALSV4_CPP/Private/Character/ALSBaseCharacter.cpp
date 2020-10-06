@@ -21,7 +21,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
-#include "Logging/TokenizedMessage.h"
 #include "Net/UnrealNetwork.h"
 
 AALSBaseCharacter::AALSBaseCharacter(const FObjectInitializer& ObjectInitializer)
@@ -963,7 +962,7 @@ void AALSBaseCharacter::SetEssentialValues(float DeltaTime)
 
 	// Determine if the character has movement input by getting its movement input amount.
 	// The Movement Input Amount is equal to the current acceleration divided by the max acceleration so that
-	// it has a range of 0-1, 1 being the maximum possible amount of input, and 0 beiung none.
+	// it has a range of 0-1, 1 being the maximum possible amount of input, and 0 being none.
 	// If the character has movement input, update the Last Movement Input Rotation.
 	SetMovementInputAmount(ReplicatedCurrentAcceleration.Size() / EasedMaxAcceleration);
 	SetHasMovementInput(MovementInputAmount > 0.0f);
