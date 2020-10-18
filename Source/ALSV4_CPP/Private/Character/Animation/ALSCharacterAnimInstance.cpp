@@ -280,7 +280,7 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 		               FootIKValues.FootOffset_L_Location, FootIKValues.FootOffset_L_Rotation);
 		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("ik_foot_r")), FName(TEXT("root")), FootOffsetRTargetCached,
 		               FootIKValues.FootOffset_R_Location, FootIKValues.FootOffset_R_Rotation);
-		SetPelvisIKOffset(DeltaSeconds, FootOffsetLTargetCached, FootOffsetRTargetCached);
+		SetPelvisIKOffset(DeltaSeconds, FootOffsetLTarget, FootOffsetRTarget);
 	}
 }
 
