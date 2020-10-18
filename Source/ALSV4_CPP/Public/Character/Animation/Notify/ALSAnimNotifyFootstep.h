@@ -32,7 +32,7 @@ public:
 	USoundBase* Sound = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	FName AttachPointName = FName(TEXT("Root"));
+	FName AttachPointName = FName(TEXT("root"));
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
 	EALSFootstepType FootstepType = EALSFootstepType::Step;

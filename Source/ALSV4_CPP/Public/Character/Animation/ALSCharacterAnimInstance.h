@@ -294,6 +294,4 @@ private:
 
 	bool bCanPlayDynamicTransition = true;
 
-	FVector FootOffsetLTargetCached;
-	FVector FootOffsetRTargetCached;
 };
