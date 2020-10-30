@@ -106,6 +106,9 @@ void AALSBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// If we're in networked game, disable curved movement
+	bDisableCurvedMovement = !IsNetMode(ENetMode::NM_Standalone);
+
 	FOnTimelineFloat TimelineUpdated;
 	FOnTimelineEvent TimelineFinished;
 	TimelineUpdated.BindUFunction(this, FName(TEXT("MantleUpdate")));
@@ -990,10 +993,19 @@ void AALSBaseCharacter::UpdateCharacterMovement()
 	}
 
 	// Use the allowed gait to update the movement settings.
-	UpdateDynamicMovementSettings(AllowedGait);
+	if (bDisableCurvedMovement)
+	{
+		// Don't use curves for movement
+		UpdateDynamicMovementSettingsNetworked(AllowedGait);
+	}
+	else
+	{
+		// Use curves for movement
+		UpdateDynamicMovementSettingsStandalone(AllowedGait);
+	}
 }
 
-void AALSBaseCharacter::UpdateDynamicMovementSettings(EALSGait AllowedGait)
+void AALSBaseCharacter::UpdateDynamicMovementSettingsStandalone(EALSGait AllowedGait)
 {
 	// Get the Current Movement Settings.
 	CurrentMovementSettings = GetTargetMovementSettings();
@@ -1005,25 +1017,29 @@ void AALSBaseCharacter::UpdateDynamicMovementSettings(EALSGait AllowedGait)
 	const FVector CurveVec = CurrentMovementSettings.MovementCurve->GetVectorValue(MappedSpeed);
 
 	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
+	GetCharacterMovement()->MaxWalkSpeed = NewMaxSpeed;
+	GetCharacterMovement()->MaxAcceleration = CurveVec.X;
+	GetCharacterMovement()->BrakingDecelerationWalking = CurveVec.Y;
+	GetCharacterMovement()->GroundFriction = CurveVec.Z;
+}
+
+void AALSBaseCharacter::UpdateDynamicMovementSettingsNetworked(EALSGait AllowedGait)
+{
+	// Get the Current Movement Settings.
+	CurrentMovementSettings = GetTargetMovementSettings();
+	float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
+
+	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
 	if (IsLocallyControlled() || HasAuthority())
 	{
 		if (GetCharacterMovement()->MaxWalkSpeed != NewMaxSpeed)
 		{
 			MyCharacterMovementComponent->SetMaxWalkingSpeed(NewMaxSpeed);
 		}
-		if (GetCharacterMovement()->MaxAcceleration != CurveVec.X
-			|| GetCharacterMovement()->BrakingDecelerationWalking != CurveVec.Y
-			|| GetCharacterMovement()->GroundFriction != CurveVec.Z)
-		{
-			MyCharacterMovementComponent->SetMovementSettings(CurveVec);
-		}
 	}
 	else
 	{
 		GetCharacterMovement()->MaxWalkSpeed = NewMaxSpeed;
-		GetCharacterMovement()->MaxAcceleration = CurveVec.X;
-		GetCharacterMovement()->BrakingDecelerationWalking = CurveVec.Y;
-		GetCharacterMovement()->GroundFriction = CurveVec.Z;
 	}
 }
 

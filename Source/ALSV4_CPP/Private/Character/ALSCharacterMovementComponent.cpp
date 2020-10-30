@@ -26,14 +26,6 @@ void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FV
 	{
 		MaxWalkSpeed = MyNewMaxWalkSpeed;
 		MaxWalkSpeedCrouched = MyNewMaxWalkSpeed;
-		MaxAcceleration = MyNewMaxAcceleration;
-		BrakingDecelerationWalking = MyNewBraking;
-		GroundFriction = MyNewGroundFriction;
-
-		// Ensures server Movement Settings values updates to latest
-		bRequestMovementSettingsChange = MaxAcceleration != RealMaxAcceleration
-			|| BrakingDecelerationWalking != RealBraking
-			|| GroundFriction != RealGroundFriction;
 	}
 }
 
@@ -142,35 +134,4 @@ void UALSCharacterMovementComponent::SetMaxWalkingSpeed(float NewMaxWalkSpeed)
 		Server_SetMaxWalkingSpeed(NewMaxWalkSpeed);
 	}
 	bRequestMovementSettingsChange = true;
-}
-
-// Set Max Walking Speed RPC to transfer the current Max Walking Speed from the Owning Client to the Server
-bool UALSCharacterMovementComponent::Server_SetMovementSettings_Validate(const FVector NewMovementSettings)
-{
-	return true;
-}
-
-void UALSCharacterMovementComponent::Server_SetMovementSettings_Implementation(const FVector NewMovementSettings)
-{
-	MyNewMaxAcceleration = NewMovementSettings.X;
-	MyNewBraking = NewMovementSettings.Y;
-	MyNewGroundFriction = NewMovementSettings.Z;
-	bRequestMovementSettingsChange = true;
-}
-
-void UALSCharacterMovementComponent::SetMovementSettings(FVector NewMovementSettings)
-{
-	if (PawnOwner->IsLocallyControlled())
-	{
-		MyNewMaxAcceleration = NewMovementSettings.X;
-		MyNewBraking = NewMovementSettings.Y;
-		MyNewGroundFriction = NewMovementSettings.Z;
-		Server_SetMovementSettings(NewMovementSettings);
-	}
-	bRequestMovementSettingsChange = true;
-
-	// Save Server Movement Settings for comparison during movement update
-	RealMaxAcceleration = NewMovementSettings.X;
-	RealBraking = NewMovementSettings.Y;
-	RealGroundFriction = NewMovementSettings.Z;
 }

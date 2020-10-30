@@ -54,14 +54,7 @@ public:
 	// Movement Settings Variables
 	uint8 bRequestMovementSettingsChange : 1;
 
-	float MyNewBraking;
-	float MyNewGroundFriction;
 	float MyNewMaxWalkSpeed;
-	float MyNewMaxAcceleration;
-
-	float RealBraking;
-	float RealGroundFriction;
-	float RealMaxAcceleration;
 
 	// Set Max Walking Speed (Called from the owning client)
 	UFUNCTION(BlueprintCallable, Category = "Movement Settings")
@@ -69,11 +62,4 @@ public:
 
 	UFUNCTION(reliable, Server, WithValidation)
 	void Server_SetMaxWalkingSpeed(float NewMaxWalkSpeed);
-
-	// Set Movement Settings (Called from the owning client)
-	UFUNCTION(BlueprintCallable, Category = "Movement Settings")
-	void SetMovementSettings(FVector NewMovementSettings);
-
-	UFUNCTION(reliable, Server, WithValidation)
-	void Server_SetMovementSettings(FVector NewMovementSettings);
 };

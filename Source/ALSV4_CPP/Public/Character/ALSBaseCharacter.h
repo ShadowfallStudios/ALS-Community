@@ -365,7 +365,9 @@ protected:
 
 	void UpdateCharacterMovement();
 
-	void UpdateDynamicMovementSettings(EALSGait AllowedGait);
+	void UpdateDynamicMovementSettingsNetworked(EALSGait AllowedGait);
+
+	void UpdateDynamicMovementSettingsStandalone(EALSGait AllowedGait);
 
 	void UpdateGroundedRotation(float DeltaTime);
 
@@ -677,4 +679,7 @@ protected:
 
 	/* Smooth out aiming by interping control rotation*/
 	FRotator AimingRotation;
+
+	/** We won't use curve based movement on networked games */
+	bool bDisableCurvedMovement = false;
 };
