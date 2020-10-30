@@ -268,8 +268,8 @@ public:
 	{
 		Gait = NewGait;
 		Walking_ = Gait == EALSGait::Walking;
-		Running_ = Gait == EALSGait::Running,
-			Sprinting_ = Gait == EALSGait::Sprinting;
+		Running_ = Gait == EALSGait::Running;
+		Sprinting_ = Gait == EALSGait::Sprinting;
 	}
 };
 

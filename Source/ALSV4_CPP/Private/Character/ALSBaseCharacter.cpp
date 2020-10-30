@@ -21,7 +21,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
-#include "Logging/TokenizedMessage.h"
 #include "Net/UnrealNetwork.h"
 
 AALSBaseCharacter::AALSBaseCharacter(const FObjectInitializer& ObjectInitializer)
@@ -106,6 +105,9 @@ void AALSBaseCharacter::Replicated_PlayMontage_Implementation(UAnimMontage* mont
 void AALSBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// If we're in networked game, disable curved movement
+	bDisableCurvedMovement = !IsNetMode(ENetMode::NM_Standalone);
 
 	FOnTimelineFloat TimelineUpdated;
 	FOnTimelineEvent TimelineFinished;
@@ -963,7 +965,7 @@ void AALSBaseCharacter::SetEssentialValues(float DeltaTime)
 
 	// Determine if the character has movement input by getting its movement input amount.
 	// The Movement Input Amount is equal to the current acceleration divided by the max acceleration so that
-	// it has a range of 0-1, 1 being the maximum possible amount of input, and 0 beiung none.
+	// it has a range of 0-1, 1 being the maximum possible amount of input, and 0 being none.
 	// If the character has movement input, update the Last Movement Input Rotation.
 	SetMovementInputAmount(ReplicatedCurrentAcceleration.Size() / EasedMaxAcceleration);
 	SetHasMovementInput(MovementInputAmount > 0.0f);
@@ -991,10 +993,19 @@ void AALSBaseCharacter::UpdateCharacterMovement()
 	}
 
 	// Use the allowed gait to update the movement settings.
-	UpdateDynamicMovementSettings(AllowedGait);
+	if (bDisableCurvedMovement)
+	{
+		// Don't use curves for movement
+		UpdateDynamicMovementSettingsNetworked(AllowedGait);
+	}
+	else
+	{
+		// Use curves for movement
+		UpdateDynamicMovementSettingsStandalone(AllowedGait);
+	}
 }
 
-void AALSBaseCharacter::UpdateDynamicMovementSettings(EALSGait AllowedGait)
+void AALSBaseCharacter::UpdateDynamicMovementSettingsStandalone(EALSGait AllowedGait)
 {
 	// Get the Current Movement Settings.
 	CurrentMovementSettings = GetTargetMovementSettings();
@@ -1006,25 +1017,29 @@ void AALSBaseCharacter::UpdateDynamicMovementSettings(EALSGait AllowedGait)
 	const FVector CurveVec = CurrentMovementSettings.MovementCurve->GetVectorValue(MappedSpeed);
 
 	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
+	GetCharacterMovement()->MaxWalkSpeed = NewMaxSpeed;
+	GetCharacterMovement()->MaxAcceleration = CurveVec.X;
+	GetCharacterMovement()->BrakingDecelerationWalking = CurveVec.Y;
+	GetCharacterMovement()->GroundFriction = CurveVec.Z;
+}
+
+void AALSBaseCharacter::UpdateDynamicMovementSettingsNetworked(EALSGait AllowedGait)
+{
+	// Get the Current Movement Settings.
+	CurrentMovementSettings = GetTargetMovementSettings();
+	float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
+
+	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
 	if (IsLocallyControlled() || HasAuthority())
 	{
 		if (GetCharacterMovement()->MaxWalkSpeed != NewMaxSpeed)
 		{
 			MyCharacterMovementComponent->SetMaxWalkingSpeed(NewMaxSpeed);
 		}
-		if (GetCharacterMovement()->MaxAcceleration != CurveVec.X
-			|| GetCharacterMovement()->BrakingDecelerationWalking != CurveVec.Y
-			|| GetCharacterMovement()->GroundFriction != CurveVec.Z)
-		{
-			MyCharacterMovementComponent->SetMovementSettings(CurveVec);
-		}
 	}
 	else
 	{
 		GetCharacterMovement()->MaxWalkSpeed = NewMaxSpeed;
-		GetCharacterMovement()->MaxAcceleration = CurveVec.X;
-		GetCharacterMovement()->BrakingDecelerationWalking = CurveVec.Y;
-		GetCharacterMovement()->GroundFriction = CurveVec.Z;
 	}
 }
 

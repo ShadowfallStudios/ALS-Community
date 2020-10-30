@@ -1,7 +1,7 @@
 // Project:         Advanced Locomotion System V4 on C++
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Haziq Fadhil
-// Contributors:    
+// Contributors:    Doga Can Yanikoglu
 
 
 #include "Character/ALSCharacterMovementComponent.h"
@@ -26,14 +26,6 @@ void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FV
 	{
 		MaxWalkSpeed = MyNewMaxWalkSpeed;
 		MaxWalkSpeedCrouched = MyNewMaxWalkSpeed;
-		MaxAcceleration = MyNewMaxAcceleration;
-		BrakingDecelerationWalking = MyNewBraking;
-		GroundFriction = MyNewGroundFriction;
-
-		// Ensures server Movement Settings values updates to latest
-		bRequestMovementSettingsChange = MaxAcceleration != RealMaxAcceleration
-			|| BrakingDecelerationWalking != RealBraking
-			|| GroundFriction != RealGroundFriction;
 	}
 }
 
@@ -46,7 +38,7 @@ void UALSCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags) // C
 
 class FNetworkPredictionData_Client* UALSCharacterMovementComponent::GetPredictionData_Client() const
 {
-	check(PawnOwner != NULL);
+	check(PawnOwner != nullptr);
 
 	if (!ClientPredictionData)
 	{
@@ -82,7 +74,7 @@ uint8 UALSCharacterMovementComponent::FSavedMove_My::GetCompressedFlags() const
 bool UALSCharacterMovementComponent::FSavedMove_My::CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* Character,
                                                                    float MaxDelta) const
 {
-	// Set which moves can be combined together. This will depend on the bit flags that are used.	
+	// Set which moves can be combined together. This will depend on the bit flags that are used.
 	if (bSavedRequestMovementSettingsChange != ((FSavedMove_My*)&NewMove)->bSavedRequestMovementSettingsChange)
 	{
 		return false;
@@ -103,13 +95,6 @@ void UALSCharacterMovementComponent::FSavedMove_My::SetMoveFor(ACharacter* Chara
 	}
 }
 
-void UALSCharacterMovementComponent::FSavedMove_My::PrepMoveFor(class ACharacter* Character)
-{
-	Super::PrepMoveFor(Character);
-
-	UALSCharacterMovementComponent* CharacterMovement = Cast<UALSCharacterMovementComponent>(Character->GetCharacterMovement());
-}
-
 UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::FNetworkPredictionData_Client_My(
 	const UCharacterMovementComponent& ClientMovement)
 	: Super(ClientMovement)
@@ -124,9 +109,7 @@ FSavedMovePtr UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::
 // Set Movement Settings RPC to transfer the current Movement Settings from the Owning Client to the Server
 bool UALSCharacterMovementComponent::Server_SetMaxWalkingSpeed_Validate(const float NewMaxWalkSpeed)
 {
-	if (NewMaxWalkSpeed < 0.f || NewMaxWalkSpeed > 2000.f)
-		return false;
-	return true;
+	return NewMaxWalkSpeed >= 0.f && NewMaxWalkSpeed <= 2000.f;
 }
 
 void UALSCharacterMovementComponent::Server_SetMaxWalkingSpeed_Implementation(const float NewMaxWalkSpeed)
@@ -142,35 +125,4 @@ void UALSCharacterMovementComponent::SetMaxWalkingSpeed(float NewMaxWalkSpeed)
 		Server_SetMaxWalkingSpeed(NewMaxWalkSpeed);
 	}
 	bRequestMovementSettingsChange = true;
-}
-
-// Set Max Walking Speed RPC to transfer the current Max Walking Speed from the Owning Client to the Server
-bool UALSCharacterMovementComponent::Server_SetMovementSettings_Validate(const FVector NewMovementSettings)
-{
-	return true;
-}
-
-void UALSCharacterMovementComponent::Server_SetMovementSettings_Implementation(const FVector NewMovementSettings)
-{
-	MyNewMaxAcceleration = NewMovementSettings.X;
-	MyNewBraking = NewMovementSettings.Y;
-	MyNewGroundFriction = NewMovementSettings.Z;
-	bRequestMovementSettingsChange = true;
-}
-
-void UALSCharacterMovementComponent::SetMovementSettings(FVector NewMovementSettings)
-{
-	if (PawnOwner->IsLocallyControlled())
-	{
-		MyNewMaxAcceleration = NewMovementSettings.X;
-		MyNewBraking = NewMovementSettings.Y;
-		MyNewGroundFriction = NewMovementSettings.Z;
-		Server_SetMovementSettings(NewMovementSettings);
-	}
-	bRequestMovementSettingsChange = true;
-
-	// Save Server Movement Settings for comparison during movement update
-	RealMaxAcceleration = NewMovementSettings.X;
-	RealBraking = NewMovementSettings.Y;
-	RealGroundFriction = NewMovementSettings.Z;
 }

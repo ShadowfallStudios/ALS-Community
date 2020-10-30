@@ -157,7 +157,7 @@ public:
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
 	void Multicast_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS, EALSMantleType MantleType);
 
-	/** Ragolling*/
+	/** Ragdolling*/
 	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void ReplicatedRagdollStart();
 
@@ -333,7 +333,7 @@ protected:
 
 	void SetActorLocationDuringRagdoll(float DeltaTime);
 
-	/** Stace Changes */
+	/** State Changes */
 
 	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode = 0) override;
 
@@ -365,7 +365,9 @@ protected:
 
 	void UpdateCharacterMovement();
 
-	void UpdateDynamicMovementSettings(EALSGait AllowedGait);
+	void UpdateDynamicMovementSettingsNetworked(EALSGait AllowedGait);
+
+	void UpdateDynamicMovementSettingsStandalone(EALSGait AllowedGait);
 
 	void UpdateGroundedRotation(float DeltaTime);
 
@@ -450,13 +452,13 @@ protected:
 
 	/** Input */
 
-	UPROPERTY(EditAnywhere, replicated, BlueprintReadWrite, Category = "ALS|Input")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "ALS|Input")
 	EALSRotationMode DesiredRotationMode = EALSRotationMode::LookingDirection;
 
-	UPROPERTY(EditAnywhere, replicated, BlueprintReadWrite, Category = "ALS|Input")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "ALS|Input")
 	EALSGait DesiredGait = EALSGait::Running;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, replicated, Category = "ALS|Input")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "ALS|Input")
 	EALSStance DesiredStance = EALSStance::Standing;
 
 	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input", BlueprintReadOnly)
@@ -554,10 +556,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	float EasedMaxAcceleration;
 
-	UPROPERTY(BlueprintReadOnly, replicated, Category = "ALS|Essential Information")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "ALS|Essential Information")
 	FVector ReplicatedCurrentAcceleration;
 
-	UPROPERTY(BlueprintReadOnly, replicated, Category = "ALS|Essential Information")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "ALS|Essential Information")
 	FRotator ReplicatedControlRotation;
 
 	/** State Values */
@@ -645,7 +647,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Ragdoll System")
 	FVector LastRagdollVelocity;
 
-	UPROPERTY(BlueprintReadOnly, replicated, Category = "ALS|Ragdoll System")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "ALS|Ragdoll System")
 	FVector TargetRagdollLocation;
 
 	/* Server ragdoll pull force storage*/
@@ -677,4 +679,7 @@ protected:
 
 	/* Smooth out aiming by interping control rotation*/
 	FRotator AimingRotation;
+
+	/** We won't use curve based movement on networked games */
+	bool bDisableCurvedMovement = false;
 };
