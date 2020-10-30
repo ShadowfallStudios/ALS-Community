@@ -3,7 +3,7 @@
 
 Replicated & optimized C++ port of [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1) for **Unreal Engine 4.25** with additional bug fixes.
 
-## Supported Build Types
+## Supported Systems
 - Windows 64-bit
 - Linux
 
@@ -19,14 +19,13 @@ Replicated & optimized C++ port of [Advanced Locomotion System V4](https://www.u
 - See [Issues](https://github.com/dyanikoglu/ALSV4_CPP/issues) section
 
 ## Setting Up The Plugin
-- Clone the repository inside your project's `Plugins` folder, or download the source code zip file for latest release and extract it into your project's `Plugins` folder.
+- Clone the repository inside your project's `Plugins` folder, or download the latest release and extract it into your project's `Plugins` folder.
 - Put `Config/DefaultInput.ini` from the plugin folder inside your project's config folder. If your project already have this .ini file, merge it into yours.
 - Add the lines below into your `DefaultEngine.ini`, below `[/Script/Engine.CollisionProfile]` tag (Create the tag if it doesn't exist):
 ```
 +Profiles=(Name="ALS_Character",CollisionEnabled=QueryAndPhysics,bCanModify=True,ObjectTypeName="Pawn",CustomResponses=((Channel="Visibility",Response=ECR_Ignore),(Channel="Camera",Response=ECR_Ignore),(Channel="Climbable",Response=ECR_Ignore)),HelpMessage="Custom collision settings for the capsule in the ALS_BaseCharacter.")
 +DefaultChannelResponses=(Channel=ECC_GameTraceChannel2,DefaultResponse=ECR_Block,bTraceType=True,bStaticObject=False,Name="Climbable")
 ```
-- Generate Visual Studio Project files, and compile your project. (Unreal Engine 4.25.2/3 update broke compiling distribution binaries for plugins, so you need to compile them yourself)
 - Launch the project, and enable plugin content viewer as seen below. This will show contents of the plugin in your content browser:
 ![image](https://github.com/dyanikoglu/ALSV4_CPP/raw/main/Resources/Readme_Content_1.png)
 
