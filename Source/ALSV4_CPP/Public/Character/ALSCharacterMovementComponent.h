@@ -1,7 +1,7 @@
 // Project:         Advanced Locomotion System V4 on C++
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Haziq Fadhil
-// Contributors:    
+// Contributors:    Doga Can Yanikoglu
 
 #pragma once
 
@@ -28,7 +28,6 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 		virtual uint8 GetCompressedFlags() const override;
 		virtual void SetMoveFor(ACharacter* Character, float InDeltaTime, FVector const& NewAccel,
 		                        class FNetworkPredictionData_Client_Character& ClientData) override;
-		virtual void PrepMoveFor(class ACharacter* Character) override;
 
 		// Walk Speed Update
 		uint8 bSavedRequestMovementSettingsChange : 1;
@@ -52,9 +51,9 @@ public:
 
 
 	// Movement Settings Variables
-	uint8 bRequestMovementSettingsChange : 1;
+	uint8 bRequestMovementSettingsChange = 1;
 
-	float MyNewMaxWalkSpeed;
+	float MyNewMaxWalkSpeed = 0;
 
 	// Set Max Walking Speed (Called from the owning client)
 	UFUNCTION(BlueprintCallable, Category = "Movement Settings")
