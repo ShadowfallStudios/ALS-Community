@@ -71,18 +71,6 @@ uint8 UALSCharacterMovementComponent::FSavedMove_My::GetCompressedFlags() const
 	return Result;
 }
 
-bool UALSCharacterMovementComponent::FSavedMove_My::CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* Character,
-                                                                   float MaxDelta) const
-{
-	// Set which moves can be combined together. This will depend on the bit flags that are used.
-	if (bSavedRequestMovementSettingsChange != ((FSavedMove_My*)&NewMove)->bSavedRequestMovementSettingsChange)
-	{
-		return false;
-	}
-
-	return Super::CanCombineWith(NewMove, Character, MaxDelta);
-}
-
 void UALSCharacterMovementComponent::FSavedMove_My::SetMoveFor(ACharacter* Character, float InDeltaTime, FVector const& NewAccel,
                                                                class FNetworkPredictionData_Client_Character& ClientData)
 {
@@ -104,12 +92,6 @@ UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::FNetworkPredic
 FSavedMovePtr UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::AllocateNewMove()
 {
 	return MakeShared<FSavedMove_My>();
-}
-
-// Set Movement Settings RPC to transfer the current Movement Settings from the Owning Client to the Server
-bool UALSCharacterMovementComponent::Server_SetMaxWalkingSpeed_Validate(const float NewMaxWalkSpeed)
-{
-	return NewMaxWalkSpeed >= 0.f && NewMaxWalkSpeed <= 2000.f;
 }
 
 void UALSCharacterMovementComponent::Server_SetMaxWalkingSpeed_Implementation(const float NewMaxWalkSpeed)

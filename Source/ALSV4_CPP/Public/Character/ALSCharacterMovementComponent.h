@@ -23,7 +23,6 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 
 		typedef FSavedMove_Character Super;
 
-		virtual bool CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* Character, float MaxDelta) const override;
 		virtual void Clear() override;
 		virtual uint8 GetCompressedFlags() const override;
 		virtual void SetMoveFor(ACharacter* Character, float InDeltaTime, FVector const& NewAccel,
@@ -59,6 +58,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Movement Settings")
 	void SetMaxWalkingSpeed(float NewMaxWalkSpeed);
 
-	UFUNCTION(reliable, Server, WithValidation)
+	UFUNCTION(Reliable, Server)
 	void Server_SetMaxWalkingSpeed(float NewMaxWalkSpeed);
 };
