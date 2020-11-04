@@ -654,7 +654,7 @@ protected:
 	float ServerRagdollPull = 0.0f;
 
 	/* Dedicated server mesh default visibility based anim tick option*/
-	EVisibilityBasedAnimTickOption DefVisBasedTickOp = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+	EVisibilityBasedAnimTickOption DefVisBasedTickOp;
 
 	/** Cached Variables */
 
