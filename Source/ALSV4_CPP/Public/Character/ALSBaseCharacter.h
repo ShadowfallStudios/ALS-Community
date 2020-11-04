@@ -22,6 +22,7 @@ class UTimelineComponent;
 class UAnimInstance;
 class UAnimMontage;
 class UALSCharacterAnimInstance;
+enum class EVisibilityBasedAnimTickOption : uint8;
 
 /*
  * Base character class
