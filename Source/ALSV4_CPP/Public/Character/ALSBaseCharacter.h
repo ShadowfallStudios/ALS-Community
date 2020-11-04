@@ -22,6 +22,7 @@ class UTimelineComponent;
 class UAnimInstance;
 class UAnimMontage;
 class UALSCharacterAnimInstance;
+enum class EVisibilityBasedAnimTickOption : uint8;
 
 /*
  * Base character class
@@ -654,7 +655,7 @@ protected:
 	float ServerRagdollPull = 0.0f;
 
 	/* Dedicated server mesh default visibility based anim tick option*/
-	EVisibilityBasedAnimTickOption DefVisBasedTickOp = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+	EVisibilityBasedAnimTickOption DefVisBasedTickOp;
 
 	/** Cached Variables */
 

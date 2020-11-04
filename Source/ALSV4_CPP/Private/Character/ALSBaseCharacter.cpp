@@ -1017,7 +1017,7 @@ void AALSBaseCharacter::UpdateDynamicMovementSettingsStandalone(EALSGait Allowed
 	const FVector CurveVec = CurrentMovementSettings.MovementCurve->GetVectorValue(MappedSpeed);
 
 	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
-	GetCharacterMovement()->MaxWalkSpeed = NewMaxSpeed;
+	MyCharacterMovementComponent->SetMaxWalkingSpeed(NewMaxSpeed);
 	GetCharacterMovement()->MaxAcceleration = CurveVec.X;
 	GetCharacterMovement()->BrakingDecelerationWalking = CurveVec.Y;
 	GetCharacterMovement()->GroundFriction = CurveVec.Z;
