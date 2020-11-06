@@ -704,7 +704,6 @@ void AALSBaseCharacter::RagdollUpdate(float DeltaTime)
 	// Set the Last Ragdoll Velocity.
 	FVector NewRagdollVel = GetMesh()->GetPhysicsLinearVelocity(FName(TEXT("root")));
 	LastRagdollVelocity = (NewRagdollVel != FVector::ZeroVector || IsLocallyControlled()) ? NewRagdollVel : LastRagdollVelocity / 2;
-	LastRagdollVelocity = (NewRagdollVel != FVector::ZeroVector || IsLocallyControlled()) ? NewRagdollVel : LastRagdollVelocity / 2;
 
 	// Use the Ragdoll Velocity to scale the ragdoll's joint strength for physical animation.
 	const float SpringValue = FMath::GetMappedRangeValueClamped({0.0f, 1000.0f}, {0.0f, 25000.0f}, LastRagdollVelocity.Size());
