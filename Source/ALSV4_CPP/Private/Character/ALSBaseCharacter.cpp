@@ -1279,6 +1279,8 @@ bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings
 	return true;
 }
 
+//This function is called by "MantleTimeline" in the AALSBaseCharacter::BeginPlay, when default settings are set for the timeline.
+//Line 114 (Subject to change): TimelineUpdated.BindUFunction(this, FName(TEXT("MantleUpdate")))
 void AALSBaseCharacter::MantleUpdate(float BlendIn)
 {
 	// Step 1: Continually update the mantle target from the stored local transform to follow along with moving objects
