@@ -405,6 +405,8 @@ protected:
 
 	void SetMovementModel();
 
+	bool IsComponentVelocityValid(UPrimitiveComponent* PrimitiveComponent, float MaxVelocity);
+
 	/** Input */
 
 	void PlayerForwardMovementInput(float Value);
@@ -527,6 +529,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
 	UCurveFloat* MantleTimelineCurve;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
+	float AcceptableVelocityWhileMantling = 10.0f;
 
 	/** Components */
 
