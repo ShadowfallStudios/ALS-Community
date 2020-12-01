@@ -176,7 +176,8 @@ protected:
 	AALSBaseCharacter* Character = nullptr;
 
 	/** Character Information */
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information", Meta = (
+		ShowOnlyInnerProperties))
 	FALSAnimCharacterInformation CharacterInformation;
 public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information")
@@ -198,7 +199,8 @@ public:
 	FALSOverlayState OverlayState = EALSOverlayState::Default;
 protected:
 	/** Anim Graph - Grounded */
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded", Meta = (
+		ShowOnlyInnerProperties))
 	FALSAnimGraphGrounded Grounded;
 public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded")
@@ -217,7 +219,8 @@ public:
 	FALSMovementDirection MovementDirection = EALSMovementDirection::Forward;
 protected:
 	/** Anim Graph - In Air */
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - In Air", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - In Air", Meta = (
+		ShowOnlyInnerProperties))
 	FALSAnimGraphInAir InAir;
 
 	/** Anim Graph - Aiming Values */
@@ -238,19 +241,23 @@ protected:
 	FALSAnimGraphLayerBlending LayerBlendingValues;
 
 	/** Anim Graph - Foot IK */
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Foot IK", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Foot IK", Meta = (
+		ShowOnlyInnerProperties))
 	FALSAnimGraphFootIK FootIKValues;
 
 	/** Turn In Place */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Turn In Place", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Turn In Place", Meta = (
+		ShowOnlyInnerProperties))
 	FALSAnimTurnInPlace TurnInPlaceValues;
 
 	/** Rotate In Place */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Rotate In Place", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Rotate In Place", Meta = (
+		ShowOnlyInnerProperties))
 	FALSAnimRotateInPlace RotateInPlace;
 
 	/** Configuration */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Main Configuration", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Main Configuration", Meta = (
+		ShowOnlyInnerProperties))
 	FALSAnimConfiguration Config;
 
 	/** Blend Curves */
@@ -293,5 +300,4 @@ private:
 	FTimerHandle OnJumpedTimer;
 
 	bool bCanPlayDynamicTransition = true;
-
 };

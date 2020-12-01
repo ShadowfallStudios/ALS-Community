@@ -36,7 +36,10 @@ public:
 	AALSBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION(BlueprintCallable, Category= "Movement")
-	FORCEINLINE class UALSCharacterMovementComponent* GetMyMovementComponent() const { return MyCharacterMovementComponent; }
+	FORCEINLINE class UALSCharacterMovementComponent* GetMyMovementComponent() const
+	{
+		return MyCharacterMovementComponent;
+	}
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -153,10 +156,12 @@ public:
 
 	/** Mantling*/
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
-	void Server_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS, EALSMantleType MantleType);
+	void Server_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
+	                        EALSMantleType MantleType);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
-	void Multicast_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS, EALSMantleType MantleType);
+	void Multicast_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
+	                           EALSMantleType MantleType);
 
 	/** Ragdolling*/
 	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
@@ -376,7 +381,8 @@ protected:
 
 	/** Mantle System */
 
-	virtual void MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS, EALSMantleType MantleType);
+	virtual void MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
+	                         EALSMantleType MantleType);
 
 	virtual bool MantleCheck(const FALSMantleTraceSettings& TraceSettings,
 	                         EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::ForOneFrame);
@@ -626,7 +632,8 @@ protected:
 	bool bBreakfallOnLand = true;
 
 	/** If player hits to the ground with an amount of velocity greater than specified value, switch to breakfall state */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Breakfall System", meta = (EditCondition = "bBreakfallOnLand"))
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Breakfall System", meta = (EditCondition =
+		"bBreakfallOnLand"))
 	float BreakfallOnLandVelocity = 600.0f;
 
 	/** Ragdoll System */
@@ -636,7 +643,8 @@ protected:
 	bool bRagdollOnLand = false;
 
 	/** If player hits to the ground with an amount of velocity greater than specified value, switch to ragdoll state */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Ragdoll System", meta = (EditCondition = "bRagdollOnLand"))
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Ragdoll System", meta = (EditCondition =
+		"bRagdollOnLand"))
 	float RagdollOnLandVelocity = 1000.0f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Ragdoll System")
