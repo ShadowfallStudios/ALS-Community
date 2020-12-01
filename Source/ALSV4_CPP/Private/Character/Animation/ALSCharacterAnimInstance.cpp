@@ -257,8 +257,9 @@ void UALSCharacterAnimInstance::UpdateLayerValues()
 
 void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 {
-	FVector FootOffsetLTarget;
-	FVector FootOffsetRTarget;
+	FVector FootOffsetLTarget = FVector::ZeroVector;
+	FVector FootOffsetRTarget = FVector::ZeroVector;
+
 	// Update Foot Locking values.
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("FootLock_L")),
 	               FName(TEXT("ik_foot_l")), FootIKValues.FootLock_L_Alpha, FootIKValues.UseFootLockCurve_L,
