@@ -57,6 +57,7 @@ public:
 	static bool AngleInRange(float Angle, float MinAngle, float MaxAngle, float Buffer, bool IncreaseBuffer);
 
 	UFUNCTION(BlueprintCallable)
-	static EALSMovementDirection CalculateQuadrant(EALSMovementDirection Current, float FRThreshold, float FLThreshold, float BRThreshold,
+	static EALSMovementDirection CalculateQuadrant(EALSMovementDirection Current, float FRThreshold, float FLThreshold,
+	                                               float BRThreshold,
 	                                               float BLThreshold, float Buffer, float Angle);
 };

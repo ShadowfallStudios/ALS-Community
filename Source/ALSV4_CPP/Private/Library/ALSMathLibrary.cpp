@@ -77,8 +77,10 @@ bool UALSMathLibrary::AngleInRange(float Angle, float MinAngle, float MaxAngle, 
 	return Angle >= MinAngle + Buffer && Angle <= MaxAngle - Buffer;
 }
 
-EALSMovementDirection UALSMathLibrary::CalculateQuadrant(EALSMovementDirection Current, float FRThreshold, float FLThreshold,
-                                                         float BRThreshold, float BLThreshold, float Buffer, float Angle)
+EALSMovementDirection UALSMathLibrary::CalculateQuadrant(EALSMovementDirection Current, float FRThreshold,
+                                                         float FLThreshold,
+                                                         float BRThreshold, float BLThreshold, float Buffer,
+                                                         float Angle)
 {
 	// Take the input angle and determine its quadrant (direction). Use the current Movement Direction to increase or
 	// decrease the buffers on the angle ranges for each quadrant.

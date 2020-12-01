@@ -79,7 +79,7 @@ void AALSCharacter::RagdollEnd()
 
 ECollisionChannel AALSCharacter::GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius)
 {
-	FName CameraSocketName = bRightShoulder ? TEXT("TP_CameraTrace_R") : TEXT("TP_CameraTrace_L");
+	const FName CameraSocketName = bRightShoulder ? TEXT("TP_CameraTrace_R") : TEXT("TP_CameraTrace_L");
 	TraceOrigin = GetMesh()->GetSocketLocation(CameraSocketName);
 	TraceRadius = 15.0f;
 	return ECC_Camera;

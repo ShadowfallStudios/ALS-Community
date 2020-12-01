@@ -57,8 +57,10 @@ void AALSBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("StanceAction", IE_Pressed, this, &AALSBaseCharacter::StancePressedAction);
 	PlayerInputComponent->BindAction("WalkAction", IE_Pressed, this, &AALSBaseCharacter::WalkPressedAction);
 	PlayerInputComponent->BindAction("RagdollAction", IE_Pressed, this, &AALSBaseCharacter::RagdollPressedAction);
-	PlayerInputComponent->BindAction("SelectRotationMode_1", IE_Pressed, this, &AALSBaseCharacter::VelocityDirectionPressedAction);
-	PlayerInputComponent->BindAction("SelectRotationMode_2", IE_Pressed, this, &AALSBaseCharacter::LookingDirectionPressedAction);
+	PlayerInputComponent->BindAction("SelectRotationMode_1", IE_Pressed, this,
+	                                 &AALSBaseCharacter::VelocityDirectionPressedAction);
+	PlayerInputComponent->BindAction("SelectRotationMode_2", IE_Pressed, this,
+	                                 &AALSBaseCharacter::LookingDirectionPressedAction);
 	PlayerInputComponent->BindAction("SprintAction", IE_Pressed, this, &AALSBaseCharacter::SprintPressedAction);
 	PlayerInputComponent->BindAction("SprintAction", IE_Released, this, &AALSBaseCharacter::SprintReleasedAction);
 	PlayerInputComponent->BindAction("AimAction", IE_Pressed, this, &AALSBaseCharacter::AimPressedAction);
@@ -478,13 +480,15 @@ void AALSBaseCharacter::EventOnJumped()
 	MainAnimInstance->OnJumped();
 }
 
-void AALSBaseCharacter::Server_MantleStart_Implementation(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
+void AALSBaseCharacter::Server_MantleStart_Implementation(float MantleHeight,
+                                                          const FALSComponentAndTransform& MantleLedgeWS,
                                                           EALSMantleType MantleType)
 {
 	Multicast_MantleStart(MantleHeight, MantleLedgeWS, MantleType);
 }
 
-void AALSBaseCharacter::Multicast_MantleStart_Implementation(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
+void AALSBaseCharacter::Multicast_MantleStart_Implementation(float MantleHeight,
+                                                             const FALSComponentAndTransform& MantleLedgeWS,
                                                              EALSMantleType MantleType)
 {
 	if (!IsLocallyControlled())
@@ -695,19 +699,23 @@ void AALSBaseCharacter::GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bo
 
 void AALSBaseCharacter::SetAcceleration(const FVector& NewAcceleration)
 {
-	Acceleration = (NewAcceleration != FVector::ZeroVector || IsLocallyControlled()) ? NewAcceleration : Acceleration / 2;
+	Acceleration = (NewAcceleration != FVector::ZeroVector || IsLocallyControlled())
+		               ? NewAcceleration
+		               : Acceleration / 2;
 	MainAnimInstance->GetCharacterInformationMutable().Acceleration = Acceleration;
 }
 
 void AALSBaseCharacter::RagdollUpdate(float DeltaTime)
 {
 	// Set the Last Ragdoll Velocity.
-	FVector NewRagdollVel = GetMesh()->GetPhysicsLinearVelocity(FName(TEXT("root")));
-	LastRagdollVelocity = (NewRagdollVel != FVector::ZeroVector || IsLocallyControlled()) ? NewRagdollVel : LastRagdollVelocity / 2;
-	LastRagdollVelocity = (NewRagdollVel != FVector::ZeroVector || IsLocallyControlled()) ? NewRagdollVel : LastRagdollVelocity / 2;
+	const FVector NewRagdollVel = GetMesh()->GetPhysicsLinearVelocity(FName(TEXT("root")));
+	LastRagdollVelocity = (NewRagdollVel != FVector::ZeroVector || IsLocallyControlled())
+		                      ? NewRagdollVel
+		                      : LastRagdollVelocity / 2;
 
 	// Use the Ragdoll Velocity to scale the ragdoll's joint strength for physical animation.
-	const float SpringValue = FMath::GetMappedRangeValueClamped({0.0f, 1000.0f}, {0.0f, 25000.0f}, LastRagdollVelocity.Size());
+	const float SpringValue = FMath::GetMappedRangeValueClamped({0.0f, 1000.0f}, {0.0f, 25000.0f},
+	                                                            LastRagdollVelocity.Size());
 	GetMesh()->SetAllMotorsAngularDriveParams(SpringValue, 0.0f, 0.0f, false);
 
 	// Disable Gravity if falling faster than -4000 to prevent continual acceleration.
@@ -763,8 +771,9 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 		ServerRagdollPull = FMath::FInterpTo(ServerRagdollPull, 750, DeltaTime, 0.6);
 		float RagdollSpeed = FVector(LastRagdollVelocity.X, LastRagdollVelocity.Y, 0).Size();
 		FName RagdollSocketPullName = RagdollSpeed > 300 ? FName(TEXT("spine_03")) : FName(TEXT("pelvis"));
-		GetMesh()->AddForce((TargetRagdollLocation - GetMesh()->GetSocketLocation(RagdollSocketPullName)) * ServerRagdollPull,
-		                    RagdollSocketPullName, true);
+		GetMesh()->AddForce(
+			(TargetRagdollLocation - GetMesh()->GetSocketLocation(RagdollSocketPullName)) * ServerRagdollPull,
+			RagdollSocketPullName, true);
 	}
 	SetActorLocationAndTargetRotation(bRagdollOnGround ? NewRagdollLoc : TargetRagdollLocation, TargetRagdollRotation);
 }
@@ -1009,7 +1018,7 @@ void AALSBaseCharacter::UpdateDynamicMovementSettingsStandalone(EALSGait Allowed
 {
 	// Get the Current Movement Settings.
 	CurrentMovementSettings = GetTargetMovementSettings();
-	float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
+	const float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
 
 	// Update the Acceleration, Deceleration, and Ground Friction using the Movement Curve.
 	// This allows for fine control over movement behavior at each speed (May not be suitable for replication).
@@ -1027,7 +1036,7 @@ void AALSBaseCharacter::UpdateDynamicMovementSettingsNetworked(EALSGait AllowedG
 {
 	// Get the Current Movement Settings.
 	CurrentMovementSettings = GetTargetMovementSettings();
-	float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
+	const float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
 
 	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
 	if (IsLocallyControlled() || HasAuthority())
@@ -1054,7 +1063,8 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 			if (RotationMode == EALSRotationMode::VelocityDirection)
 			{
 				// Velocity Direction Rotation
-				SmoothCharacterRotation({0.0f, LastVelocityRotation.Yaw, 0.0f}, 800.0f, GroundedRotationRate, DeltaTime);
+				SmoothCharacterRotation({0.0f, LastVelocityRotation.Yaw, 0.0f}, 800.0f, GroundedRotationRate,
+				                        DeltaTime);
 			}
 			else if (RotationMode == EALSRotationMode::LookingDirection)
 			{
@@ -1138,7 +1148,8 @@ void AALSBaseCharacter::UpdateInAirRotation(float DeltaTime)
 	}
 }
 
-void AALSBaseCharacter::MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS, EALSMantleType MantleType)
+void AALSBaseCharacter::MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
+                                    EALSMantleType MantleType)
 {
 	// Step 1: Get the Mantle Asset and use it to set the new Mantle Params.
 	const FALSMantleAsset& MantleAsset = GetMantleAsset(MantleType);
@@ -1147,10 +1158,14 @@ void AALSBaseCharacter::MantleStart(float MantleHeight, const FALSComponentAndTr
 	MantleParams.PositionCorrectionCurve = MantleAsset.PositionCorrectionCurve;
 	MantleParams.StartingOffset = MantleAsset.StartingOffset;
 	MantleParams.StartingPosition = FMath::GetMappedRangeValueClamped({MantleAsset.LowHeight, MantleAsset.HighHeight},
-	                                                                  {MantleAsset.LowStartPosition, MantleAsset.HighStartPosition},
+	                                                                  {
+		                                                                  MantleAsset.LowStartPosition,
+		                                                                  MantleAsset.HighStartPosition
+	                                                                  },
 	                                                                  MantleHeight);
 	MantleParams.PlayRate = FMath::GetMappedRangeValueClamped({MantleAsset.LowHeight, MantleAsset.HighHeight},
-	                                                          {MantleAsset.LowPlayRate, MantleAsset.HighPlayRate}, MantleHeight);
+	                                                          {MantleAsset.LowPlayRate, MantleAsset.HighPlayRate},
+	                                                          MantleHeight);
 
 	// Step 2: Convert the world space target to the mantle component's local space for use in moving objects.
 	MantleLedgeLS.Component = MantleLedgeWS.Component;
@@ -1216,7 +1231,17 @@ bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings
 		// Not a valid surface to mantle
 		return false;
 	}
-
+	
+	if (HitResult.GetComponent() != nullptr) 
+	{
+		UPrimitiveComponent* PrimitiveComponent = HitResult.GetComponent();
+		if (PrimitiveComponent && PrimitiveComponent->GetComponentVelocity().Size() > AcceptableVelocityWhileMantling)
+		{
+			// The surface to mantle moves too fast
+			return false;
+		}
+	}
+	
 	const FVector InitialTraceImpactPoint = HitResult.ImpactPoint;
 	const FVector InitialTraceNormal = HitResult.ImpactNormal;
 
@@ -1228,7 +1253,8 @@ bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings
 	DownwardTraceStart.Z += TraceSettings.MaxLedgeHeight + TraceSettings.DownwardTraceRadius + 1.0f;
 
 	World->SweepSingleByChannel(HitResult, DownwardTraceStart, DownwardTraceEnd, FQuat::Identity,
-	                            ECC_GameTraceChannel2, FCollisionShape::MakeSphere(TraceSettings.DownwardTraceRadius), Params);
+	                            ECC_GameTraceChannel2, FCollisionShape::MakeSphere(TraceSettings.DownwardTraceRadius),
+	                            Params);
 
 
 	if (!GetCharacterMovement()->IsWalkable(HitResult))
@@ -1242,7 +1268,8 @@ bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings
 
 	// Step 3: Check if the capsule has room to stand at the downward trace's location.
 	// If so, set that location as the Target Transform and calculate the mantle height.
-	const FVector& CapsuleLocationFBase = UALSMathLibrary::GetCapsuleLocationFromBase(DownTraceLocation, 2.0f, GetCapsuleComponent());
+	const FVector& CapsuleLocationFBase = UALSMathLibrary::GetCapsuleLocationFromBase(
+		DownTraceLocation, 2.0f, GetCapsuleComponent());
 	const bool bCapsuleHasRoom = UALSMathLibrary::CapsuleHasRoomCheck(GetCapsuleComponent(), CapsuleLocationFBase, 0.0f,
 	                                                                  0.0f);
 
@@ -1280,6 +1307,7 @@ bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings
 	return true;
 }
 
+// This function is called by "MantleTimeline" using BindUFunction in the AALSBaseCharacter::BeginPlay during the default settings initalization.
 void AALSBaseCharacter::MantleUpdate(float BlendIn)
 {
 	// Step 1: Continually update the mantle target from the stored local transform to follow along with moving objects
@@ -1287,7 +1315,8 @@ void AALSBaseCharacter::MantleUpdate(float BlendIn)
 
 	// Step 2: Update the Position and Correction Alphas using the Position/Correction curve set for each Mantle.
 	const FVector CurveVec = MantleParams.PositionCorrectionCurve
-	                                     ->GetVectorValue(MantleParams.StartingPosition + MantleTimeline->GetPlaybackPosition());
+	                                     ->GetVectorValue(
+		                                     MantleParams.StartingPosition + MantleTimeline->GetPlaybackPosition());
 	const float PositionAlpha = CurveVec.X;
 	const float XYCorrectionAlpha = CurveVec.Y;
 	const float ZCorrectionAlpha = CurveVec.Z;
@@ -1298,7 +1327,8 @@ void AALSBaseCharacter::MantleUpdate(float BlendIn)
 	// Blend into the animated horizontal and rotation offset using the Y value of the Position/Correction Curve.
 	const FTransform TargetHzTransform(MantleAnimatedStartOffset.GetRotation(),
 	                                   {
-		                                   MantleAnimatedStartOffset.GetLocation().X, MantleAnimatedStartOffset.GetLocation().Y,
+		                                   MantleAnimatedStartOffset.GetLocation().X,
+		                                   MantleAnimatedStartOffset.GetLocation().Y,
 		                                   MantleActualStartOffset.GetLocation().Z
 	                                   },
 	                                   FVector::OneVector);
@@ -1308,7 +1338,8 @@ void AALSBaseCharacter::MantleUpdate(float BlendIn)
 	// Blend into the animated vertical offset using the Z value of the Position/Correction Curve.
 	const FTransform TargetVtTransform(MantleActualStartOffset.GetRotation(),
 	                                   {
-		                                   MantleActualStartOffset.GetLocation().X, MantleActualStartOffset.GetLocation().Y,
+		                                   MantleActualStartOffset.GetLocation().X,
+		                                   MantleActualStartOffset.GetLocation().Y,
 		                                   MantleAnimatedStartOffset.GetLocation().Z
 	                                   },
 	                                   FVector::OneVector);
@@ -1316,18 +1347,23 @@ void AALSBaseCharacter::MantleUpdate(float BlendIn)
 		UKismetMathLibrary::TLerp(MantleActualStartOffset, TargetVtTransform, ZCorrectionAlpha);
 
 	const FTransform ResultTransform(HzLerpResult.GetRotation(),
-	                                 {HzLerpResult.GetLocation().X, HzLerpResult.GetLocation().Y, VtLerpResult.GetLocation().Z},
+	                                 {
+		                                 HzLerpResult.GetLocation().X, HzLerpResult.GetLocation().Y,
+		                                 VtLerpResult.GetLocation().Z
+	                                 },
 	                                 FVector::OneVector);
 
 	// Blend from the currently blending transforms into the final mantle target using the X
 	// value of the Position/Correction Curve.
-	const FTransform& ResultLerp = UKismetMathLibrary::TLerp(UALSMathLibrary::TransfromAdd(MantleTarget, ResultTransform), MantleTarget,
-	                                                         PositionAlpha);
+	const FTransform& ResultLerp = UKismetMathLibrary::TLerp(
+		UALSMathLibrary::TransfromAdd(MantleTarget, ResultTransform), MantleTarget,
+		PositionAlpha);
 
 	// Initial Blend In (controlled in the timeline curve) to allow the actor to blend into the Position/Correction
 	// curve at the midoint. This prevents pops when mantling an object lower than the animated mantle.
 	const FTransform& LerpedTarget =
-		UKismetMathLibrary::TLerp(UALSMathLibrary::TransfromAdd(MantleTarget, MantleActualStartOffset), ResultLerp, BlendIn);
+		UKismetMathLibrary::TLerp(UALSMathLibrary::TransfromAdd(MantleTarget, MantleActualStartOffset), ResultLerp,
+		                          BlendIn);
 
 	// Step 4: Set the actors location and rotation to the Lerped Target.
 	SetActorLocationAndTargetRotation(LerpedTarget.GetLocation(), LerpedTarget.GetRotation().Rotator());
@@ -1463,8 +1499,8 @@ void AALSBaseCharacter::GetControlForwardRightVector(FVector& Forward, FVector& 
 
 FVector AALSBaseCharacter::GetPlayerMovementInput() const
 {
-	FVector Forward;
-	FVector Right;
+	FVector Forward = FVector::ZeroVector;
+	FVector Right = FVector::ZeroVector;
 	GetControlForwardRightVector(Forward, Right);
 	return (Forward + Right).GetSafeNormal();
 }
@@ -1485,7 +1521,8 @@ void AALSBaseCharacter::PlayerRightMovementInput(float Value)
 	if (MovementState == EALSMovementState::Grounded || MovementState == EALSMovementState::InAir)
 	{
 		// Default camera relative movement behavior
-		const float Scale = UALSMathLibrary::FixDiagonalGamepadValues(GetInputAxisValue("MoveForward/Backwards"), Value).Value;
+		const float Scale = UALSMathLibrary::FixDiagonalGamepadValues(GetInputAxisValue("MoveForward/Backwards"), Value)
+			.Value;
 		const FRotator DirRotator(0.0f, AimingRotation.Yaw, 0.0f);
 		AddMovementInput(UKismetMathLibrary::GetRightVector(DirRotator), Scale);
 	}
