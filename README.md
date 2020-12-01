@@ -10,7 +10,7 @@ Replicated & optimized C++ port of [Advanced Locomotion System V4](https://www.u
 *Mac, Android, IOS, and console builds are not tested and supported at the moment*
 
 ## Features
-- Full replication support with low bandwith usage
+- Full replication support with low bandwidth usage
 - Plugin structure
 - Highly optimized for production
 - Lots of bug fixes additional to marketplace version
