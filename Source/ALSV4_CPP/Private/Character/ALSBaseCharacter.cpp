@@ -708,7 +708,7 @@ void AALSBaseCharacter::SetAcceleration(const FVector& NewAcceleration)
 void AALSBaseCharacter::RagdollUpdate(float DeltaTime)
 {
 	// Set the Last Ragdoll Velocity.
-	FVector NewRagdollVel = GetMesh()->GetPhysicsLinearVelocity(FName(TEXT("root")));
+	const FVector NewRagdollVel = GetMesh()->GetPhysicsLinearVelocity(FName(TEXT("root")));
 	LastRagdollVelocity = (NewRagdollVel != FVector::ZeroVector || IsLocallyControlled())
 		                      ? NewRagdollVel
 		                      : LastRagdollVelocity / 2;
@@ -1018,7 +1018,7 @@ void AALSBaseCharacter::UpdateDynamicMovementSettingsStandalone(EALSGait Allowed
 {
 	// Get the Current Movement Settings.
 	CurrentMovementSettings = GetTargetMovementSettings();
-	float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
+	const float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
 
 	// Update the Acceleration, Deceleration, and Ground Friction using the Movement Curve.
 	// This allows for fine control over movement behavior at each speed (May not be suitable for replication).
@@ -1036,7 +1036,7 @@ void AALSBaseCharacter::UpdateDynamicMovementSettingsNetworked(EALSGait AllowedG
 {
 	// Get the Current Movement Settings.
 	CurrentMovementSettings = GetTargetMovementSettings();
-	float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
+	const float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
 
 	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
 	if (IsLocallyControlled() || HasAuthority())
@@ -1489,8 +1489,8 @@ void AALSBaseCharacter::GetControlForwardRightVector(FVector& Forward, FVector& 
 
 FVector AALSBaseCharacter::GetPlayerMovementInput() const
 {
-	FVector Forward;
-	FVector Right;
+	FVector Forward = FVector::ZeroVector;
+	FVector Right = FVector::ZeroVector;
 	GetControlForwardRightVector(Forward, Right);
 	return (Forward + Right).GetSafeNormal();
 }

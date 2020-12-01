@@ -548,7 +548,7 @@ void UALSCharacterAnimInstance::UpdateMovementValues(float DeltaSeconds)
 	VelocityBlend.L = FMath::FInterpTo(VelocityBlend.L, TargetBlend.L, DeltaSeconds, Config.VelocityBlendInterpSpeed);
 	VelocityBlend.R = FMath::FInterpTo(VelocityBlend.R, TargetBlend.R, DeltaSeconds, Config.VelocityBlendInterpSpeed);
 
-	// Set the Diagnal Scale Amount.
+	// Set the Diagonal Scale Amount.
 	Grounded.DiagonalScaleAmount = CalculateDiagonalScaleAmount();
 
 	// Set the Relative Acceleration Amount and Interp the Lean Amount.

@@ -23,9 +23,9 @@ class ALSV4_CPP_API UALSAnimNotifyFootstep : public UAnimNotify
 {
 	GENERATED_BODY()
 
-	void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 
-	FString GetNotifyName_Implementation() const override;
+	virtual FString GetNotifyName_Implementation() const override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
