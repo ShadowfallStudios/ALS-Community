@@ -564,14 +564,6 @@ void AALSBaseCharacter::SetMovementModel()
 	MovementData = *OutRow;
 }
 
-bool AALSBaseCharacter::IsComponentVelocityValid(UPrimitiveComponent* PrimitiveComponent, float MaxVelocity)
-{
-	FVector PrimitiveComponentVelocity = PrimitiveComponent->GetComponentVelocity();
-
-	return (PrimitiveComponentVelocity.Size() < MaxVelocity);
-}
-
-
 void AALSBaseCharacter::SetHasMovementInput(bool bNewHasMovementInput)
 {
 	bHasMovementInput = bNewHasMovementInput;
@@ -1243,10 +1235,9 @@ bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings
 	if (HitResult.GetComponent() != nullptr) 
 	{
 		UPrimitiveComponent* PrimitiveComponent = HitResult.GetComponent();
-
-		if (!IsComponentVelocityValid(PrimitiveComponent, AcceptableVelocityWhileMantling))
+		if (PrimitiveComponent && PrimitiveComponent->GetComponentVelocity().Size() > AcceptableVelocityWhileMantling)
 		{
-			//The surface to mantle moves too fast
+			// The surface to mantle moves too fast
 			return false;
 		}
 	}
@@ -1321,13 +1312,6 @@ void AALSBaseCharacter::MantleUpdate(float BlendIn)
 {
 	// Step 1: Continually update the mantle target from the stored local transform to follow along with moving objects
 	MantleTarget = UALSMathLibrary::MantleComponentLocalToWorld(MantleLedgeLS);
-		
-	if (MantleLedgeLS.Component != nullptr && !IsComponentVelocityValid(MantleLedgeLS.Component, AcceptableVelocityWhileMantling))
-	{
-			//The surface to mantle moves too fast
-			MantleEnd();
-			return;		
-	}
 
 	// Step 2: Update the Position and Correction Alphas using the Position/Correction curve set for each Mantle.
 	const FVector CurveVec = MantleParams.PositionCorrectionCurve
