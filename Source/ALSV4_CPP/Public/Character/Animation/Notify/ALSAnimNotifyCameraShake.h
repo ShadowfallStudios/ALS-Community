@@ -9,9 +9,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Runtime/Engine/Classes/Camera/CameraShake.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "ALSAnimNotifyCameraShake.generated.h"
+
+class UMatineeCameraShake;
 
 /**
  * Generic camera shake animation notify for pawns with controller enabled
@@ -25,7 +26,7 @@ class ALSV4_CPP_API UALSAnimNotifyCameraShake : public UAnimNotify
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	TSubclassOf<UCameraShake> ShakeClass;
+	TSubclassOf<UMatineeCameraShake> ShakeClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
 	float Scale = 1.0f;
