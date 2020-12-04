@@ -30,7 +30,7 @@ AALSBaseCharacter::AALSBaseCharacter(const FObjectInitializer& ObjectInitializer
 	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(FName(TEXT("MantleTimeline")));
 	bUseControllerRotationYaw = 0;
 	bReplicates = true;
-	bReplicateMovement = true;
+	SetReplicatingMovement(true);
 }
 
 void AALSBaseCharacter::Restart()
