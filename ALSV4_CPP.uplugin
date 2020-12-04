@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "4.11",
+	"VersionName": "4.12",
 	"FriendlyName": "Advanced Locomotion System V4 on C++",
 	"Description": "Performance optimized C++ port of LongmireLocomotion's Advanced Locomotion System V4",
 	"Category": "Animation",
@@ -10,7 +10,7 @@
 	"DocsURL": "https://github.com/dyanikoglu/ALSV4_CPP",
 	"MarketplaceURL": "https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1",
 	"SupportURL": "https://github.com/dyanikoglu/ALSV4_CPP/issues",
-	"EngineVersion": "4.25.0",
+	"EngineVersion": "4.26.0",
 	"EnabledByDefault": true,
 	"CanContainContent": true,
 	"IsBetaVersion": false,
