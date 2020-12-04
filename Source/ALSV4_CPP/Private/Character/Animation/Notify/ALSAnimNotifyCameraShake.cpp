@@ -17,7 +17,7 @@ void UALSAnimNotifyCameraShake::Notify(USkeletalMeshComponent* MeshComp, UAnimSe
 		APlayerController* OwnerController = Cast<APlayerController>(OwnerPawn->GetController());
 		if (OwnerController)
 		{
-			OwnerController->ClientPlayCameraShake(ShakeClass, Scale);
+			OwnerController->ClientStartCameraShake(ShakeClass, Scale);
 		}
 	}
 }
