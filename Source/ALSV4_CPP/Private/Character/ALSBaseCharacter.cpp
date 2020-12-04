@@ -29,8 +29,8 @@ AALSBaseCharacter::AALSBaseCharacter(const FObjectInitializer& ObjectInitializer
 	PrimaryActorTick.bCanEverTick = true;
 	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(FName(TEXT("MantleTimeline")));
 	bUseControllerRotationYaw = 0;
-	SetReplicates(true);
-	SetReplicatingMovement(true);
+	bReplicates = true;
+	bReplicateMovement = true;
 }
 
 void AALSBaseCharacter::Restart()
