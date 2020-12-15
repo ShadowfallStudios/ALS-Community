@@ -659,7 +659,7 @@ float UALSCharacterAnimInstance::CalculateStrideBlend() const
 	// the movement speed, preventing the character from needing to play a half walk+half run blend.
 	// The curves are used to map the stride amount to the speed for maximum control.
 	const float CurveTime = CharacterInformation.Speed / GetOwningComponent()->GetComponentScale().Z;
-	const float ClampedGait = GetAnimCurveClamped(FName(TEXT("Weight_Gait")), -1.0, 0.0f, 1.0f);
+	const float ClampedGait = GetAnimCurveClamped(FName(TEXT("W_Gait")), -1.0, 0.0f, 1.0f);
 	const float LerpedStrideBlend =
 		FMath::Lerp(StrideBlend_N_Walk->GetFloatValue(CurveTime), StrideBlend_N_Run->GetFloatValue(CurveTime),
 		            ClampedGait);
@@ -676,15 +676,15 @@ float UALSCharacterAnimInstance::CalculateWalkRunBlend() const
 float UALSCharacterAnimInstance::CalculateStandingPlayRate() const
 {
 	// Calculate the Play Rate by dividing the Character's speed by the Animated Speed for each gait.
-	// The lerps are determined by the "Weight_Gait" anim curve that exists on every locomotion cycle so
+	// The lerps are determined by the "W_Gait" anim curve that exists on every locomotion cycle so
 	// that the play rate is always in sync with the currently blended animation.
 	// The value is also divided by the Stride Blend and the mesh scale so that the play rate increases as the stride or scale gets smaller
 	const float LerpedSpeed = FMath::Lerp(CharacterInformation.Speed / Config.AnimatedWalkSpeed,
 	                                      CharacterInformation.Speed / Config.AnimatedRunSpeed,
-	                                      GetAnimCurveClamped(FName(TEXT("Weight_Gait")), -1.0f, 0.0f, 1.0f));
+	                                      GetAnimCurveClamped(FName(TEXT("W_Gait")), -1.0f, 0.0f, 1.0f));
 
 	const float SprintAffectedSpeed = FMath::Lerp(LerpedSpeed, CharacterInformation.Speed / Config.AnimatedSprintSpeed,
-	                                              GetAnimCurveClamped(FName(TEXT("Weight_Gait")), -2.0f, 0.0f, 1.0f));
+	                                              GetAnimCurveClamped(FName(TEXT("W_Gait")), -2.0f, 0.0f, 1.0f));
 
 	return FMath::Clamp((SprintAffectedSpeed / Grounded.StrideBlend) / GetOwningComponent()->GetComponentScale().Z,
 	                    0.0f, 3.0f);
