@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    Haziq Fadhil
+// Contributors:    Haziq Fadhil, Drakynfly
 
 
 #pragma once
@@ -46,8 +46,6 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void PreInitializeComponents() override;
-
-	virtual void Restart() override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 

@@ -3,13 +3,12 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    Haziq Fadhil
+// Contributors:    Haziq Fadhil, Drakynfly
 
 
 #include "Character/ALSBaseCharacter.h"
 
 
-#include "Character/ALSPlayerController.h"
 #include "Character/Animation/ALSCharacterAnimInstance.h"
 #include "Library/ALSMathLibrary.h"
 #include "Components/CapsuleComponent.h"
@@ -31,17 +30,6 @@ AALSBaseCharacter::AALSBaseCharacter(const FObjectInitializer& ObjectInitializer
 	bUseControllerRotationYaw = 0;
 	bReplicates = true;
 	SetReplicatingMovement(true);
-}
-
-void AALSBaseCharacter::Restart()
-{
-	Super::Restart();
-
-	AALSPlayerController* NewController = Cast<AALSPlayerController>(GetController());
-	if (NewController)
-	{
-		NewController->OnRestartPawn(this);
-	}
 }
 
 void AALSBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
