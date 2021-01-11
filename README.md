@@ -3,11 +3,11 @@
 
 Replicated & optimized C++ port of [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1) for **Unreal Engine 4.26** with additional bug fixes.
 
-## Supported Systems
-- Windows 64-bit
+## Supported Platforms
+- Windows
 - Linux
 
-*Mac, Android, IOS, and console builds are not tested and supported at the moment*
+*Mac, Android, IOS, and console builds are not tested and supported at the moment. Use the plugin on those platforms with your own risk.*
 
 ## Features
 - Full replication support with low bandwidth usage
@@ -26,6 +26,7 @@ Replicated & optimized C++ port of [Advanced Locomotion System V4](https://www.u
 +Profiles=(Name="ALS_Character",CollisionEnabled=QueryAndPhysics,bCanModify=True,ObjectTypeName="Pawn",CustomResponses=((Channel="Visibility",Response=ECR_Ignore),(Channel="Camera",Response=ECR_Ignore),(Channel="Climbable",Response=ECR_Ignore)),HelpMessage="Custom collision settings for the capsule in the ALS_BaseCharacter.")
 +DefaultChannelResponses=(Channel=ECC_GameTraceChannel2,DefaultResponse=ECR_Block,bTraceType=True,bStaticObject=False,Name="Climbable")
 ```
+- Enable plugin in your project, generate visual studio project files and build. Your project needs to be a C++ project to build the plugin. Unfortunately, BP projects are not supported at the moment.
 - Launch the project, and enable plugin content viewer as seen below. This will show contents of the plugin in your content browser:
 ![image](https://github.com/dyanikoglu/ALSV4_CPP/raw/main/Resources/Readme_Content_1.png)
 
