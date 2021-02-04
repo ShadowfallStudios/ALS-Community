@@ -15,8 +15,9 @@ Replicated & optimized C++ port of [Advanced Locomotion System V4](https://www.u
 - Highly optimized for production
 - Lots of bug fixes additional to marketplace version
 
-## Known Issues
-- See [Issues](https://github.com/dyanikoglu/ALSV4_CPP/issues) section
+## Known Issues & Discussion
+- See [Issues](https://github.com/dyanikoglu/ALSV4_CPP/issues) section for list of known issues
+- See [Discussions](https://github.com/dyanikoglu/ALSV4_CPP/discussions) section to discuss anything about the plugin, and ask questions. Please do not open an issue to ask questions about the plugin.
 
 ## Setting Up The Plugin
 - Clone the repository inside your project's `Plugins` folder, or download the latest release and extract it into your project's `Plugins` folder.
