@@ -1,5 +1,5 @@
 // Project:         Advanced Locomotion System V4 on C++
-// Copyright:       Copyright (C) 2020 Doğa Can Yanıkoğlu
+// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
@@ -27,7 +27,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static FTransform MantleComponentLocalToWorld(const FALSComponentAndTransform& CompAndTransform);
 
-	static TPair<float, float> FixDiagonalGamepadValues(float Y, float X);
+	static TPair<float, float> FixDiagonalGamepadValues(float X, float Y);
 
 	UFUNCTION(BlueprintCallable)
 	static FTransform TransfromSub(const FTransform& T1, const FTransform& T2)

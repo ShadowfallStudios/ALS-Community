@@ -1,7 +1,9 @@
 // Project:         Advanced Locomotion System V4 on C++
+// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
+// License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Haziq Fadhil
-// Contributors:    Doga Can Yanikoglu
+// Contributors:    Doğa Can Yanıkoğlu
 
 
 #include "Character/ALSCharacterMovementComponent.h"
@@ -12,7 +14,8 @@ UALSCharacterMovementComponent::UALSCharacterMovementComponent(const FObjectInit
 {
 }
 
-void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity)
+void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector& OldLocation,
+                                                       const FVector& OldVelocity)
 {
 	Super::OnMovementUpdated(DeltaTime, OldLocation, OldVelocity);
 
@@ -71,15 +74,19 @@ uint8 UALSCharacterMovementComponent::FSavedMove_My::GetCompressedFlags() const
 	return Result;
 }
 
-void UALSCharacterMovementComponent::FSavedMove_My::SetMoveFor(ACharacter* Character, float InDeltaTime, FVector const& NewAccel,
-                                                               class FNetworkPredictionData_Client_Character& ClientData)
+void UALSCharacterMovementComponent::FSavedMove_My::SetMoveFor(ACharacter* Character, float InDeltaTime,
+                                                               FVector const& NewAccel,
+                                                               class FNetworkPredictionData_Client_Character&
+                                                               ClientData)
 {
 	Super::SetMoveFor(Character, InDeltaTime, NewAccel, ClientData);
 
-	UALSCharacterMovementComponent* CharacterMovement = Cast<UALSCharacterMovementComponent>(Character->GetCharacterMovement());
+	UALSCharacterMovementComponent* CharacterMovement = Cast<UALSCharacterMovementComponent>(
+		Character->GetCharacterMovement());
 	if (CharacterMovement)
 	{
 		bSavedRequestMovementSettingsChange = CharacterMovement->bRequestMovementSettingsChange;
+		MaxSpeed = CharacterMovement->MyNewMaxWalkSpeed;
 	}
 }
 

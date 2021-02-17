@@ -1,15 +1,14 @@
 // Project:         Advanced Locomotion System V4 on C++
-// Copyright:       Copyright (C) 2020 Doğa Can Yanıkoğlu
+// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    Haziq Fadhil
+// Contributors:    Haziq Fadhil, Drakynfly
 
 
 #include "Character/ALSBaseCharacter.h"
 
 
-#include "Character/ALSPlayerController.h"
 #include "Character/Animation/ALSCharacterAnimInstance.h"
 #include "Library/ALSMathLibrary.h"
 #include "Components/CapsuleComponent.h"
@@ -27,21 +26,9 @@ AALSBaseCharacter::AALSBaseCharacter(const FObjectInitializer& ObjectInitializer
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UALSCharacterMovementComponent>(CharacterMovementComponentName))
 {
 	PrimaryActorTick.bCanEverTick = true;
-	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(FName(TEXT("MantleTimeline")));
 	bUseControllerRotationYaw = 0;
 	bReplicates = true;
 	SetReplicatingMovement(true);
-}
-
-void AALSBaseCharacter::Restart()
-{
-	Super::Restart();
-
-	AALSPlayerController* NewController = Cast<AALSPlayerController>(GetController());
-	if (NewController)
-	{
-		NewController->OnRestartPawn(this);
-	}
 }
 
 void AALSBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -97,11 +84,11 @@ void AALSBaseCharacter::OnBreakfall_Implementation()
 	Replicated_PlayMontage(GetRollAnimation(), 1.35);
 }
 
-void AALSBaseCharacter::Replicated_PlayMontage_Implementation(UAnimMontage* montage, float track)
+void AALSBaseCharacter::Replicated_PlayMontage_Implementation(UAnimMontage* Montage, float PlayRate)
 {
 	// Roll: Simply play a Root Motion Montage.
-	MainAnimInstance->Montage_Play(montage, track);
-	Server_PlayMontage(montage, track);
+	MainAnimInstance->Montage_Play(Montage, PlayRate);
+	Server_PlayMontage(Montage, PlayRate);
 }
 
 void AALSBaseCharacter::BeginPlay()
@@ -109,16 +96,7 @@ void AALSBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// If we're in networked game, disable curved movement
-	bDisableCurvedMovement = !IsNetMode(ENetMode::NM_Standalone);
-
-	FOnTimelineFloat TimelineUpdated;
-	FOnTimelineEvent TimelineFinished;
-	TimelineUpdated.BindUFunction(this, FName(TEXT("MantleUpdate")));
-	TimelineFinished.BindUFunction(this, FName(TEXT("MantleEnd")));
-	MantleTimeline->SetTimelineFinishedFunc(TimelineFinished);
-	MantleTimeline->SetLooping(false);
-	MantleTimeline->SetTimelineLengthMode(TL_TimelineLength);
-	MantleTimeline->AddInterpFloat(MantleTimelineCurve, TimelineUpdated);
+	bEnableNetworkOptimizations = !IsNetMode(NM_Standalone);
 
 	// Make sure the mesh and animbp update after the CharacterBP to ensure it gets the most recent values.
 	GetMesh()->AddTickPrerequisiteActor(this);
@@ -198,12 +176,6 @@ void AALSBaseCharacter::Tick(float DeltaTime)
 	else if (MovementState == EALSMovementState::InAir)
 	{
 		UpdateInAirRotation(DeltaTime);
-
-		// Perform a mantle check if falling while movement input is pressed.
-		if (bHasMovementInput)
-		{
-			MantleCheck(FallingTraceSettings);
-		}
 	}
 	else if (MovementState == EALSMovementState::Ragdoll)
 	{
@@ -214,11 +186,18 @@ void AALSBaseCharacter::Tick(float DeltaTime)
 	PreviousVelocity = GetVelocity();
 	PreviousAimYaw = AimingRotation.Yaw;
 
+#if !UE_BUILD_SHIPPING
 	DrawDebugSpheres();
+#endif
 }
 
 void AALSBaseCharacter::RagdollStart()
 {
+	if (RagdollStateChangedDelegate.IsBound())
+	{
+		RagdollStateChangedDelegate.Broadcast(true);
+	}
+
 	/** When Networked, disables replicate movement reset TargetRagdollLocation and ServerRagdollPull variable
 	and if the host is a dedicated server, change character mesh optimisation option to avoid z-location bug*/
 	MyCharacterMovementComponent->bIgnoreClientMovementErrorChecksAndCorrection = 1;
@@ -287,6 +266,11 @@ void AALSBaseCharacter::RagdollEnd()
 	GetMesh()->SetCollisionObjectType(ECC_Pawn);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetMesh()->SetAllBodiesSimulatePhysics(false);
+
+	if (RagdollStateChangedDelegate.IsBound())
+	{
+		RagdollStateChangedDelegate.Broadcast(false);
+	}
 }
 
 void AALSBaseCharacter::Server_SetMeshLocationDuringRagdoll_Implementation(FVector MeshLocation)
@@ -324,7 +308,6 @@ void AALSBaseCharacter::SetStance(const EALSStance NewStance)
 	{
 		const EALSStance Prev = Stance;
 		Stance = NewStance;
-		MainAnimInstance->Stance = Stance;
 		OnStanceChanged(Prev);
 	}
 }
@@ -333,8 +316,9 @@ void AALSBaseCharacter::SetGait(const EALSGait NewGait)
 {
 	if (Gait != NewGait)
 	{
+		const EALSGait Prev = Gait;
 		Gait = NewGait;
-		MainAnimInstance->Gait = Gait;
+		OnGaitChanged(Prev);
 	}
 }
 
@@ -370,7 +354,6 @@ void AALSBaseCharacter::Server_SetDesiredGait_Implementation(EALSGait NewGait)
 void AALSBaseCharacter::SetDesiredRotationMode(EALSRotationMode NewRotMode)
 {
 	DesiredRotationMode = NewRotMode;
-
 	if (GetLocalRole() == ROLE_AutonomousProxy)
 	{
 		Server_SetDesiredRotationMode(NewRotMode);
@@ -480,34 +463,18 @@ void AALSBaseCharacter::EventOnJumped()
 	MainAnimInstance->OnJumped();
 }
 
-void AALSBaseCharacter::Server_MantleStart_Implementation(float MantleHeight,
-                                                          const FALSComponentAndTransform& MantleLedgeWS,
-                                                          EALSMantleType MantleType)
+void AALSBaseCharacter::Server_PlayMontage_Implementation(UAnimMontage* Montage, float PlayRate)
 {
-	Multicast_MantleStart(MantleHeight, MantleLedgeWS, MantleType);
+	MainAnimInstance->Montage_Play(Montage, PlayRate);
+	ForceNetUpdate();
+	Multicast_PlayMontage(Montage, PlayRate);
 }
 
-void AALSBaseCharacter::Multicast_MantleStart_Implementation(float MantleHeight,
-                                                             const FALSComponentAndTransform& MantleLedgeWS,
-                                                             EALSMantleType MantleType)
+void AALSBaseCharacter::Multicast_PlayMontage_Implementation(UAnimMontage* Montage, float PlayRate)
 {
 	if (!IsLocallyControlled())
 	{
-		MantleStart(MantleHeight, MantleLedgeWS, MantleType);
-	}
-}
-
-void AALSBaseCharacter::Server_PlayMontage_Implementation(UAnimMontage* montage, float track)
-{
-	Multicast_PlayMontage(montage, track);
-}
-
-void AALSBaseCharacter::Multicast_PlayMontage_Implementation(UAnimMontage* montage, float track)
-{
-	if (!IsLocallyControlled())
-	{
-		// Roll: Simply play a Root Motion Montage.
-		MainAnimInstance->Montage_Play(montage, track);
+		MainAnimInstance->Montage_Play(Montage, PlayRate);
 	}
 }
 
@@ -543,16 +510,6 @@ void AALSBaseCharacter::SetActorLocationAndTargetRotation(FVector NewLocation, F
 {
 	SetActorLocationAndRotation(NewLocation, NewRotation);
 	TargetRotation = NewRotation;
-}
-
-bool AALSBaseCharacter::MantleCheckGrounded()
-{
-	return MantleCheck(GroundedTraceSettings);
-}
-
-bool AALSBaseCharacter::MantleCheckFalling()
-{
-	return MantleCheck(FallingTraceSettings);
 }
 
 void AALSBaseCharacter::SetMovementModel()
@@ -815,11 +772,6 @@ void AALSBaseCharacter::OnMovementStateChanged(const EALSMovementState PreviousS
 			ReplicatedRagdollStart();
 		}
 	}
-	else if (MovementState == EALSMovementState::Ragdoll && PreviousState == EALSMovementState::Mantling)
-	{
-		// Stop the Mantle Timeline if transitioning to the ragdoll state while mantling.
-		MantleTimeline->Stop();
-	}
 }
 
 void AALSBaseCharacter::OnMovementActionChanged(const EALSMovementAction PreviousAction)
@@ -845,6 +797,7 @@ void AALSBaseCharacter::OnMovementActionChanged(const EALSMovementAction Previou
 
 void AALSBaseCharacter::OnStanceChanged(const EALSStance PreviousStance)
 {
+	MainAnimInstance->Stance = Stance;
 }
 
 void AALSBaseCharacter::OnRotationModeChanged(EALSRotationMode PreviousRotationMode)
@@ -860,6 +813,7 @@ void AALSBaseCharacter::OnRotationModeChanged(EALSRotationMode PreviousRotationM
 
 void AALSBaseCharacter::OnGaitChanged(const EALSGait PreviousGait)
 {
+	MainAnimInstance->Gait = Gait;
 }
 
 void AALSBaseCharacter::OnViewModeChanged(const EALSViewMode PreviousViewMode)
@@ -1002,7 +956,7 @@ void AALSBaseCharacter::UpdateCharacterMovement()
 	}
 
 	// Use the allowed gait to update the movement settings.
-	if (bDisableCurvedMovement)
+	if (bEnableNetworkOptimizations)
 	{
 		// Don't use curves for movement
 		UpdateDynamicMovementSettingsNetworked(AllowedGait);
@@ -1122,9 +1076,8 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 	}
 	else if (MovementAction == EALSMovementAction::Rolling)
 	{
-		// Rolling Rotation
-
-		if (bHasMovementInput)
+		// Rolling Rotation (Not allowed on networked games)
+		if (!bEnableNetworkOptimizations && bHasMovementInput)
 		{
 			SmoothCharacterRotation({0.0f, LastMovementInputRotation.Yaw, 0.0f}, 0.0f, 2.0f, DeltaTime);
 		}
@@ -1146,233 +1099,6 @@ void AALSBaseCharacter::UpdateInAirRotation(float DeltaTime)
 		SmoothCharacterRotation({0.0f, AimingRotation.Yaw, 0.0f}, 0.0f, 15.0f, DeltaTime);
 		InAirRotation = GetActorRotation();
 	}
-}
-
-void AALSBaseCharacter::MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
-                                    EALSMantleType MantleType)
-{
-	// Step 1: Get the Mantle Asset and use it to set the new Mantle Params.
-	const FALSMantleAsset& MantleAsset = GetMantleAsset(MantleType);
-
-	MantleParams.AnimMontage = MantleAsset.AnimMontage;
-	MantleParams.PositionCorrectionCurve = MantleAsset.PositionCorrectionCurve;
-	MantleParams.StartingOffset = MantleAsset.StartingOffset;
-	MantleParams.StartingPosition = FMath::GetMappedRangeValueClamped({MantleAsset.LowHeight, MantleAsset.HighHeight},
-	                                                                  {
-		                                                                  MantleAsset.LowStartPosition,
-		                                                                  MantleAsset.HighStartPosition
-	                                                                  },
-	                                                                  MantleHeight);
-	MantleParams.PlayRate = FMath::GetMappedRangeValueClamped({MantleAsset.LowHeight, MantleAsset.HighHeight},
-	                                                          {MantleAsset.LowPlayRate, MantleAsset.HighPlayRate},
-	                                                          MantleHeight);
-
-	// Step 2: Convert the world space target to the mantle component's local space for use in moving objects.
-	MantleLedgeLS.Component = MantleLedgeWS.Component;
-	MantleLedgeLS.Transform = MantleLedgeWS.Transform * MantleLedgeWS.Component->GetComponentToWorld().Inverse();
-
-	// Step 3: Set the Mantle Target and calculate the Starting Offset
-	// (offset amount between the actor and target transform).
-	MantleTarget = MantleLedgeWS.Transform;
-	MantleActualStartOffset = UALSMathLibrary::TransfromSub(GetActorTransform(), MantleTarget);
-
-	// Step 4: Calculate the Animated Start Offset from the Target Location.
-	// This would be the location the actual animation starts at relative to the Target Transform.
-	FVector RotatedVector = MantleTarget.GetRotation().Vector() * MantleParams.StartingOffset.Y;
-	RotatedVector.Z = MantleParams.StartingOffset.Z;
-	const FTransform StartOffset(MantleTarget.Rotator(), MantleTarget.GetLocation() - RotatedVector,
-	                             FVector::OneVector);
-	MantleAnimatedStartOffset = UALSMathLibrary::TransfromSub(StartOffset, MantleTarget);
-
-	// Step 5: Clear the Character Movement Mode and set the Movement State to Mantling
-	GetCharacterMovement()->SetMovementMode(MOVE_None);
-	SetMovementState(EALSMovementState::Mantling);
-
-	// Step 6: Configure the Mantle Timeline so that it is the same length as the
-	// Lerp/Correction curve minus the starting position, and plays at the same speed as the animation.
-	// Then start the timeline.
-	float MinTime = 0.0f;
-	float MaxTime = 0.0f;
-	MantleParams.PositionCorrectionCurve->GetTimeRange(MinTime, MaxTime);
-	MantleTimeline->SetTimelineLength(MaxTime - MantleParams.StartingPosition);
-	MantleTimeline->SetPlayRate(MantleParams.PlayRate);
-	MantleTimeline->PlayFromStart();
-
-	// Step 7: Play the Anim Montaget if valid.
-	if (IsValid(MantleParams.AnimMontage))
-	{
-		MainAnimInstance->Montage_Play(MantleParams.AnimMontage, MantleParams.PlayRate,
-		                               EMontagePlayReturnType::MontageLength, MantleParams.StartingPosition, false);
-	}
-}
-
-bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings, EDrawDebugTrace::Type DebugType)
-{
-	// Step 1: Trace forward to find a wall / object the character cannot walk on.
-	const FVector& CapsuleBaseLocation = UALSMathLibrary::GetCapsuleBaseLocation(2.0f, GetCapsuleComponent());
-	FVector TraceStart = CapsuleBaseLocation + GetPlayerMovementInput() * -30.0f;
-	TraceStart.Z += (TraceSettings.MaxLedgeHeight + TraceSettings.MinLedgeHeight) / 2.0f;
-	const FVector TraceEnd = TraceStart + (GetPlayerMovementInput() * TraceSettings.ReachDistance);
-	const float HalfHeight = 1.0f + ((TraceSettings.MaxLedgeHeight - TraceSettings.MinLedgeHeight) / 2.0f);
-
-	UWorld* World = GetWorld();
-	check(World);
-
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-
-	FHitResult HitResult;
-	// ECC_GameTraceChannel2 -> Climbable
-	World->SweepSingleByChannel(HitResult, TraceStart, TraceEnd, FQuat::Identity, ECC_GameTraceChannel2,
-	                            FCollisionShape::MakeCapsule(TraceSettings.ForwardTraceRadius, HalfHeight), Params);
-
-	if (!HitResult.IsValidBlockingHit() || GetCharacterMovement()->IsWalkable(HitResult))
-	{
-		// Not a valid surface to mantle
-		return false;
-	}
-	
-	if (HitResult.GetComponent() != nullptr) 
-	{
-		UPrimitiveComponent* PrimitiveComponent = HitResult.GetComponent();
-		if (PrimitiveComponent && PrimitiveComponent->GetComponentVelocity().Size() > AcceptableVelocityWhileMantling)
-		{
-			// The surface to mantle moves too fast
-			return false;
-		}
-	}
-	
-	const FVector InitialTraceImpactPoint = HitResult.ImpactPoint;
-	const FVector InitialTraceNormal = HitResult.ImpactNormal;
-
-	// Step 2: Trace downward from the first trace's Impact Point and determine if the hit location is walkable.
-	FVector DownwardTraceEnd = InitialTraceImpactPoint;
-	DownwardTraceEnd.Z = CapsuleBaseLocation.Z;
-	DownwardTraceEnd += InitialTraceNormal * -15.0f;
-	FVector DownwardTraceStart = DownwardTraceEnd;
-	DownwardTraceStart.Z += TraceSettings.MaxLedgeHeight + TraceSettings.DownwardTraceRadius + 1.0f;
-
-	World->SweepSingleByChannel(HitResult, DownwardTraceStart, DownwardTraceEnd, FQuat::Identity,
-	                            ECC_GameTraceChannel2, FCollisionShape::MakeSphere(TraceSettings.DownwardTraceRadius),
-	                            Params);
-
-
-	if (!GetCharacterMovement()->IsWalkable(HitResult))
-	{
-		// Not a valid surface to mantle
-		return false;
-	}
-
-	const FVector DownTraceLocation(HitResult.Location.X, HitResult.Location.Y, HitResult.ImpactPoint.Z);
-	UPrimitiveComponent* HitComponent = HitResult.GetComponent();
-
-	// Step 3: Check if the capsule has room to stand at the downward trace's location.
-	// If so, set that location as the Target Transform and calculate the mantle height.
-	const FVector& CapsuleLocationFBase = UALSMathLibrary::GetCapsuleLocationFromBase(
-		DownTraceLocation, 2.0f, GetCapsuleComponent());
-	const bool bCapsuleHasRoom = UALSMathLibrary::CapsuleHasRoomCheck(GetCapsuleComponent(), CapsuleLocationFBase, 0.0f,
-	                                                                  0.0f);
-
-	if (!bCapsuleHasRoom)
-	{
-		// Capsule doesn't have enough room to mantle
-		return false;
-	}
-
-	const FTransform TargetTransform(
-		(InitialTraceNormal * FVector(-1.0f, -1.0f, 0.0f)).ToOrientationRotator(),
-		CapsuleLocationFBase,
-		FVector::OneVector);
-
-	const float MantleHeight = (CapsuleLocationFBase - GetActorLocation()).Z;
-
-	// Step 4: Determine the Mantle Type by checking the movement mode and Mantle Height.
-	EALSMantleType MantleType;
-	if (MovementState == EALSMovementState::InAir)
-	{
-		MantleType = EALSMantleType::FallingCatch;
-	}
-	else
-	{
-		MantleType = MantleHeight > 125.0f ? EALSMantleType::HighMantle : EALSMantleType::LowMantle;
-	}
-
-	// Step 5: If everything checks out, start the Mantle
-	FALSComponentAndTransform MantleWS;
-	MantleWS.Component = HitComponent;
-	MantleWS.Transform = TargetTransform;
-	MantleStart(MantleHeight, MantleWS, MantleType);
-	Server_MantleStart(MantleHeight, MantleWS, MantleType);
-
-	return true;
-}
-
-// This function is called by "MantleTimeline" using BindUFunction in the AALSBaseCharacter::BeginPlay during the default settings initalization.
-void AALSBaseCharacter::MantleUpdate(float BlendIn)
-{
-	// Step 1: Continually update the mantle target from the stored local transform to follow along with moving objects
-	MantleTarget = UALSMathLibrary::MantleComponentLocalToWorld(MantleLedgeLS);
-
-	// Step 2: Update the Position and Correction Alphas using the Position/Correction curve set for each Mantle.
-	const FVector CurveVec = MantleParams.PositionCorrectionCurve
-	                                     ->GetVectorValue(
-		                                     MantleParams.StartingPosition + MantleTimeline->GetPlaybackPosition());
-	const float PositionAlpha = CurveVec.X;
-	const float XYCorrectionAlpha = CurveVec.Y;
-	const float ZCorrectionAlpha = CurveVec.Z;
-
-	// Step 3: Lerp multiple transforms together for independent control over the horizontal
-	// and vertical blend to the animated start position, as well as the target position.
-
-	// Blend into the animated horizontal and rotation offset using the Y value of the Position/Correction Curve.
-	const FTransform TargetHzTransform(MantleAnimatedStartOffset.GetRotation(),
-	                                   {
-		                                   MantleAnimatedStartOffset.GetLocation().X,
-		                                   MantleAnimatedStartOffset.GetLocation().Y,
-		                                   MantleActualStartOffset.GetLocation().Z
-	                                   },
-	                                   FVector::OneVector);
-	const FTransform& HzLerpResult =
-		UKismetMathLibrary::TLerp(MantleActualStartOffset, TargetHzTransform, XYCorrectionAlpha);
-
-	// Blend into the animated vertical offset using the Z value of the Position/Correction Curve.
-	const FTransform TargetVtTransform(MantleActualStartOffset.GetRotation(),
-	                                   {
-		                                   MantleActualStartOffset.GetLocation().X,
-		                                   MantleActualStartOffset.GetLocation().Y,
-		                                   MantleAnimatedStartOffset.GetLocation().Z
-	                                   },
-	                                   FVector::OneVector);
-	const FTransform& VtLerpResult =
-		UKismetMathLibrary::TLerp(MantleActualStartOffset, TargetVtTransform, ZCorrectionAlpha);
-
-	const FTransform ResultTransform(HzLerpResult.GetRotation(),
-	                                 {
-		                                 HzLerpResult.GetLocation().X, HzLerpResult.GetLocation().Y,
-		                                 VtLerpResult.GetLocation().Z
-	                                 },
-	                                 FVector::OneVector);
-
-	// Blend from the currently blending transforms into the final mantle target using the X
-	// value of the Position/Correction Curve.
-	const FTransform& ResultLerp = UKismetMathLibrary::TLerp(
-		UALSMathLibrary::TransfromAdd(MantleTarget, ResultTransform), MantleTarget,
-		PositionAlpha);
-
-	// Initial Blend In (controlled in the timeline curve) to allow the actor to blend into the Position/Correction
-	// curve at the midoint. This prevents pops when mantling an object lower than the animated mantle.
-	const FTransform& LerpedTarget =
-		UKismetMathLibrary::TLerp(UALSMathLibrary::TransfromAdd(MantleTarget, MantleActualStartOffset), ResultLerp,
-		                          BlendIn);
-
-	// Step 4: Set the actors location and rotation to the Lerped Target.
-	SetActorLocationAndTargetRotation(LerpedTarget.GetLocation(), LerpedTarget.GetRotation().Rotator());
-}
-
-void AALSBaseCharacter::MantleEnd()
-{
-	// Set the Character Movement Mode to Walking
-	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 }
 
 float AALSBaseCharacter::GetMappedSpeed() const
@@ -1540,20 +1266,17 @@ void AALSBaseCharacter::PlayerCameraRightInput(float Value)
 
 void AALSBaseCharacter::JumpPressedAction()
 {
-	// Jump Action: Press "Jump Action" to end the ragdoll if ragdolling, check for a mantle if grounded or in air,
-	// stand up if crouching, or jump if standing.
+	// Jump Action: Press "Jump Action" to end the ragdoll if ragdolling, stand up if crouching, or jump if standing.
+
+	if (JumpPressedDelegate.IsBound())
+	{
+		JumpPressedDelegate.Broadcast();
+	}
 
 	if (MovementAction == EALSMovementAction::None)
 	{
 		if (MovementState == EALSMovementState::Grounded)
 		{
-			if (bHasMovementInput)
-			{
-				if (MantleCheckGrounded())
-				{
-					return;
-				}
-			}
 			if (Stance == EALSStance::Standing)
 			{
 				Jump();
@@ -1562,10 +1285,6 @@ void AALSBaseCharacter::JumpPressedAction()
 			{
 				UnCrouch();
 			}
-		}
-		else if (MovementState == EALSMovementState::InAir)
-		{
-			MantleCheckFalling();
 		}
 		else if (MovementState == EALSMovementState::Ragdoll)
 		{
