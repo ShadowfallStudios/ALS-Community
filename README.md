@@ -13,6 +13,7 @@ Replicated & optimized C++ port of [Advanced Locomotion System V4](https://www.u
 - Full replication support with low bandwidth usage
 - Plugin structure
 - Highly optimized for production
+- Mantling feature is implemented as a separate actor component for reducing total overhead on base character class
 - Lots of bug fixes additional to marketplace version
 
 ## Known Issues & Discussion
