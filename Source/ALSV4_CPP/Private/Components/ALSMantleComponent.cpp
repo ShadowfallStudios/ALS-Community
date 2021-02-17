@@ -8,7 +8,6 @@
 #include "Components/ALSMantleComponent.h"
 
 
-
 #include "Character/ALSCharacter.h"
 #include "Character/Animation/ALSCharacterAnimInstance.h"
 #include "Curves/CurveVector.h"
@@ -77,7 +76,7 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 		return;
 	}
 
-	if(MantleType != EALSMantleType::LowMantle && OwnerCharacter->IsA(AALSCharacter::StaticClass()))
+	if (MantleType != EALSMantleType::LowMantle && OwnerCharacter->IsA(AALSCharacter::StaticClass()))
 	{
 		Cast<AALSCharacter>(OwnerCharacter)->ClearHeldObject();
 	}
@@ -343,7 +342,7 @@ void UALSMantleComponent::MantleEnd()
 		bMantleInProgress = false;
 		OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 
-		if(OwnerCharacter->IsA(AALSCharacter::StaticClass()))
+		if (OwnerCharacter->IsA(AALSCharacter::StaticClass()))
 		{
 			Cast<AALSCharacter>(OwnerCharacter)->UpdateHeldObject();
 		}
