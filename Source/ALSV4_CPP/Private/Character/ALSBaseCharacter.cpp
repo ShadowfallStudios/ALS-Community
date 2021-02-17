@@ -84,11 +84,11 @@ void AALSBaseCharacter::OnBreakfall_Implementation()
 	Replicated_PlayMontage(GetRollAnimation(), 1.35);
 }
 
-void AALSBaseCharacter::Replicated_PlayMontage_Implementation(UAnimMontage* montage, float track)
+void AALSBaseCharacter::Replicated_PlayMontage_Implementation(UAnimMontage* Montage, float Track)
 {
 	// Roll: Simply play a Root Motion Montage.
-	MainAnimInstance->Montage_Play(montage, track);
-	Server_PlayMontage(montage, track);
+	MainAnimInstance->Montage_Play(Montage, Track);
+	Server_PlayMontage(Montage, Track);
 }
 
 void AALSBaseCharacter::BeginPlay()
@@ -463,17 +463,17 @@ void AALSBaseCharacter::EventOnJumped()
 	MainAnimInstance->OnJumped();
 }
 
-void AALSBaseCharacter::Server_PlayMontage_Implementation(UAnimMontage* montage, float track)
+void AALSBaseCharacter::Server_PlayMontage_Implementation(UAnimMontage* Montage, float Track)
 {
-	Multicast_PlayMontage(montage, track);
+	Multicast_PlayMontage(Montage, Track);
 }
 
-void AALSBaseCharacter::Multicast_PlayMontage_Implementation(UAnimMontage* montage, float track)
+void AALSBaseCharacter::Multicast_PlayMontage_Implementation(UAnimMontage* Montage, float Track)
 {
 	if (!IsLocallyControlled())
 	{
 		// Roll: Simply play a Root Motion Montage.
-		MainAnimInstance->Montage_Play(montage, track);
+		MainAnimInstance->Montage_Play(Montage, Track);
 	}
 }
 
