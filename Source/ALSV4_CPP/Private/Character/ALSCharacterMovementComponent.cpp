@@ -86,6 +86,7 @@ void UALSCharacterMovementComponent::FSavedMove_My::SetMoveFor(ACharacter* Chara
 	if (CharacterMovement)
 	{
 		bSavedRequestMovementSettingsChange = CharacterMovement->bRequestMovementSettingsChange;
+		MaxSpeed = CharacterMovement->MyNewMaxWalkSpeed;
 	}
 }
 
