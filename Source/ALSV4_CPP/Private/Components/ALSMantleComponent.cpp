@@ -8,6 +8,8 @@
 #include "Components/ALSMantleComponent.h"
 
 
+
+#include "Character/ALSCharacter.h"
 #include "Character/Animation/ALSCharacterAnimInstance.h"
 #include "Curves/CurveVector.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -73,6 +75,11 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 	if (!OwnerCharacter)
 	{
 		return;
+	}
+
+	if(MantleType != EALSMantleType::LowMantle && OwnerCharacter->IsA(AALSCharacter::StaticClass()))
+	{
+		Cast<AALSCharacter>(OwnerCharacter)->ClearHeldObject();
 	}
 
 	bMantleInProgress = true;
@@ -335,6 +342,11 @@ void UALSMantleComponent::MantleEnd()
 	{
 		bMantleInProgress = false;
 		OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+
+		if(OwnerCharacter->IsA(AALSCharacter::StaticClass()))
+		{
+			Cast<AALSCharacter>(OwnerCharacter)->UpdateHeldObject();
+		}
 	}
 
 	// Enable ticking back after mantle ends
