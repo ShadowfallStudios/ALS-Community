@@ -202,7 +202,9 @@ void AALSBaseCharacter::Tick(float DeltaTime)
 	PreviousVelocity = GetVelocity();
 	PreviousAimYaw = AimingRotation.Yaw;
 
+#if !UE_BUILD_SHIPPING
 	DrawDebugSpheres();
+#endif
 }
 
 void AALSBaseCharacter::RagdollStart()
@@ -312,7 +314,6 @@ void AALSBaseCharacter::SetStance(const EALSStance NewStance)
 	{
 		const EALSStance Prev = Stance;
 		Stance = NewStance;
-		MainAnimInstance->Stance = Stance;
 		OnStanceChanged(Prev);
 	}
 }
@@ -321,8 +322,9 @@ void AALSBaseCharacter::SetGait(const EALSGait NewGait)
 {
 	if (Gait != NewGait)
 	{
+		const EALSGait Prev = Gait;
 		Gait = NewGait;
-		MainAnimInstance->Gait = Gait;
+		OnGaitChanged(Prev);
 	}
 }
 
@@ -358,7 +360,6 @@ void AALSBaseCharacter::Server_SetDesiredGait_Implementation(EALSGait NewGait)
 void AALSBaseCharacter::SetDesiredRotationMode(EALSRotationMode NewRotMode)
 {
 	DesiredRotationMode = NewRotMode;
-
 	if (GetLocalRole() == ROLE_AutonomousProxy)
 	{
 		Server_SetDesiredRotationMode(NewRotMode);
@@ -833,6 +834,7 @@ void AALSBaseCharacter::OnMovementActionChanged(const EALSMovementAction Previou
 
 void AALSBaseCharacter::OnStanceChanged(const EALSStance PreviousStance)
 {
+	MainAnimInstance->Stance = Stance;
 }
 
 void AALSBaseCharacter::OnRotationModeChanged(EALSRotationMode PreviousRotationMode)
@@ -848,6 +850,7 @@ void AALSBaseCharacter::OnRotationModeChanged(EALSRotationMode PreviousRotationM
 
 void AALSBaseCharacter::OnGaitChanged(const EALSGait PreviousGait)
 {
+	MainAnimInstance->Gait = Gait;
 }
 
 void AALSBaseCharacter::OnViewModeChanged(const EALSViewMode PreviousViewMode)
@@ -1219,8 +1222,8 @@ bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings
 		// Not a valid surface to mantle
 		return false;
 	}
-	
-	if (HitResult.GetComponent() != nullptr) 
+
+	if (HitResult.GetComponent() != nullptr)
 	{
 		UPrimitiveComponent* PrimitiveComponent = HitResult.GetComponent();
 		if (PrimitiveComponent && PrimitiveComponent->GetComponentVelocity().Size() > AcceptableVelocityWhileMantling)
@@ -1229,7 +1232,7 @@ bool AALSBaseCharacter::MantleCheck(const FALSMantleTraceSettings& TraceSettings
 			return false;
 		}
 	}
-	
+
 	const FVector InitialTraceImpactPoint = HitResult.ImpactPoint;
 	const FVector InitialTraceNormal = HitResult.ImpactNormal;
 
