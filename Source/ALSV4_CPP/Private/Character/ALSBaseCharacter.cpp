@@ -84,11 +84,11 @@ void AALSBaseCharacter::OnBreakfall_Implementation()
 	Replicated_PlayMontage(GetRollAnimation(), 1.35);
 }
 
-void AALSBaseCharacter::Replicated_PlayMontage_Implementation(UAnimMontage* Montage, float Track)
+void AALSBaseCharacter::Replicated_PlayMontage_Implementation(UAnimMontage* Montage, float PlayRate)
 {
 	// Roll: Simply play a Root Motion Montage.
-	MainAnimInstance->Montage_Play(Montage, Track);
-	Server_PlayMontage(Montage, Track);
+	MainAnimInstance->Montage_Play(Montage, PlayRate);
+	Server_PlayMontage(Montage, PlayRate);
 }
 
 void AALSBaseCharacter::BeginPlay()
@@ -96,7 +96,7 @@ void AALSBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// If we're in networked game, disable curved movement
-	bDisableCurvedMovement = !IsNetMode(NM_Standalone);
+	bEnableNetworkOptimizations = !IsNetMode(NM_Standalone);
 
 	// Make sure the mesh and animbp update after the CharacterBP to ensure it gets the most recent values.
 	GetMesh()->AddTickPrerequisiteActor(this);
@@ -463,17 +463,18 @@ void AALSBaseCharacter::EventOnJumped()
 	MainAnimInstance->OnJumped();
 }
 
-void AALSBaseCharacter::Server_PlayMontage_Implementation(UAnimMontage* Montage, float Track)
+void AALSBaseCharacter::Server_PlayMontage_Implementation(UAnimMontage* Montage, float PlayRate)
 {
-	Multicast_PlayMontage(Montage, Track);
+	MainAnimInstance->Montage_Play(Montage, PlayRate);
+	ForceNetUpdate();
+	Multicast_PlayMontage(Montage, PlayRate);
 }
 
-void AALSBaseCharacter::Multicast_PlayMontage_Implementation(UAnimMontage* Montage, float Track)
+void AALSBaseCharacter::Multicast_PlayMontage_Implementation(UAnimMontage* Montage, float PlayRate)
 {
 	if (!IsLocallyControlled())
 	{
-		// Roll: Simply play a Root Motion Montage.
-		MainAnimInstance->Montage_Play(Montage, Track);
+		MainAnimInstance->Montage_Play(Montage, PlayRate);
 	}
 }
 
@@ -955,7 +956,7 @@ void AALSBaseCharacter::UpdateCharacterMovement()
 	}
 
 	// Use the allowed gait to update the movement settings.
-	if (bDisableCurvedMovement)
+	if (bEnableNetworkOptimizations)
 	{
 		// Don't use curves for movement
 		UpdateDynamicMovementSettingsNetworked(AllowedGait);
@@ -1075,9 +1076,8 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 	}
 	else if (MovementAction == EALSMovementAction::Rolling)
 	{
-		// Rolling Rotation
-
-		if (bHasMovementInput)
+		// Rolling Rotation (Not allowed on networked games)
+		if (!bEnableNetworkOptimizations && bHasMovementInput)
 		{
 			SmoothCharacterRotation({0.0f, LastMovementInputRotation.Yaw, 0.0f}, 0.0f, 2.0f, DeltaTime);
 		}
