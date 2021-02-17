@@ -501,16 +501,6 @@ void AALSBaseCharacter::SetActorLocationAndTargetRotation(FVector NewLocation, F
 	TargetRotation = NewRotation;
 }
 
-// bool AALSBaseCharacter::MantleCheckGrounded()
-// {
-// 	return false; // MantleCheck(GroundedTraceSettings);
-// }
-//
-// bool AALSBaseCharacter::MantleCheckFalling()
-// {
-// 	return false; // MantleCheck(FallingTraceSettings);
-// }
-
 void AALSBaseCharacter::SetMovementModel()
 {
 	const FString ContextString = GetFullName();
@@ -1268,18 +1258,15 @@ void AALSBaseCharacter::JumpPressedAction()
 {
 	// Jump Action: Press "Jump Action" to end the ragdoll if ragdolling, stand up if crouching, or jump if standing.
 
+	if (JumpPressedDelegate.IsBound())
+	{
+		JumpPressedDelegate.Broadcast();
+	}
+
 	if (MovementAction == EALSMovementAction::None)
 	{
 		if (MovementState == EALSMovementState::Grounded)
 		{
-			if (bHasMovementInput)
-			{
-				// TODO
-				// if (MantleCheckGrounded())
-				// {
-				// 	return;
-				// }
-			}
 			if (Stance == EALSStance::Standing)
 			{
 				Jump();
@@ -1289,11 +1276,6 @@ void AALSBaseCharacter::JumpPressedAction()
 				UnCrouch();
 			}
 		}
-		// TODO
-		// else if (MovementState == EALSMovementState::InAir)
-		// {
-		// 	MantleCheckFalling();
-		// }
 		else if (MovementState == EALSMovementState::Ragdoll)
 		{
 			ReplicatedRagdollEnd();

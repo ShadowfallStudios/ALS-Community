@@ -43,6 +43,8 @@ void UALSMantleComponent::BeginPlay()
 			MantleTimeline->SetLooping(false);
 			MantleTimeline->SetTimelineLengthMode(TL_TimelineLength);
 			MantleTimeline->AddInterpFloat(MantleTimelineCurve, TimelineUpdated);
+
+			OwnerCharacter->JumpPressedDelegate.AddUniqueDynamic(this, &UALSMantleComponent::OnOwnerJumpInput);
 		}
 	}
 }
@@ -332,5 +334,25 @@ void UALSMantleComponent::MantleEnd()
 	{
 		bMantleInProgress = false;
 		OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	}
+}
+
+void UALSMantleComponent::OnOwnerJumpInput()
+{
+	// Check if character is able to do one of the special mantling
+
+	if (OwnerCharacter->GetMovementAction() == EALSMovementAction::None)
+	{
+		if (OwnerCharacter->GetMovementState() == EALSMovementState::Grounded)
+		{
+			if (OwnerCharacter->HasMovementInput())
+			{
+				MantleCheck(GroundedTraceSettings);
+			}
+		}
+		else if (OwnerCharacter->GetMovementState() == EALSMovementState::InAir)
+		{
+			MantleCheck(FallingTraceSettings);
+		}
 	}
 }

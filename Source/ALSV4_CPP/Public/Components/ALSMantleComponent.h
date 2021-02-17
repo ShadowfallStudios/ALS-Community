@@ -10,6 +10,8 @@
 
 #include "Character/ALSBaseCharacter.h"
 #include "Components/ActorComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 #include "ALSMantleComponent.generated.h"
 
 
@@ -35,6 +37,9 @@ public:
 
 	UFUNCTION()
     void MantleEnd();
+
+	UFUNCTION()
+	void OnOwnerJumpInput();
 
 	/** Implement on BP to get correct mantle parameter set according to character state */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|Mantle System")

@@ -14,7 +14,6 @@
 #include "Library/ALSCharacterStructLibrary.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/Character.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 #include "ALSBaseCharacter.generated.h"
 
@@ -23,6 +22,8 @@ class UAnimInstance;
 class UAnimMontage;
 class UALSCharacterAnimInstance;
 enum class EVisibilityBasedAnimTickOption : uint8;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumpPressedSignature);
 
 /*
  * Base character class
@@ -173,6 +174,9 @@ public:
 
 	/** Input */
 
+	UPROPERTY(BlueprintAssignable, Category = "ALS|Input")
+	FJumpPressedSignature JumpPressedDelegate;
+
 	UFUNCTION(BlueprintGetter, Category = "ALS|Input")
 	EALSStance GetDesiredStance() const { return DesiredStance; }
 
@@ -204,14 +208,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Rotation System")
 	void SetActorLocationAndTargetRotation(FVector NewLocation, FRotator NewRotation);
-
-	/** Mantle System */
-
-	// UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
-	// virtual bool MantleCheckGrounded();
-	//
-	// UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
-	// virtual bool MantleCheckFalling();
 
 	/** Movement System */
 
