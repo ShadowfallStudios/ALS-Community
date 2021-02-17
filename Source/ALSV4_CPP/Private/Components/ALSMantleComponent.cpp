@@ -337,7 +337,7 @@ void UALSMantleComponent::MantleEnd()
 		OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	}
 
-	// Disable ticking during mantle
+	// Enable ticking back after mantle ends
 	SetComponentTickEnabledAsync(true);
 }
 
