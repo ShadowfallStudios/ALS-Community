@@ -81,8 +81,6 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 		Cast<AALSCharacter>(OwnerCharacter)->ClearHeldObject();
 	}
 
-	bMantleInProgress = true;
-
 	// Disable ticking during mantle
 	SetComponentTickEnabledAsync(false);
 
@@ -339,7 +337,6 @@ void UALSMantleComponent::MantleEnd()
 	// Set the Character Movement Mode to Walking
 	if (OwnerCharacter)
 	{
-		bMantleInProgress = false;
 		OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 
 		if (OwnerCharacter->IsA(AALSCharacter::StaticClass()))
@@ -375,7 +372,7 @@ void UALSMantleComponent::OnOwnerJumpInput()
 void UALSMantleComponent::OnOwnerRagdollStateChanged(bool bRagdollState)
 {
 	// If owner is going into ragdoll state, stop mantling immediately
-	if (bRagdollState && bMantleInProgress)
+	if (bRagdollState)
 	{
 		MantleTimeline->Stop();
 	}

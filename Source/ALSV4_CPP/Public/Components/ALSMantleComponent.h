@@ -97,8 +97,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
 	float AcceptableVelocityWhileMantling = 10.0f;
 
-	bool bMantleInProgress = false;
-
 private:
 	UPROPERTY()
 	AALSBaseCharacter* OwnerCharacter;
