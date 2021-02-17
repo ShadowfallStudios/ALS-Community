@@ -45,6 +45,8 @@ void UALSMantleComponent::BeginPlay()
 			MantleTimeline->AddInterpFloat(MantleTimelineCurve, TimelineUpdated);
 
 			OwnerCharacter->JumpPressedDelegate.AddUniqueDynamic(this, &UALSMantleComponent::OnOwnerJumpInput);
+			OwnerCharacter->RagdollStateChangedDelegate.AddUniqueDynamic(
+				this, &UALSMantleComponent::OnOwnerRagdollStateChanged);
 		}
 	}
 }
@@ -55,18 +57,13 @@ void UALSMantleComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!bMantleInProgress && OwnerCharacter->GetMovementState() == EALSMovementState::InAir)
+	if (OwnerCharacter->GetMovementState() == EALSMovementState::InAir)
 	{
 		// Perform a mantle check if falling while movement input is pressed.
 		if (OwnerCharacter->HasMovementInput())
 		{
 			MantleCheck(FallingTraceSettings);
 		}
-	}
-	else if (OwnerCharacter->GetMovementState() == EALSMovementState::Ragdoll && bMantleInProgress)
-	{
-		bMantleInProgress = false;
-		MantleTimeline->Stop();
 	}
 }
 
@@ -79,7 +76,10 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 	}
 
 	bMantleInProgress = true;
-	
+
+	// Disable ticking during mantle
+	SetComponentTickEnabledAsync(false);
+
 	// Step 1: Get the Mantle Asset and use it to set the new Mantle Params.
 	const FALSMantleAsset& MantleAsset = GetMantleAsset(MantleType, OwnerCharacter->GetOverlayState());
 
@@ -131,7 +131,8 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 	if (IsValid(MantleParams.AnimMontage))
 	{
 		OwnerCharacter->GetMainAnimInstance()->Montage_Play(MantleParams.AnimMontage, MantleParams.PlayRate,
-		                               EMontagePlayReturnType::MontageLength, MantleParams.StartingPosition, false);
+		                                                    EMontagePlayReturnType::MontageLength,
+		                                                    MantleParams.StartingPosition, false);
 	}
 }
 
@@ -267,7 +268,7 @@ void UALSMantleComponent::MantleUpdate(float BlendIn)
 	{
 		return;
 	}
-	
+
 	// Step 1: Continually update the mantle target from the stored local transform to follow along with moving objects
 	MantleTarget = UALSMathLibrary::MantleComponentLocalToWorld(MantleLedgeLS);
 
@@ -335,13 +336,16 @@ void UALSMantleComponent::MantleEnd()
 		bMantleInProgress = false;
 		OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	}
+
+	// Disable ticking during mantle
+	SetComponentTickEnabledAsync(true);
 }
 
 void UALSMantleComponent::OnOwnerJumpInput()
 {
 	// Check if character is able to do one of the special mantling
 
-	if (OwnerCharacter->GetMovementAction() == EALSMovementAction::None)
+	if (OwnerCharacter && OwnerCharacter->GetMovementAction() == EALSMovementAction::None)
 	{
 		if (OwnerCharacter->GetMovementState() == EALSMovementState::Grounded)
 		{
@@ -354,5 +358,14 @@ void UALSMantleComponent::OnOwnerJumpInput()
 		{
 			MantleCheck(FallingTraceSettings);
 		}
+	}
+}
+
+void UALSMantleComponent::OnOwnerRagdollStateChanged(bool bRagdollState)
+{
+	// If owner is going into ragdoll state, stop mantling immediately
+	if (bRagdollState && bMantleInProgress)
+	{
+		MantleTimeline->Stop();
 	}
 }

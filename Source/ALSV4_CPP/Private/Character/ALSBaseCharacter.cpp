@@ -193,6 +193,11 @@ void AALSBaseCharacter::Tick(float DeltaTime)
 
 void AALSBaseCharacter::RagdollStart()
 {
+	if (RagdollStateChangedDelegate.IsBound())
+	{
+		RagdollStateChangedDelegate.Broadcast(true);
+	}
+	
 	/** When Networked, disables replicate movement reset TargetRagdollLocation and ServerRagdollPull variable
 	and if the host is a dedicated server, change character mesh optimisation option to avoid z-location bug*/
 	MyCharacterMovementComponent->bIgnoreClientMovementErrorChecksAndCorrection = 1;
@@ -261,6 +266,11 @@ void AALSBaseCharacter::RagdollEnd()
 	GetMesh()->SetCollisionObjectType(ECC_Pawn);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetMesh()->SetAllBodiesSimulatePhysics(false);
+
+	if (RagdollStateChangedDelegate.IsBound())
+	{
+		RagdollStateChangedDelegate.Broadcast(false);
+	}
 }
 
 void AALSBaseCharacter::Server_SetMeshLocationDuringRagdoll_Implementation(FVector MeshLocation)

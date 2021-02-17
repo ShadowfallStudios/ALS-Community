@@ -24,6 +24,7 @@ class UALSCharacterAnimInstance;
 enum class EVisibilityBasedAnimTickOption : uint8;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumpPressedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRagdollStateChangedSignature, bool, bRagdollState);
 
 /*
  * Base character class
@@ -176,6 +177,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "ALS|Input")
 	FJumpPressedSignature JumpPressedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "ALS|Input")
+	FRagdollStateChangedSignature RagdollStateChangedDelegate;
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Input")
 	EALSStance GetDesiredStance() const { return DesiredStance; }
