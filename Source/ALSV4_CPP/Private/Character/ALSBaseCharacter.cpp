@@ -96,7 +96,7 @@ void AALSBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// If we're in networked game, disable curved movement
-	bDisableCurvedMovement = !IsNetMode(ENetMode::NM_Standalone);
+	bDisableCurvedMovement = !IsNetMode(NM_Standalone);
 
 	// Make sure the mesh and animbp update after the CharacterBP to ensure it gets the most recent values.
 	GetMesh()->AddTickPrerequisiteActor(this);
@@ -197,7 +197,7 @@ void AALSBaseCharacter::RagdollStart()
 	{
 		RagdollStateChangedDelegate.Broadcast(true);
 	}
-	
+
 	/** When Networked, disables replicate movement reset TargetRagdollLocation and ServerRagdollPull variable
 	and if the host is a dedicated server, change character mesh optimisation option to avoid z-location bug*/
 	MyCharacterMovementComponent->bIgnoreClientMovementErrorChecksAndCorrection = 1;
