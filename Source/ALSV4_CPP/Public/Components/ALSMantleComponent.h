@@ -1,0 +1,96 @@
+﻿// Project:         Advanced Locomotion System V4 on C++
+// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
+// License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
+// Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
+// Original Author: Doğa Can Yanıkoğlu
+
+#pragma once
+
+#include "CoreMinimal.h"
+
+#include "Character/ALSBaseCharacter.h"
+#include "Components/ActorComponent.h"
+#include "ALSMantleComponent.generated.h"
+
+
+UCLASS(Blueprintable, BlueprintType)
+class ALSV4_CPP_API UALSMantleComponent : public UActorComponent
+{
+	GENERATED_BODY()
+
+public:
+	UALSMantleComponent();
+
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+                               FActorComponentTickFunction* ThisTickFunction) override;
+
+	bool MantleCheck(const FALSMantleTraceSettings& TraceSettings, EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::None);
+
+
+	void MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
+                             EALSMantleType MantleType);
+	
+	UFUNCTION()
+    void MantleUpdate(float BlendIn);
+
+	UFUNCTION()
+    void MantleEnd();
+
+	/** Implement on BP to get correct mantle parameter set according to character state */
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|Mantle System")
+    FALSMantleAsset GetMantleAsset(EALSMantleType MantleType, EALSOverlayState CurrentOverlayState);
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+	/** Mantling*/
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
+    void Server_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
+                            EALSMantleType MantleType);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
+    void Multicast_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
+                               EALSMantleType MantleType);
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTimelineComponent* MantleTimeline = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
+	FALSMantleTraceSettings GroundedTraceSettings;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
+	FALSMantleTraceSettings AutomaticTraceSettings;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
+	FALSMantleTraceSettings FallingTraceSettings;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
+	UCurveFloat* MantleTimelineCurve;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
+	FALSMantleParams MantleParams;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
+	FALSComponentAndTransform MantleLedgeLS;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
+	FTransform MantleTarget = FTransform::Identity;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
+	FTransform MantleActualStartOffset = FTransform::Identity;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
+	FTransform MantleAnimatedStartOffset = FTransform::Identity;
+
+	/** If a dynamic object has a velocity bigger than this value, do not start mantle */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
+	float AcceptableVelocityWhileMantling = 10.0f;
+
+	bool bMantleInProgress = false;
+
+private:
+	UPROPERTY()
+	AALSBaseCharacter* OwnerCharacter;
+};

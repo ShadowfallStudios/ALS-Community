@@ -152,15 +152,6 @@ public:
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
 	void Multicast_PlayMontage(UAnimMontage* montage, float track);
 
-	/** Mantling*/
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
-	void Server_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
-	                        EALSMantleType MantleType);
-
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
-	void Multicast_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
-	                           EALSMantleType MantleType);
-
 	/** Ragdolling*/
 	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
 	void ReplicatedRagdollStart();
@@ -216,15 +207,11 @@ public:
 
 	/** Mantle System */
 
-	/** Implement on BP to get correct mantle parameter set according to character state */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|Mantle System")
-	FALSMantleAsset GetMantleAsset(EALSMantleType MantleType);
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
-	virtual bool MantleCheckGrounded();
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
-	virtual bool MantleCheckFalling();
+	// UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
+	// virtual bool MantleCheckGrounded();
+	//
+	// UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
+	// virtual bool MantleCheckFalling();
 
 	/** Movement System */
 
@@ -261,6 +248,9 @@ public:
 	UAnimMontage* GetRollAnimation();
 
 	/** Utility */
+
+	UFUNCTION(BlueprintCallable, Category = "ALS|Utility")
+	UALSCharacterAnimInstance* GetMainAnimInstance() { return MainAnimInstance; }
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Utility")
 	float GetAnimCurveValue(FName CurveName) const;
@@ -376,20 +366,6 @@ protected:
 	void UpdateGroundedRotation(float DeltaTime);
 
 	void UpdateInAirRotation(float DeltaTime);
-
-	/** Mantle System */
-
-	virtual void MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
-	                         EALSMantleType MantleType);
-
-	virtual bool MantleCheck(const FALSMantleTraceSettings& TraceSettings,
-	                         EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::ForOneFrame);
-
-	UFUNCTION()
-	virtual void MantleUpdate(float BlendIn);
-
-	UFUNCTION()
-	virtual void MantleEnd();
 
 	/** Utils */
 
@@ -512,29 +488,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ALS|Movement System")
 	FDataTableRowHandle MovementModel;
 
-	/** Mantle System */
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
-	FALSMantleTraceSettings GroundedTraceSettings;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
-	FALSMantleTraceSettings AutomaticTraceSettings;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
-	FALSMantleTraceSettings FallingTraceSettings;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
-	UCurveFloat* MantleTimelineCurve;
-
-	/** If a dynamic object has a velocity bigger than this value, do not start mantle */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
-	float AcceptableVelocityWhileMantling = 10.0f;
-
-	/** Components */
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Components")
-	UTimelineComponent* MantleTimeline = nullptr;
-
 	/** Essential Information */
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
@@ -610,23 +563,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Rotation System")
 	float YawOffset = 0.0f;
-
-	/** Mantle System */
-
-	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
-	FALSMantleParams MantleParams;
-
-	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
-	FALSComponentAndTransform MantleLedgeLS;
-
-	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
-	FTransform MantleTarget = FTransform::Identity;
-
-	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
-	FTransform MantleActualStartOffset = FTransform::Identity;
-
-	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
-	FTransform MantleAnimatedStartOffset = FTransform::Identity;
 
 	/** Breakfall System */
 

@@ -116,19 +116,19 @@ void AALSCharacter::BeginPlay()
 	UpdateHeldObject();
 }
 
-void AALSCharacter::MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
-                                EALSMantleType MantleType)
-{
-	Super::MantleStart(MantleHeight, MantleLedgeWS, MantleType);
-	if (MantleType != EALSMantleType::LowMantle)
-	{
-		// If we're not doing low mantle, clear held object
-		ClearHeldObject();
-	}
-}
-
-void AALSCharacter::MantleEnd()
-{
-	Super::MantleEnd();
-	UpdateHeldObject();
-}
+// void AALSCharacter::MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
+//                                 EALSMantleType MantleType)
+// {
+// 	Super::MantleStart(MantleHeight, MantleLedgeWS, MantleType);
+// 	if (MantleType != EALSMantleType::LowMantle)
+// 	{
+// 		// If we're not doing low mantle, clear held object
+// 		ClearHeldObject();
+// 	}
+// }
+//
+// void AALSCharacter::MantleEnd()
+// {
+// 	Super::MantleEnd();
+// 	UpdateHeldObject();
+// }

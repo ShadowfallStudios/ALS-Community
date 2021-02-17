@@ -51,10 +51,10 @@ protected:
 
 	virtual void OnOverlayStateChanged(EALSOverlayState PreviousState) override;
 
-	virtual void MantleStart(
-		float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS, EALSMantleType MantleType) override;
-
-	virtual void MantleEnd() override;
+	// virtual void MantleStart(
+	// 	float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS, EALSMantleType MantleType) override;
+	//
+	// virtual void MantleEnd() override;
 
 	/** Implement on BP to update animation states of held objects */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|HeldObject")
