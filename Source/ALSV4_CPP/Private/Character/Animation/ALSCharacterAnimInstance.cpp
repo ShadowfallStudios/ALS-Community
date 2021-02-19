@@ -148,12 +148,12 @@ bool UALSCharacterAnimInstance::CanTurnInPlace() const
 {
 	return RotationMode.LookingDirection() &&
 		CharacterInformation.ViewMode == EALSViewMode::ThirdPerson &&
-		GetCurveValue(FName(TEXT("Enable_Transition"))) > 0.99f;
+		GetCurveValue(FName(TEXT("Enable_Transition"))) >= 0.99f;
 }
 
 bool UALSCharacterAnimInstance::CanDynamicTransition() const
 {
-	return GetCurveValue(FName(TEXT("Enable_Transition"))) == 1.0f;
+	return GetCurveValue(FName(TEXT("Enable_Transition"))) >= 0.99f;
 }
 
 void UALSCharacterAnimInstance::PlayDynamicTransitionDelay()
@@ -736,8 +736,8 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 
 	FHitResult HitResult;
 
-	World->SweepSingleByProfile(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity,
-	                            FName(TEXT("ALS_Character")),
+	World->SweepSingleByChannel(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity,
+	                            ECollisionChannel::ECC_Visibility,
 	                            FCollisionShape::MakeCapsule(CapsuleComp->GetUnscaledCapsuleRadius(),
 	                                                         CapsuleComp->GetUnscaledCapsuleHalfHeight()), Params);
 
