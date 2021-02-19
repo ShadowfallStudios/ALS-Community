@@ -30,14 +30,20 @@ void AALSPlayerCameraManager::OnPossess(AALSBaseCharacter* NewCharacter)
 	UALSPlayerCameraBehavior* CastedBehv = Cast<UALSPlayerCameraBehavior>(CameraBehavior->GetAnimInstance());
 	if (CastedBehv)
 	{
-		CastedBehv->PlayerController = GetOwningPlayerController();
-		CastedBehv->ControlledPawn = ControlledCharacter;
-
-		// Initial position
-		const FVector& TPSLoc = ControlledCharacter->GetThirdPersonPivotTarget().GetLocation();
-		SetActorLocation(TPSLoc);
-		SmoothedPivotTarget.SetLocation(TPSLoc);
+		NewCharacter->SetCameraBehavior(CastedBehv);
+		CastedBehv->MovementState = NewCharacter->GetMovementState();
+		CastedBehv->MovementAction = NewCharacter->GetMovementAction();
+		CastedBehv->bRightShoulder = NewCharacter->IsRightShoulder();
+		CastedBehv->Gait = NewCharacter->GetGait();
+		CastedBehv->SetRotationMode(NewCharacter->GetRotationMode());
+		CastedBehv->Stance = NewCharacter->GetStance();
+		CastedBehv->ViewMode = NewCharacter->GetViewMode();
 	}
+
+	// Initial position
+	const FVector& TPSLoc = ControlledCharacter->GetThirdPersonPivotTarget().GetLocation();
+	SetActorLocation(TPSLoc);
+	SmoothedPivotTarget.SetLocation(TPSLoc);
 }
 
 float AALSPlayerCameraManager::GetCameraBehaviorParam(FName CurveName) const

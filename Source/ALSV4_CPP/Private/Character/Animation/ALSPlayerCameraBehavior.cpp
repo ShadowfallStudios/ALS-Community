@@ -11,16 +11,9 @@
 
 #include "Character/ALSBaseCharacter.h"
 
-void UALSPlayerCameraBehavior::NativeUpdateAnimation(float DeltaSeconds)
+void UALSPlayerCameraBehavior::SetRotationMode(EALSRotationMode RotationMode)
 {
-	if (ControlledPawn)
-	{
-		MovementState = ControlledPawn->GetMovementState();
-		MovementAction = ControlledPawn->GetMovementAction();
-		RotationMode = ControlledPawn->GetRotationMode();
-		Gait = ControlledPawn->GetGait();
-		Stance = ControlledPawn->GetStance();
-		ViewMode = ControlledPawn->GetViewMode();
-		bRightShoulder = ControlledPawn->IsRightShoulder();
-	}
+	bVelocityDirection = RotationMode == EALSRotationMode::VelocityDirection;
+	bLookingDirection = RotationMode == EALSRotationMode::LookingDirection;
+	bAiming = RotationMode == EALSRotationMode::Aiming;
 }

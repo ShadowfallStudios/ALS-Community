@@ -26,16 +26,8 @@ class ALSV4_CPP_API UALSPlayerCameraBehavior : public UAnimInstance
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	AALSBaseCharacter* ControlledPawn = nullptr;
+	void SetRotationMode(EALSRotationMode RotationMode);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	APlayerController* PlayerController = nullptr;
-
-protected:
-	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-
-protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EALSMovementState MovementState;
 
@@ -43,7 +35,13 @@ protected:
 	EALSMovementAction MovementAction;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	EALSRotationMode RotationMode;
+	bool bLookingDirection = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bVelocityDirection = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bAiming = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EALSGait Gait;
@@ -55,5 +53,8 @@ protected:
 	EALSViewMode ViewMode;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool bRightShoulder;
+	bool bRightShoulder = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bDebugView = false;
 };
