@@ -62,8 +62,8 @@ bool UALSMathLibrary::CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector Ta
 	Params.AddIgnoredActor(Capsule->GetOwner());
 
 	FHitResult HitResult;
-	World->SweepSingleByProfile(HitResult, TraceStart, TraceEnd, FQuat::Identity,
-	                            FName(TEXT("ALS_Character")), FCollisionShape::MakeSphere(Radius), Params);
+	World->SweepSingleByChannel(HitResult, TraceStart, TraceEnd, FQuat::Identity,
+	                            ECollisionChannel::ECC_Visibility, FCollisionShape::MakeSphere(Radius), Params);
 
 	return !(HitResult.bBlockingHit || HitResult.bStartPenetrating);
 }
