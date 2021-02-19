@@ -266,7 +266,7 @@ public:
 	bool IsRightShoulder() const { return bRightShoulder; }
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
-	void SetRightShoulder(bool bNewRightShoulder) { bRightShoulder = bNewRightShoulder; }
+	void SetRightShoulder(bool bNewRightShoulder);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
 	virtual ECollisionChannel GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius);
@@ -279,6 +279,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
 	void GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bool& bRightShoulderOut) const;
+
+	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
+	void SetCameraBehavior(UALSPlayerCameraBehavior* CamBeh) { CameraBehavior = CamBeh; }
 
 	/** Essential Information Getters/Setters */
 
@@ -613,6 +616,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	UALSCharacterAnimInstance* MainAnimInstance = nullptr;
+
+	UPROPERTY(BlueprintReadOnly)
+	UALSPlayerCameraBehavior* CameraBehavior;
 
 	/** Last time the 'first' crouch/roll button is pressed */
 	float LastStanceInputTime = 0.0f;

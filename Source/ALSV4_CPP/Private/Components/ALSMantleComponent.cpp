@@ -162,8 +162,7 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 	Params.AddIgnoredActor(OwnerCharacter);
 
 	FHitResult HitResult;
-	// ECC_GameTraceChannel2 -> Climbable
-	World->SweepSingleByChannel(HitResult, TraceStart, TraceEnd, FQuat::Identity, ECC_GameTraceChannel2,
+	World->SweepSingleByProfile(HitResult, TraceStart, TraceEnd, FQuat::Identity, FName(TEXT("IgnoreOnlyPawn")),
 	                            FCollisionShape::MakeCapsule(TraceSettings.ForwardTraceRadius, HalfHeight), Params);
 
 	if (!HitResult.IsValidBlockingHit() || OwnerCharacter->GetCharacterMovement()->IsWalkable(HitResult))

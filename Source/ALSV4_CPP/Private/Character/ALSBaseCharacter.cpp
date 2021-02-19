@@ -10,6 +10,7 @@
 
 
 #include "Character/Animation/ALSCharacterAnimInstance.h"
+#include "Character/Animation/ALSPlayerCameraBehavior.h"
 #include "Library/ALSMathLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/TimelineComponent.h"
@@ -630,6 +631,15 @@ float AALSBaseCharacter::GetAnimCurveValue(FName CurveName) const
 	return 0.0f;
 }
 
+void AALSBaseCharacter::SetRightShoulder(bool bNewRightShoulder)
+{
+	bRightShoulder = bNewRightShoulder;
+	if (CameraBehavior)
+	{
+		CameraBehavior->bRightShoulder = bRightShoulder;
+	}
+}
+
 ECollisionChannel AALSBaseCharacter::GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius)
 {
 	TraceOrigin = GetActorLocation();
@@ -772,6 +782,11 @@ void AALSBaseCharacter::OnMovementStateChanged(const EALSMovementState PreviousS
 			ReplicatedRagdollStart();
 		}
 	}
+
+	if (CameraBehavior)
+	{
+		CameraBehavior->MovementState = MovementState;
+	}
 }
 
 void AALSBaseCharacter::OnMovementActionChanged(const EALSMovementAction PreviousAction)
@@ -793,11 +808,21 @@ void AALSBaseCharacter::OnMovementActionChanged(const EALSMovementAction Previou
 			Crouch();
 		}
 	}
+
+	if (CameraBehavior)
+	{
+		CameraBehavior->MovementAction = MovementAction;
+	}
 }
 
 void AALSBaseCharacter::OnStanceChanged(const EALSStance PreviousStance)
 {
 	MainAnimInstance->Stance = Stance;
+
+	if (CameraBehavior)
+	{
+		CameraBehavior->Stance = Stance;
+	}
 }
 
 void AALSBaseCharacter::OnRotationModeChanged(EALSRotationMode PreviousRotationMode)
@@ -809,11 +834,21 @@ void AALSBaseCharacter::OnRotationModeChanged(EALSRotationMode PreviousRotationM
 		// set the viewmode to Third Person.
 		SetViewMode(EALSViewMode::ThirdPerson);
 	}
+
+	if (CameraBehavior)
+	{
+		CameraBehavior->SetRotationMode(RotationMode);
+	}
 }
 
 void AALSBaseCharacter::OnGaitChanged(const EALSGait PreviousGait)
 {
 	MainAnimInstance->Gait = Gait;
+
+	if (CameraBehavior)
+	{
+		CameraBehavior->Gait = Gait;
+	}
 }
 
 void AALSBaseCharacter::OnViewModeChanged(const EALSViewMode PreviousViewMode)
@@ -831,6 +866,11 @@ void AALSBaseCharacter::OnViewModeChanged(const EALSViewMode PreviousViewMode)
 	{
 		// If First Person, set the rotation mode to looking direction if currently in the velocity direction mode.
 		SetRotationMode(EALSRotationMode::LookingDirection);
+	}
+
+	if (CameraBehavior)
+	{
+		CameraBehavior->ViewMode = ViewMode;
 	}
 }
 
