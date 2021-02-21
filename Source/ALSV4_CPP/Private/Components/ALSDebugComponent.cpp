@@ -14,6 +14,11 @@
 #include "Character/Animation/ALSPlayerCameraBehavior.h"
 #include "Kismet/GameplayStatics.h"
 
+bool UALSDebugComponent::bDebugView;
+bool UALSDebugComponent::bShowTraces;
+bool UALSDebugComponent::bShowDebugShapes;
+bool UALSDebugComponent::bShowLayerColors;
+
 UALSDebugComponent::UALSDebugComponent()
 {
 #if UE_BUILD_SHIPPING
@@ -21,19 +26,6 @@ UALSDebugComponent::UALSDebugComponent()
 #else
 	PrimaryComponentTick.bCanEverTick = true;
 #endif
-}
-
-void UALSDebugComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	OwnerCharacter = Cast<AALSCharacter>(GetOwner());
-
-	if (OwnerCharacter)
-	{
-		SetDynamicMaterials();
-		SetResetColors();
-	}
 }
 
 void UALSDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -77,6 +69,19 @@ void UALSDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		}
 	}
 #endif
+}
+
+void UALSDebugComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	OwnerCharacter = Cast<AALSCharacter>(GetOwner());
+
+	if (OwnerCharacter)
+	{
+		SetDynamicMaterials();
+		SetResetColors();
+	}
 }
 
 void UALSDebugComponent::ToggleGlobalTimeDilationLocal(float TimeDilation)

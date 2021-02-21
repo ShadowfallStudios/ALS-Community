@@ -65,6 +65,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void ToggleCharacterInfo() { bShowCharacterInfo = !bShowCharacterInfo; }
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
+	bool GetDebugView() { return bDebugView; }
+
+	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
+    bool GetShowTraces() { return bShowTraces; }
+
+	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
+    bool GetShowDebugShapes() { return bShowDebugShapes; }
+
+	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
+    bool GetShowLayerColors() { return bShowLayerColors; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -79,19 +91,15 @@ public:
 	bool bShowHud = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
-	bool bDebugView = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
-	bool bShowTraces = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
-	bool bShowDebugShapes = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
-	bool bShowLayerColors = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
 	bool bShowCharacterInfo = false;
+
+	static bool bDebugView;
+
+	static bool bShowTraces;
+
+	static bool bShowDebugShapes;
+
+	static bool bShowLayerColors;
 
 private:
 	bool bNeedsColorReset = false;
