@@ -35,15 +35,15 @@ public:
 
 	/** Implemented on BP to set/reset layering colors */
 	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
-    void SetResetColors();
+	void SetResetColors();
 
 	/** Implemented on BP to set dynamic color materials for debugging */
 	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
-    void SetDynamicMaterials();
-	
+	void SetDynamicMaterials();
+
 	/** Implement on BP to draw debug spheres */
 	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
-    void DrawDebugSpheres();
+	void DrawDebugSpheres();
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|HeldObject")
 	void ClearHeldObject();

@@ -78,7 +78,8 @@ void AALSPlayerController::ToggleDebugView()
 	AALSPlayerCameraManager* CamManager = Cast<AALSPlayerCameraManager>(PlayerCameraManager);
 	if (CamManager)
 	{
-		UALSPlayerCameraBehavior* CameraBehavior = Cast<UALSPlayerCameraBehavior>(CamManager->CameraBehavior->GetAnimInstance());
+		UALSPlayerCameraBehavior* CameraBehavior = Cast<UALSPlayerCameraBehavior>(
+			CamManager->CameraBehavior->GetAnimInstance());
 		if (CameraBehavior)
 		{
 			CameraBehavior->bDebugView = bDebugView;

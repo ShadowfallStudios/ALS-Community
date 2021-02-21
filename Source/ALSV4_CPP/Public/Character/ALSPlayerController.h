@@ -23,18 +23,18 @@ class ALSV4_CPP_API AALSPlayerController : public APlayerController
 
 public:
 	virtual void OnPossess(APawn* NewPawn) override;
-	
+
 	virtual void OnRep_Pawn() override;
 
 private:
 	void SetupCamera();
 
 	virtual void SetupInputComponent() override;
-	
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	void ToggleGlobalTimeDilationLocal(float TimeDilation);
-	
+
 	UFUNCTION(BlueprintCallable, Category = "ALS Player Controller")
 	void ToggleSlomo();
 
