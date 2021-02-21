@@ -7,8 +7,10 @@
 
 
 #include "Character/ALSCharacter.h"
+
 #include "Engine/StaticMesh.h"
 #include "Character/AI/ALSAIController.h"
+#include "Kismet/GameplayStatics.h"
 
 AALSCharacter::AALSCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -106,6 +108,7 @@ void AALSCharacter::OnOverlayStateChanged(EALSOverlayState PreviousState)
 void AALSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	UpdateHeldObjectAnimations();
 }
 

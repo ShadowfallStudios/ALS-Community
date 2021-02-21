@@ -45,10 +45,10 @@ void UALSCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (MovementState.Grounded())
 	{
 		// Check If Moving Or Not & Enable Movement Animations if IsMoving and HasMovementInput, or if the Speed is greater than 150.
-		const bool prevShouldMove = Grounded.bShouldMove;
+		const bool bPrevShouldMove = Grounded.bShouldMove;
 		Grounded.bShouldMove = ShouldMoveCheck();
 
-		if (prevShouldMove == false && Grounded.bShouldMove)
+		if (bPrevShouldMove == false && Grounded.bShouldMove)
 		{
 			// Do When Starting To Move
 			TurnInPlaceValues.ElapsedDelayTime = 0.0f;
@@ -737,7 +737,7 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 	FHitResult HitResult;
 
 	World->SweepSingleByChannel(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity,
-	                            ECollisionChannel::ECC_Visibility,
+	                            ECC_Visibility,
 	                            FCollisionShape::MakeCapsule(CapsuleComp->GetUnscaledCapsuleRadius(),
 	                                                         CapsuleComp->GetUnscaledCapsuleHalfHeight()), Params);
 

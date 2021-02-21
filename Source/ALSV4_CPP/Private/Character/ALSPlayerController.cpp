@@ -9,6 +9,8 @@
 #include "Character/ALSPlayerController.h"
 #include "Character/ALSCharacter.h"
 #include "Character/ALSPlayerCameraManager.h"
+#include "Components/ALSDebugComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 void AALSPlayerController::OnPossess(APawn* NewPawn)
 {
@@ -19,6 +21,20 @@ void AALSPlayerController::OnPossess(APawn* NewPawn)
 	if (!IsRunningDedicatedServer())
 	{
 		SetupCamera();
+	}
+
+	// Bind inputs for debugging
+	UActorComponent* Comp = NewPawn->GetComponentByClass(UALSDebugComponent::StaticClass());
+	if (Comp)
+	{
+		UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(Comp);
+		InputComponent->BindKey(FKey("Tab"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleHud);
+		InputComponent->BindKey(FKey("V"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleDebugView);
+		InputComponent->BindKey(FKey("T"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleTraces);
+		InputComponent->BindKey(FKey("Y"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleDebugShapes);
+		InputComponent->BindKey(FKey("U"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleLayerColors);
+		InputComponent->BindKey(FKey("I"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleCharacterInfo);
+		InputComponent->BindKey(FKey("Z"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleSlomo);
 	}
 }
 
@@ -39,4 +55,9 @@ void AALSPlayerController::SetupCamera()
 	{
 		CastedMgr->OnPossess(PossessedCharacter);
 	}
+}
+
+void AALSPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
 }

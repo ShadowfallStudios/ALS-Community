@@ -31,7 +31,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetCameraBehaviorParam(FName CurveName) const;
 
-	/** Implement debug logic in BP */
+	/** Implemented debug logic in BP */
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void DrawDebugTargets(FVector PivotTargetLocation);
 

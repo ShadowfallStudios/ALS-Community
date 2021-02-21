@@ -23,7 +23,7 @@ class ALSV4_CPP_API AALSCharacter : public AALSBaseCharacter
 public:
 	AALSCharacter(const FObjectInitializer& ObjectInitializer);
 
-	/** Implement on BP to update held objects */
+	/** Implemented on BP to update held objects */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|HeldObject")
 	void UpdateHeldObject();
 
@@ -64,4 +64,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* StaticMesh = nullptr;
+
+private:
+	bool bNeedsColorReset = false;
 };
