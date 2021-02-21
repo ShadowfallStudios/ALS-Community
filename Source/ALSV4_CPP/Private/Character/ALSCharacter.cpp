@@ -8,7 +8,6 @@
 
 #include "Character/ALSCharacter.h"
 
-#include "Character/ALSPlayerController.h"
 #include "Engine/StaticMesh.h"
 #include "Character/AI/ALSAIController.h"
 #include "Kismet/GameplayStatics.h"
@@ -26,16 +25,6 @@ AALSCharacter::AALSCharacter(const FObjectInitializer& ObjectInitializer)
 	StaticMesh->SetupAttachment(HeldObjectRoot);
 
 	AIControllerClass = AALSAIController::StaticClass();
-}
-
-void AALSCharacter::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-#if !UE_BUILD_SHIPPING
-	SetDynamicMaterials();
-	SetResetColors();
-#endif
 }
 
 void AALSCharacter::ClearHeldObject()
@@ -121,32 +110,6 @@ void AALSCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateHeldObjectAnimations();
-
-#if !UE_BUILD_SHIPPING
-	AALSPlayerController* ALSController = Cast<AALSPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-	if (ALSController)
-	{
-		if (bNeedsColorReset)
-		{
-			bNeedsColorReset = false;
-			SetResetColors();
-		}
-		
-		if (ALSController->bShowLayerColors)
-		{
-			UpdateColoringSystem();
-		}
-		else
-		{
-			bNeedsColorReset = true;
-		}
-
-		if (ALSController->bShowDebugShapes)
-		{
-			DrawDebugSpheres();
-		}
-	}
-#endif
 }
 
 void AALSCharacter::BeginPlay()

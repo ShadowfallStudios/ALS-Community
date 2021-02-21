@@ -9,9 +9,8 @@
 #include "Character/ALSPlayerController.h"
 #include "Character/ALSCharacter.h"
 #include "Character/ALSPlayerCameraManager.h"
-#include "Character/Animation/ALSPlayerCameraBehavior.h"
+#include "Components/ALSDebugComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 void AALSPlayerController::OnPossess(APawn* NewPawn)
 {
@@ -22,6 +21,20 @@ void AALSPlayerController::OnPossess(APawn* NewPawn)
 	if (!IsRunningDedicatedServer())
 	{
 		SetupCamera();
+	}
+
+	// Bind inputs for debugging
+	UActorComponent* Comp = NewPawn->GetComponentByClass(UALSDebugComponent::StaticClass());
+	if (Comp)
+	{
+		UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(Comp);
+		InputComponent->BindKey(FKey("Tab"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleHud);
+		InputComponent->BindKey(FKey("V"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleDebugView);
+		InputComponent->BindKey(FKey("T"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleTraces);
+		InputComponent->BindKey(FKey("Y"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleDebugShapes);
+		InputComponent->BindKey(FKey("U"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleLayerColors);
+		InputComponent->BindKey(FKey("I"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleCharacterInfo);
+		InputComponent->BindKey(FKey("Z"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleSlomo);
 	}
 }
 
@@ -47,42 +60,4 @@ void AALSPlayerController::SetupCamera()
 void AALSPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-
-	InputComponent->BindKey(FKey("Tab"), EInputEvent::IE_Pressed, this, &AALSPlayerController::ToggleHud);
-	InputComponent->BindKey(FKey("V"), EInputEvent::IE_Pressed, this, &AALSPlayerController::ToggleDebugView);
-	InputComponent->BindKey(FKey("T"), EInputEvent::IE_Pressed, this, &AALSPlayerController::ToggleTraces);
-	InputComponent->BindKey(FKey("Y"), EInputEvent::IE_Pressed, this, &AALSPlayerController::ToggleDebugShapes);
-	InputComponent->BindKey(FKey("U"), EInputEvent::IE_Pressed, this, &AALSPlayerController::ToggleLayerColors);
-	InputComponent->BindKey(FKey("I"), EInputEvent::IE_Pressed, this, &AALSPlayerController::ToggleCharacterInfo);
-	InputComponent->BindKey(FKey("Z"), EInputEvent::IE_Pressed, this, &AALSPlayerController::ToggleSlomo);
-}
-
-void AALSPlayerController::ToggleGlobalTimeDilationLocal(float TimeDilation)
-{
-	if (UKismetSystemLibrary::IsStandalone(this))
-	{
-		UGameplayStatics::SetGlobalTimeDilation(this, TimeDilation);
-	}
-}
-
-void AALSPlayerController::ToggleSlomo()
-{
-	bSlomo = !bSlomo;
-	ToggleGlobalTimeDilationLocal(bSlomo ? 0.15f : 1.f);
-}
-
-void AALSPlayerController::ToggleDebugView()
-{
-	bDebugView = !bDebugView;
-
-	AALSPlayerCameraManager* CamManager = Cast<AALSPlayerCameraManager>(PlayerCameraManager);
-	if (CamManager)
-	{
-		UALSPlayerCameraBehavior* CameraBehavior = Cast<UALSPlayerCameraBehavior>(
-			CamManager->CameraBehavior->GetAnimInstance());
-		if (CameraBehavior)
-		{
-			CameraBehavior->bDebugView = bDebugView;
-		}
-	}
 }

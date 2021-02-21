@@ -175,15 +175,6 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 		TargetCameraLocation += HitResult.Location - HitResult.TraceEnd;
 	}
 
-#if !UE_BUILD_SHIPPING
-	// Step 7: Draw Debug Shapes.
-	AALSPlayerController* Controller = Cast<AALSPlayerController>(GetOwningPlayerController());
-	if (Controller && Controller->bShowDebugShapes)
-	{
-		DrawDebugTargets(PivotTarget.GetLocation());
-	}
-#endif
-
 	// Step 8: Lerp First Person Override and return target camera parameters.
 	FTransform TargetCameraTransform(TargetCameraRotation, TargetCameraLocation, FVector::OneVector);
 	FTransform FPTargetCameraTransform(TargetCameraRotation, FPTarget, FVector::OneVector);
