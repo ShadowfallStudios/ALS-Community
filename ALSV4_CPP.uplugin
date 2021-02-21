@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "4.15",
+	"VersionName": "4.16",
 	"FriendlyName": "Advanced Locomotion System V4 on C++",
 	"Description": "Performance optimized C++ port of LongmireLocomotion's Advanced Locomotion System V4",
 	"Category": "Animation",
