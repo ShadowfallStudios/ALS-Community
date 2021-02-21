@@ -257,10 +257,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Utility")
 	float GetAnimCurveValue(FName CurveName) const;
 
-	/** Implement on BP to draw debug spheres */
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ALS|Debug")
-	void DrawDebugSpheres();
-
 	/** Camera System */
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Camera System")

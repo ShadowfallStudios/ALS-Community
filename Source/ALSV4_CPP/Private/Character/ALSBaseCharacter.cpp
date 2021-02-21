@@ -186,10 +186,6 @@ void AALSBaseCharacter::Tick(float DeltaTime)
 	// Cache values
 	PreviousVelocity = GetVelocity();
 	PreviousAimYaw = AimingRotation.Yaw;
-
-#if !UE_BUILD_SHIPPING
-	DrawDebugSpheres();
-#endif
 }
 
 void AALSBaseCharacter::RagdollStart()

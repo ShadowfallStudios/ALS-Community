@@ -23,13 +23,27 @@ class ALSV4_CPP_API AALSCharacter : public AALSBaseCharacter
 public:
 	AALSCharacter(const FObjectInitializer& ObjectInitializer);
 
+	void PostInitializeComponents() override;
+
 	/** Implemented on BP to update held objects */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|HeldObject")
 	void UpdateHeldObject();
 
 	/** Implemented on BP to update layering colors */
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|Debug")
-    void UpdateColoringSystem();
+	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
+	void UpdateColoringSystem();
+
+	/** Implemented on BP to set/reset layering colors */
+	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
+    void SetResetColors();
+
+	/** Implemented on BP to set dynamic color materials for debugging */
+	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
+    void SetDynamicMaterials();
+	
+	/** Implement on BP to draw debug spheres */
+	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
+    void DrawDebugSpheres();
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|HeldObject")
 	void ClearHeldObject();
@@ -68,4 +82,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* StaticMesh = nullptr;
+
+private:
+	bool bNeedsColorReset = false;
 };

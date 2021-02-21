@@ -10,6 +10,7 @@
 
 
 #include "Character/ALSBaseCharacter.h"
+#include "Character/ALSPlayerController.h"
 #include "Character/Animation/ALSPlayerCameraBehavior.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -174,8 +175,14 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 		TargetCameraLocation += HitResult.Location - HitResult.TraceEnd;
 	}
 
+#if !UE_BUILD_SHIPPING
 	// Step 7: Draw Debug Shapes.
-	DrawDebugTargets(PivotTarget.GetLocation());
+	AALSPlayerController* Controller = Cast<AALSPlayerController>(GetOwningPlayerController());
+	if (Controller && Controller->bShowDebugShapes)
+	{
+		DrawDebugTargets(PivotTarget.GetLocation());
+	}
+#endif
 
 	// Step 8: Lerp First Person Override and return target camera parameters.
 	FTransform TargetCameraTransform(TargetCameraRotation, TargetCameraLocation, FVector::OneVector);
