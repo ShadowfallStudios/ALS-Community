@@ -44,8 +44,6 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 		virtual FSavedMovePtr AllocateNewMove() override;
 	};
 
-public:
-
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 	virtual void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity) override;

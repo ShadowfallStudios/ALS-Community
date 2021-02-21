@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Jens Bjarne Myhre
-// Contributors:
+// Contributors: Doğa Can Yanıkoğlu
 
 #pragma once
 
@@ -44,15 +44,15 @@ public:
 
 	FALSMovementState(const EALSMovementState InitialState) { *this = InitialState; }
 
-	FORCEINLINE const bool& None() const { return None_; }
-	FORCEINLINE const bool& Grounded() const { return Grounded_; }
-	FORCEINLINE const bool& InAir() const { return InAir_; }
-	FORCEINLINE const bool& Mantling() const { return Mantling_; }
-	FORCEINLINE const bool& Ragdoll() const { return Ragdoll_; }
+	const bool& None() const { return None_; }
+	const bool& Grounded() const { return Grounded_; }
+	const bool& InAir() const { return InAir_; }
+	const bool& Mantling() const { return Mantling_; }
+	const bool& Ragdoll() const { return Ragdoll_; }
 
-	FORCEINLINE operator EALSMovementState() const { return State; }
+	operator EALSMovementState() const { return State; }
 
-	FORCEINLINE void operator=(const EALSMovementState NewState)
+	void operator=(const EALSMovementState NewState)
 	{
 		State = NewState;
 		None_ = State == EALSMovementState::None;
@@ -85,12 +85,12 @@ public:
 
 	FALSStance(const EALSStance InitialStance) { *this = InitialStance; }
 
-	FORCEINLINE const bool& Standing() const { return Standing_; }
-	FORCEINLINE const bool& Crouching() const { return Crouching_; }
+	const bool& Standing() const { return Standing_; }
+	const bool& Crouching() const { return Crouching_; }
 
-	FORCEINLINE operator EALSStance() const { return Stance; }
+	operator EALSStance() const { return Stance; }
 
-	FORCEINLINE void operator=(const EALSStance NewStance)
+	void operator=(const EALSStance NewStance)
 	{
 		Stance = NewStance;
 		Standing_ = Stance == EALSStance::Standing;
@@ -123,13 +123,13 @@ public:
 
 	FALSRotationMode(const EALSRotationMode InitialRotationMode) { *this = InitialRotationMode; }
 
-	FORCEINLINE const bool& VelocityDirection() const { return VelocityDirection_; }
-	FORCEINLINE const bool& LookingDirection() const { return LookingDirection_; }
-	FORCEINLINE const bool& Aiming() const { return Aiming_; }
+	const bool& VelocityDirection() const { return VelocityDirection_; }
+	const bool& LookingDirection() const { return LookingDirection_; }
+	const bool& Aiming() const { return Aiming_; }
 
-	FORCEINLINE operator EALSRotationMode() const { return RotationMode; }
+	operator EALSRotationMode() const { return RotationMode; }
 
-	FORCEINLINE void operator=(const EALSRotationMode NewRotationMode)
+	void operator=(const EALSRotationMode NewRotationMode)
 	{
 		RotationMode = NewRotationMode;
 		VelocityDirection_ = RotationMode == EALSRotationMode::VelocityDirection;
@@ -164,16 +164,19 @@ public:
 	{
 	}
 
-	FALSMovementDirection(const EALSMovementDirection InitialMovementDirection) { *this = InitialMovementDirection; }
+	FALSMovementDirection(const EALSMovementDirection InitialMovementDirection)
+	{
+		*this = InitialMovementDirection;
+	}
 
-	FORCEINLINE const bool& Forward() const { return Forward_; }
-	FORCEINLINE const bool& Right() const { return Right_; }
-	FORCEINLINE const bool& Left() const { return Left_; }
-	FORCEINLINE const bool& Backward() const { return Backward_; }
+	const bool& Forward() const { return Forward_; }
+	const bool& Right() const { return Right_; }
+	const bool& Left() const { return Left_; }
+	const bool& Backward() const { return Backward_; }
 
-	FORCEINLINE operator EALSMovementDirection() const { return MovementDirection; }
+	operator EALSMovementDirection() const { return MovementDirection; }
 
-	FORCEINLINE void operator=(const EALSMovementDirection NewMovementDirection)
+	void operator=(const EALSMovementDirection NewMovementDirection)
 	{
 		MovementDirection = NewMovementDirection;
 		Forward_ = MovementDirection == EALSMovementDirection::Forward;
@@ -214,15 +217,15 @@ public:
 
 	FALSMovementAction(const EALSMovementAction InitialAction) { *this = InitialAction; }
 
-	FORCEINLINE const bool& None() const { return None_; }
-	FORCEINLINE const bool& LowMantle() const { return LowMantle_; }
-	FORCEINLINE const bool& HighMantle() const { return HighMantle_; }
-	FORCEINLINE const bool& Rolling() const { return Rolling_; }
-	FORCEINLINE const bool& GettingUp() const { return GettingUp_; }
+	const bool& None() const { return None_; }
+	const bool& LowMantle() const { return LowMantle_; }
+	const bool& HighMantle() const { return HighMantle_; }
+	const bool& Rolling() const { return Rolling_; }
+	const bool& GettingUp() const { return GettingUp_; }
 
-	FORCEINLINE operator EALSMovementAction() const { return Action; }
+	operator EALSMovementAction() const { return Action; }
 
-	FORCEINLINE void operator=(const EALSMovementAction NewAction)
+	void operator=(const EALSMovementAction NewAction)
 	{
 		Action = NewAction;
 		None_ = Action == EALSMovementAction::None;
@@ -258,13 +261,13 @@ public:
 
 	FALSGait(const EALSGait InitialGait) { *this = InitialGait; }
 
-	FORCEINLINE const bool& Walking() const { return Walking_; }
-	FORCEINLINE const bool& Running() const { return Running_; }
-	FORCEINLINE const bool& Sprinting() const { return Sprinting_; }
+	const bool& Walking() const { return Walking_; }
+	const bool& Running() const { return Running_; }
+	const bool& Sprinting() const { return Sprinting_; }
 
-	FORCEINLINE operator EALSGait() const { return Gait; }
+	operator EALSGait() const { return Gait; }
 
-	FORCEINLINE void operator=(const EALSGait NewGait)
+	void operator=(const EALSGait NewGait)
 	{
 		Gait = NewGait;
 		Walking_ = Gait == EALSGait::Walking;
@@ -328,23 +331,23 @@ public:
 
 	FALSOverlayState(const EALSOverlayState InitialState) { *this = InitialState; }
 
-	FORCEINLINE const bool& Default() const { return Default_; }
-	FORCEINLINE const bool& Masculine() const { return Masculine_; }
-	FORCEINLINE const bool& Feminine() const { return Feminine_; }
-	FORCEINLINE const bool& Injured() const { return Injured_; }
-	FORCEINLINE const bool& HandsTied() const { return HandsTied_; }
-	FORCEINLINE const bool& Rifle() const { return Rifle_; }
-	FORCEINLINE const bool& PistolOneHanded() const { return PistolOneHanded_; }
-	FORCEINLINE const bool& PistolTwoHanded() const { return PistolTwoHanded_; }
-	FORCEINLINE const bool& Bow() const { return Bow_; }
-	FORCEINLINE const bool& Torch() const { return Torch_; }
-	FORCEINLINE const bool& Binoculars() const { return Binoculars_; }
-	FORCEINLINE const bool& Box() const { return Box_; }
-	FORCEINLINE const bool& Barrel() const { return Barrel_; }
+	const bool& Default() const { return Default_; }
+	const bool& Masculine() const { return Masculine_; }
+	const bool& Feminine() const { return Feminine_; }
+	const bool& Injured() const { return Injured_; }
+	const bool& HandsTied() const { return HandsTied_; }
+	const bool& Rifle() const { return Rifle_; }
+	const bool& PistolOneHanded() const { return PistolOneHanded_; }
+	const bool& PistolTwoHanded() const { return PistolTwoHanded_; }
+	const bool& Bow() const { return Bow_; }
+	const bool& Torch() const { return Torch_; }
+	const bool& Binoculars() const { return Binoculars_; }
+	const bool& Box() const { return Box_; }
+	const bool& Barrel() const { return Barrel_; }
 
-	FORCEINLINE operator EALSOverlayState() const { return State; }
+	operator EALSOverlayState() const { return State; }
 
-	FORCEINLINE void operator=(const EALSOverlayState NewAction)
+	void operator=(const EALSOverlayState NewAction)
 	{
 		State = NewAction;
 		Default_ = State == EALSOverlayState::Default;
@@ -385,12 +388,12 @@ public:
 
 	FALSGroundedEntryState(const EALSGroundedEntryState InitialState) { *this = InitialState; }
 
-	FORCEINLINE const bool& None() const { return None_; }
-	FORCEINLINE const bool& Roll() const { return Roll_; }
+	const bool& None() const { return None_; }
+	const bool& Roll() const { return Roll_; }
 
-	FORCEINLINE operator EALSGroundedEntryState() const { return State; }
+	operator EALSGroundedEntryState() const { return State; }
 
-	FORCEINLINE void operator=(const EALSGroundedEntryState NewState)
+	void operator=(const EALSGroundedEntryState NewState)
 	{
 		State = NewState;
 		None_ = State == EALSGroundedEntryState::None;

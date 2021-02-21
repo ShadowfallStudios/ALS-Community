@@ -25,7 +25,9 @@ static FORCEINLINE FString GetEnumerationToString(const Enumeration InValue)
 	return StaticEnum<Enumeration>()->GetNameStringByValue(static_cast<int64>(InValue));
 }
 
-
+/**
+ * Character gait state. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
+ */
 UENUM(BlueprintType)
 enum class EALSGait : uint8
 {
@@ -34,6 +36,9 @@ enum class EALSGait : uint8
 	Sprinting
 };
 
+/**
+ * Character movement action state. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
+ */
 UENUM(BlueprintType)
 enum class EALSMovementAction : uint8
 {
@@ -44,6 +49,9 @@ enum class EALSMovementAction : uint8
 	GettingUp
 };
 
+/**
+ * Character movement state. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
+ */
 UENUM(BlueprintType)
 enum class EALSMovementState : uint8
 {
@@ -54,6 +62,9 @@ enum class EALSMovementState : uint8
 	Ragdoll
 };
 
+/**
+ * Character overlay state. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
+ */
 UENUM(BlueprintType)
 enum class EALSOverlayState : uint8
 {
@@ -72,6 +83,9 @@ enum class EALSOverlayState : uint8
 	Barrel
 };
 
+/**
+ * Character rotation mode. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
+ */
 UENUM(BlueprintType)
 enum class EALSRotationMode : uint8
 {
@@ -80,6 +94,9 @@ enum class EALSRotationMode : uint8
 	Aiming
 };
 
+/**
+ * Character stance. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
+ */
 UENUM(BlueprintType)
 enum class EALSStance : uint8
 {
@@ -87,6 +104,9 @@ enum class EALSStance : uint8
 	Crouching
 };
 
+/**
+ * Character view mode. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
+ */
 UENUM(BlueprintType)
 enum class EALSViewMode : uint8
 {

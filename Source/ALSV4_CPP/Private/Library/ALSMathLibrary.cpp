@@ -63,7 +63,7 @@ bool UALSMathLibrary::CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector Ta
 
 	FHitResult HitResult;
 	World->SweepSingleByChannel(HitResult, TraceStart, TraceEnd, FQuat::Identity,
-	                            ECollisionChannel::ECC_Visibility, FCollisionShape::MakeSphere(Radius), Params);
+	                            ECC_Visibility, FCollisionShape::MakeSphere(Radius), Params);
 
 	return !(HitResult.bBlockingHit || HitResult.bStartPenetrating);
 }

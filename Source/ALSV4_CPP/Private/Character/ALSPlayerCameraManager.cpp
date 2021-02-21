@@ -171,7 +171,7 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 
 	if (HitResult.IsValidBlockingHit())
 	{
-		TargetCameraLocation += (HitResult.Location - HitResult.TraceEnd);
+		TargetCameraLocation += HitResult.Location - HitResult.TraceEnd;
 	}
 
 	// Step 7: Draw Debug Shapes.
