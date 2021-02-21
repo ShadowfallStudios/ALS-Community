@@ -106,7 +106,12 @@ void AALSCharacter::OnOverlayStateChanged(EALSOverlayState PreviousState)
 void AALSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	UpdateHeldObjectAnimations();
+
+#if !UE_BUILD_SHIPPING
+	UpdateColoringSystem();
+#endif
 }
 
 void AALSCharacter::BeginPlay()

@@ -23,9 +23,13 @@ class ALSV4_CPP_API AALSCharacter : public AALSBaseCharacter
 public:
 	AALSCharacter(const FObjectInitializer& ObjectInitializer);
 
-	/** Implement on BP to update held objects */
+	/** Implemented on BP to update held objects */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|HeldObject")
 	void UpdateHeldObject();
+
+	/** Implemented on BP to update layering colors */
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|Debug")
+    void UpdateColoringSystem();
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|HeldObject")
 	void ClearHeldObject();
