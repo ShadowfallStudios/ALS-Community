@@ -26,10 +26,12 @@ public:
 
 	virtual void OnRep_Pawn() override;
 
+	virtual void BeginPlayingState() override;
+
 private:
 	void SetupCamera();
 
-	virtual void SetupInputComponent() override;
+	void SetupDebugInputs();
 	
 public:
 	/** Main character reference */
