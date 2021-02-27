@@ -360,17 +360,11 @@ protected:
 
 	void UpdateCharacterMovement();
 
-	void UpdateDynamicMovementSettingsNetworked(EALSGait AllowedGait);
-
-	void UpdateDynamicMovementSettingsStandalone(EALSGait AllowedGait);
-
 	void UpdateGroundedRotation(float DeltaTime);
 
 	void UpdateInAirRotation(float DeltaTime);
 
 	/** Utils */
-
-	float GetMappedSpeed() const;
 
 	void SmoothCharacterRotation(FRotator Target, float TargetInterpSpeed, float ActorInterpSpeed, float DeltaTime);
 
@@ -482,9 +476,6 @@ protected:
 	EALSOverlayState OverlayState = EALSOverlayState::Default;
 
 	/** Movement System */
-
-	UPROPERTY(BlueprintReadOnly, Category = "ALS|Movement System")
-	FALSMovementSettings CurrentMovementSettings;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ALS|Movement System")
 	FDataTableRowHandle MovementModel;
