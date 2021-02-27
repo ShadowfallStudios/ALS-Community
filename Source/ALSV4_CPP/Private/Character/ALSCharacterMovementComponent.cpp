@@ -1,7 +1,9 @@
 // Project:         Advanced Locomotion System V4 on C++
+// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
+// License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Haziq Fadhil
-// Contributors:    
+// Contributors:    Doğa Can Yanıkoğlu
 
 
 #include "Character/ALSCharacterMovementComponent.h"
@@ -12,7 +14,8 @@ UALSCharacterMovementComponent::UALSCharacterMovementComponent(const FObjectInit
 {
 }
 
-void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity)
+void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FVector& OldLocation,
+                                                       const FVector& OldVelocity)
 {
 	Super::OnMovementUpdated(DeltaTime, OldLocation, OldVelocity);
 
@@ -26,14 +29,6 @@ void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FV
 	{
 		MaxWalkSpeed = MyNewMaxWalkSpeed;
 		MaxWalkSpeedCrouched = MyNewMaxWalkSpeed;
-		MaxAcceleration = MyNewMaxAcceleration;
-		BrakingDecelerationWalking = MyNewBraking;
-		GroundFriction = MyNewGroundFriction;
-
-		// Ensures server Movement Settings values updates to latest
-		bRequestMovementSettingsChange = MaxAcceleration != RealMaxAcceleration
-									  || BrakingDecelerationWalking != RealBraking
-									  || GroundFriction != RealGroundFriction;
 	}
 }
 
@@ -46,7 +41,7 @@ void UALSCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags) // C
 
 class FNetworkPredictionData_Client* UALSCharacterMovementComponent::GetPredictionData_Client() const
 {
-	check(PawnOwner != NULL);
+	check(PawnOwner != nullptr);
 
 	if (!ClientPredictionData)
 	{
@@ -79,35 +74,20 @@ uint8 UALSCharacterMovementComponent::FSavedMove_My::GetCompressedFlags() const
 	return Result;
 }
 
-bool UALSCharacterMovementComponent::FSavedMove_My::CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* Character,
-                                                                   float MaxDelta) const
-{
-	// Set which moves can be combined together. This will depend on the bit flags that are used.	
-	if (bSavedRequestMovementSettingsChange != ((FSavedMove_My*)&NewMove)->bSavedRequestMovementSettingsChange)
-	{
-		return false;
-	}
-
-	return Super::CanCombineWith(NewMove, Character, MaxDelta);
-}
-
-void UALSCharacterMovementComponent::FSavedMove_My::SetMoveFor(ACharacter* Character, float InDeltaTime, FVector const& NewAccel,
-                                                               class FNetworkPredictionData_Client_Character& ClientData)
+void UALSCharacterMovementComponent::FSavedMove_My::SetMoveFor(ACharacter* Character, float InDeltaTime,
+                                                               FVector const& NewAccel,
+                                                               class FNetworkPredictionData_Client_Character&
+                                                               ClientData)
 {
 	Super::SetMoveFor(Character, InDeltaTime, NewAccel, ClientData);
 
-	UALSCharacterMovementComponent* CharacterMovement = Cast<UALSCharacterMovementComponent>(Character->GetCharacterMovement());
+	UALSCharacterMovementComponent* CharacterMovement = Cast<UALSCharacterMovementComponent>(
+		Character->GetCharacterMovement());
 	if (CharacterMovement)
 	{
 		bSavedRequestMovementSettingsChange = CharacterMovement->bRequestMovementSettingsChange;
+		MaxSpeed = CharacterMovement->MyNewMaxWalkSpeed;
 	}
-}
-
-void UALSCharacterMovementComponent::FSavedMove_My::PrepMoveFor(class ACharacter* Character)
-{
-	Super::PrepMoveFor(Character);
-
-	UALSCharacterMovementComponent* CharacterMovement = Cast<UALSCharacterMovementComponent>(Character->GetCharacterMovement());
 }
 
 UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::FNetworkPredictionData_Client_My(
@@ -118,16 +98,7 @@ UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::FNetworkPredic
 
 FSavedMovePtr UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::AllocateNewMove()
 {
-	return FSavedMovePtr(new FSavedMove_My());
-}
-
-// Set Movement Settings RPC to transfer the current Movement Settings from the Owning Client to the Server
-bool UALSCharacterMovementComponent::Server_SetMaxWalkingSpeed_Validate(const float NewMaxWalkSpeed)
-{
-	if (NewMaxWalkSpeed < 0.f || NewMaxWalkSpeed > 2000.f)
-		return false;
-	else
-		return true;
+	return MakeShared<FSavedMove_My>();
 }
 
 void UALSCharacterMovementComponent::Server_SetMaxWalkingSpeed_Implementation(const float NewMaxWalkSpeed)
@@ -143,35 +114,4 @@ void UALSCharacterMovementComponent::SetMaxWalkingSpeed(float NewMaxWalkSpeed)
 		Server_SetMaxWalkingSpeed(NewMaxWalkSpeed);
 	}
 	bRequestMovementSettingsChange = true;
-}
-
-// Set Max Walking Speed RPC to transfer the current Max Walking Speed from the Owning Client to the Server
-bool UALSCharacterMovementComponent::Server_SetMovementSettings_Validate(const FVector NewMovementSettings)
-{
-		return true;
-}
-
-void UALSCharacterMovementComponent::Server_SetMovementSettings_Implementation(const FVector NewMovementSettings)
-{
-	MyNewMaxAcceleration = NewMovementSettings.X;
-	MyNewBraking = NewMovementSettings.Y;
-	MyNewGroundFriction = NewMovementSettings.Z;
-	bRequestMovementSettingsChange = true;
-}
-
-void UALSCharacterMovementComponent::SetMovementSettings(FVector NewMovementSettings)
-{
-	if (PawnOwner->IsLocallyControlled())
-	{
-		MyNewMaxAcceleration = NewMovementSettings.X;
-		MyNewBraking = NewMovementSettings.Y;
-		MyNewGroundFriction = NewMovementSettings.Z;
-		Server_SetMovementSettings(NewMovementSettings);
-	}
-	bRequestMovementSettingsChange = true;
-
-	// Save Server Movement Settings for comparison during movement update
-	RealMaxAcceleration = NewMovementSettings.X;
-	RealBraking = NewMovementSettings.Y;
-	RealGroundFriction = NewMovementSettings.Z;
 }

@@ -1,5 +1,5 @@
 // Project:         Advanced Locomotion System V4 on C++
-// Copyright:       Copyright (C) 2020 Doğa Can Yanıkoğlu
+// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
@@ -26,16 +26,8 @@ class ALSV4_CPP_API UALSPlayerCameraBehavior : public UAnimInstance
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	AALSBaseCharacter* ControlledPawn = nullptr;
+	void SetRotationMode(EALSRotationMode RotationMode);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	APlayerController* PlayerController = nullptr;
-
-protected:
-	void NativeUpdateAnimation(float DeltaSeconds) override;
-
-protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EALSMovementState MovementState;
 
@@ -43,7 +35,13 @@ protected:
 	EALSMovementAction MovementAction;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	EALSRotationMode RotationMode;
+	bool bLookingDirection = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bVelocityDirection = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bAiming = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EALSGait Gait;
@@ -55,5 +53,8 @@ protected:
 	EALSViewMode ViewMode;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool bRightShoulder;
+	bool bRightShoulder = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bDebugView = false;
 };

@@ -1,5 +1,5 @@
 // Project:         Advanced Locomotion System V4 on C++
-// Copyright:       Copyright (C) 2020 Doğa Can Yanıkoğlu
+// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
@@ -31,7 +31,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetCameraBehaviorParam(FName CurveName) const;
 
-	/** Implement debug logic in BP */
+	/** Implemented debug logic in BP */
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void DrawDebugTargets(FVector PivotTargetLocation);
 
@@ -39,7 +39,7 @@ protected:
 	virtual void UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	FVector CalculateAxisIndependentLag(
+	static FVector CalculateAxisIndependentLag(
 		FVector CurrentLocation, FVector TargetLocation, FRotator CameraRotation, FVector LagSpeeds, float DeltaTime);
 
 	UFUNCTION(BlueprintCallable)
@@ -53,9 +53,6 @@ public:
 	USkeletalMeshComponent* CameraBehavior = nullptr;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FName CustomTag = FName(TEXT("ALS_Character"));
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector RootLocation;
 

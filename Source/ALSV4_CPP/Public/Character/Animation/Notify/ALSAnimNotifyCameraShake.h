@@ -1,5 +1,5 @@
 // Project:         Advanced Locomotion System V4 on C++
-// Copyright:       Copyright (C) 2020 Doğa Can Yanıkoğlu
+// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
@@ -9,9 +9,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Runtime/Engine/Classes/Camera/CameraShake.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "ALSAnimNotifyCameraShake.generated.h"
+
+class UMatineeCameraShake;
 
 /**
  * Generic camera shake animation notify for pawns with controller enabled
@@ -21,11 +22,11 @@ class ALSV4_CPP_API UALSAnimNotifyCameraShake : public UAnimNotify
 {
 	GENERATED_BODY()
 
-	void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	TSubclassOf<UCameraShake> ShakeClass;
+	TSubclassOf<UMatineeCameraShake> ShakeClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
 	float Scale = 1.0f;

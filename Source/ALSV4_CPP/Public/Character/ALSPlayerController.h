@@ -1,10 +1,9 @@
 // Project:         Advanced Locomotion System V4 on C++
-// Copyright:       Copyright (C) 2020 Doğa Can Yanıkoğlu
+// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    
-
+// Contributors:	Drakynfly
 
 #pragma once
 
@@ -23,9 +22,19 @@ class ALSV4_CPP_API AALSPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	void OnRestartPawn(APawn* NewPawn);
+	virtual void OnPossess(APawn* NewPawn) override;
+
+	virtual void OnRep_Pawn() override;
+
+	virtual void BeginPlayingState() override;
 
 private:
+	void SetupCamera();
+
+	void SetupDebugInputs();
+	
+public:
 	/** Main character reference */
+	UPROPERTY(BlueprintReadOnly, Category = "ALS Player Controller")
 	AALSBaseCharacter* PossessedCharacter = nullptr;
 };

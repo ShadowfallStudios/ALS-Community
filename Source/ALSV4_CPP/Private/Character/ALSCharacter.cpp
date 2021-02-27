@@ -1,5 +1,5 @@
 // Project:         Advanced Locomotion System V4 on C++
-// Copyright:       Copyright (C) 2020 Doğa Can Yanıkoğlu
+// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
@@ -7,8 +7,10 @@
 
 
 #include "Character/ALSCharacter.h"
+
 #include "Engine/StaticMesh.h"
 #include "Character/AI/ALSAIController.h"
+#include "Kismet/GameplayStatics.h"
 
 AALSCharacter::AALSCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -79,10 +81,8 @@ void AALSCharacter::RagdollEnd()
 
 ECollisionChannel AALSCharacter::GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius)
 {
-	FName CameraSocketName = bRightShoulder ? TEXT("TP_CameraTrace_R") : TEXT("TP_CameraTrace_L");
+	const FName CameraSocketName = bRightShoulder ? TEXT("TP_CameraTrace_R") : TEXT("TP_CameraTrace_L");
 	TraceOrigin = GetMesh()->GetSocketLocation(CameraSocketName);
-	float Pelvis_Z_Offset = GetMesh()->GetSocketTransform(TEXT("pelvis")).GetLocation().Z - 96;
-	TraceOrigin.Z += Pelvis_Z_Offset;
 	TraceRadius = 15.0f;
 	return ECC_Camera;
 }
@@ -90,7 +90,7 @@ ECollisionChannel AALSCharacter::GetThirdPersonTraceParams(FVector& TraceOrigin,
 FTransform AALSCharacter::GetThirdPersonPivotTarget()
 {
 	return FTransform(GetActorRotation(),
-	                  (GetMesh()->GetSocketLocation(TEXT("Head")) + GetMesh()->GetSocketLocation(TEXT("Root"))) / 2.0f,
+	                  (GetMesh()->GetSocketLocation(TEXT("Head")) + GetMesh()->GetSocketLocation(TEXT("root"))) / 2.0f,
 	                  FVector::OneVector);
 }
 
@@ -108,6 +108,7 @@ void AALSCharacter::OnOverlayStateChanged(EALSOverlayState PreviousState)
 void AALSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	UpdateHeldObjectAnimations();
 }
 
@@ -115,22 +116,5 @@ void AALSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UpdateHeldObject();
-}
-
-void AALSCharacter::MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
-                                EALSMantleType MantleType)
-{
-	Super::MantleStart(MantleHeight, MantleLedgeWS, MantleType);
-	if (MantleType != EALSMantleType::LowMantle)
-	{
-		// If we're not doing low mantle, clear held object
-		ClearHeldObject();
-	}
-}
-
-void AALSCharacter::MantleEnd()
-{
-	Super::MantleEnd();
 	UpdateHeldObject();
 }
