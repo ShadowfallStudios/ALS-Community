@@ -48,16 +48,31 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 	virtual void OnMovementUpdated(float DeltaTime, const FVector& OldLocation, const FVector& OldVelocity) override;
 
+	// Movement Settings Override
+	virtual void PhysWalking(float deltaTime, int32 Iterations) override;
+	virtual float GetMaxAcceleration() const override;
+	virtual float GetMaxBrakingDeceleration() const override;
 
 	// Movement Settings Variables
+	UPROPERTY()
 	uint8 bRequestMovementSettingsChange = 1;
 
-	float MyNewMaxWalkSpeed = 0;
+	UPROPERTY()
+	float NewMaxWalkSpeed = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Movement System")
+	FALSMovementSettings CurrentMovementSettings;
+	
+	// Set Movement Curve (Called in every instance)
+	float GetMappedSpeed() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Movement Settings")
+	void SetMovementSettings(FALSMovementSettings NewMovementSettings);
 
 	// Set Max Walking Speed (Called from the owning client)
 	UFUNCTION(BlueprintCallable, Category = "Movement Settings")
-	void SetMaxWalkingSpeed(float NewMaxWalkSpeed);
+	void SetMaxWalkingSpeed(float UpdateMaxWalkSpeed);
 
 	UFUNCTION(Reliable, Server)
-	void Server_SetMaxWalkingSpeed(float NewMaxWalkSpeed);
+	void Server_SetMaxWalkingSpeed(float UpdateMaxWalkSpeed);
 };
