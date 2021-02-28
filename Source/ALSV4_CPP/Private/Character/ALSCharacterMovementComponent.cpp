@@ -8,8 +8,8 @@
 
 #include "Character/ALSCharacterMovementComponent.h"
 #include "Character/ALSBaseCharacter.h"
+
 #include "Curves/CurveVector.h"
-#include "..\..\Public\Character\ALSCharacterMovementComponent.h"
 
 UALSCharacterMovementComponent::UALSCharacterMovementComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

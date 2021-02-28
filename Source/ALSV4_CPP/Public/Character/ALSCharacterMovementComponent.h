@@ -9,6 +9,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Library/ALSCharacterStructLibrary.h"
+
 #include "ALSCharacterMovementComponent.generated.h"
 
 /**
