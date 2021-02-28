@@ -5,7 +5,7 @@
 // Original Author: Jens Bjarne Myhre
 // Contributors:    Doğa Can Yanıkoğlu
 
-#include "Character/AI/ALSAIController.h"
+#include "AI/ALSAIController.h"
 
 AALSAIController::AALSAIController()
 {

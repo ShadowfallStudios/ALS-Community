@@ -3,9 +3,9 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Jens Bjarne Myhre
-// Contributors:    
+// Contributors:    Doğa Can Yanıkoğlu
 
-#include "Character/AI/ALS_BTTask_SetFocusToPlayer.h"
+#include "AI/ALS_BTTask_SetFocusToPlayer.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "AIController.h"
 
