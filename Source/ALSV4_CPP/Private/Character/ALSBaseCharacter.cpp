@@ -991,55 +991,12 @@ void AALSBaseCharacter::UpdateCharacterMovement()
 		SetGait(ActualGait);
 	}
 
-	// Use the allowed gait to update the movement settings.
-	if (bEnableNetworkOptimizations)
-	{
-		// Don't use curves for movement
-		UpdateDynamicMovementSettingsNetworked(AllowedGait);
-	}
-	else
-	{
-		// Use curves for movement
-		UpdateDynamicMovementSettingsStandalone(AllowedGait);
-	}
-}
-
-void AALSBaseCharacter::UpdateDynamicMovementSettingsStandalone(EALSGait AllowedGait)
-{
-	// Get the Current Movement Settings.
-	CurrentMovementSettings = GetTargetMovementSettings();
-	const float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
-
-	// Update the Acceleration, Deceleration, and Ground Friction using the Movement Curve.
-	// This allows for fine control over movement behavior at each speed (May not be suitable for replication).
-	const float MappedSpeed = GetMappedSpeed();
-	const FVector CurveVec = CurrentMovementSettings.MovementCurve->GetVectorValue(MappedSpeed);
+	// Get the Current Movement Settings and pass it through to the movement component.
+	MyCharacterMovementComponent->SetMovementSettings(GetTargetMovementSettings());
 
 	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
+	const float NewMaxSpeed = MyCharacterMovementComponent->CurrentMovementSettings.GetSpeedForGait(AllowedGait);
 	MyCharacterMovementComponent->SetMaxWalkingSpeed(NewMaxSpeed);
-	GetCharacterMovement()->MaxAcceleration = CurveVec.X;
-	GetCharacterMovement()->BrakingDecelerationWalking = CurveVec.Y;
-	GetCharacterMovement()->GroundFriction = CurveVec.Z;
-}
-
-void AALSBaseCharacter::UpdateDynamicMovementSettingsNetworked(EALSGait AllowedGait)
-{
-	// Get the Current Movement Settings.
-	CurrentMovementSettings = GetTargetMovementSettings();
-	const float NewMaxSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
-
-	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
-	if (IsLocallyControlled() || HasAuthority())
-	{
-		if (GetCharacterMovement()->MaxWalkSpeed != NewMaxSpeed)
-		{
-			MyCharacterMovementComponent->SetMaxWalkingSpeed(NewMaxSpeed);
-		}
-	}
-	else
-	{
-		GetCharacterMovement()->MaxWalkSpeed = NewMaxSpeed;
-	}
 }
 
 void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
@@ -1137,29 +1094,6 @@ void AALSBaseCharacter::UpdateInAirRotation(float DeltaTime)
 	}
 }
 
-float AALSBaseCharacter::GetMappedSpeed() const
-{
-	// Map the character's current speed to the configured movement speeds with a range of 0-3,
-	// with 0 = stopped, 1 = the Walk Speed, 2 = the Run Speed, and 3 = the Sprint Speed.
-	// This allows us to vary the movement speeds but still use the mapped range in calculations for consistent results
-
-	const float LocWalkSpeed = CurrentMovementSettings.WalkSpeed;
-	const float LocRunSpeed = CurrentMovementSettings.RunSpeed;
-	const float LocSprintSpeed = CurrentMovementSettings.SprintSpeed;
-
-	if (Speed > LocRunSpeed)
-	{
-		return FMath::GetMappedRangeValueClamped({LocRunSpeed, LocSprintSpeed}, {2.0f, 3.0f}, Speed);
-	}
-
-	if (Speed > LocWalkSpeed)
-	{
-		return FMath::GetMappedRangeValueClamped({LocWalkSpeed, LocRunSpeed}, {1.0f, 2.0f}, Speed);
-	}
-
-	return FMath::GetMappedRangeValueClamped({0.0f, LocWalkSpeed}, {0.0f, 1.0f}, Speed);
-}
-
 EALSGait AALSBaseCharacter::GetAllowedGait() const
 {
 	// Calculate the Allowed Gait. This represents the maximum Gait the character is currently allowed to be in,
@@ -1194,8 +1128,8 @@ EALSGait AALSBaseCharacter::GetActualGait(EALSGait AllowedGait) const
 	// from the desired gait or allowed gait. For instance, if the Allowed Gait becomes walking,
 	// the Actual gait will still be running untill the character decelerates to the walking speed.
 
-	const float LocWalkSpeed = CurrentMovementSettings.WalkSpeed;
-	const float LocRunSpeed = CurrentMovementSettings.RunSpeed;
+	const float LocWalkSpeed = MyCharacterMovementComponent->CurrentMovementSettings.WalkSpeed;
+	const float LocRunSpeed = MyCharacterMovementComponent->CurrentMovementSettings.RunSpeed;
 
 	if (Speed > LocRunSpeed + 10.0f)
 	{
@@ -1230,9 +1164,9 @@ float AALSBaseCharacter::CalculateGroundedRotationRate() const
 	// Using the curve in conjunction with the mapped speed gives you a high level of control over the rotation
 	// rates for each speed. Increase the speed if the camera is rotating quickly for more responsive rotation.
 
-	const float MappedSpeedVal = GetMappedSpeed();
+	const float MappedSpeedVal = MyCharacterMovementComponent->GetMappedSpeed();
 	const float CurveVal =
-		CurrentMovementSettings.RotationRateCurve->GetFloatValue(MappedSpeedVal);
+		MyCharacterMovementComponent->CurrentMovementSettings.RotationRateCurve->GetFloatValue(MappedSpeedVal);
 	const float ClampedAimYawRate = FMath::GetMappedRangeValueClamped({0.0f, 300.0f}, {1.0f, 3.0f}, AimYawRate);
 	return CurveVal * ClampedAimYawRate;
 }
