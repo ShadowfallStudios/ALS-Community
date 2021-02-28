@@ -1,7 +1,7 @@
-# Advanced Locomotion System V4 on C++
-![image](https://github.com/dyanikoglu/ALSV4_CPP/raw/main/Resources/Readme_Content_2.gif)
+# Advanced Locomotion System Community
+![image](https://github.com/dyanikoglu/ALS-Community/raw/main/Resources/Readme_Content_2.gif)
 
-Replicated & optimized C++ port of [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1) for **Unreal Engine 4.26** with additional bug fixes.
+Replicated and optimized community version of [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1) for **Unreal Engine 4.26** with additional bug fixes.
 
 ## Supported Platforms
 - Windows
@@ -10,6 +10,8 @@ Replicated & optimized C++ port of [Advanced Locomotion System V4](https://www.u
 *Mac, Android, IOS, and console builds are not tested and supported at the moment. Use the plugin on those platforms with your own risk.*
 
 ## Features
+- Based on latest marketplace release (V4) of Advanced Locomotion System
+- Fully implemented in C++
 - Full replication support with low bandwidth usage
 - Plugin structure
 - Highly optimized for production
@@ -17,8 +19,8 @@ Replicated & optimized C++ port of [Advanced Locomotion System V4](https://www.u
 - Lots of bug fixes additional to marketplace version
 
 ## Known Issues & Discussion
-- See [Issues](https://github.com/dyanikoglu/ALSV4_CPP/issues) section for list of known issues
-- See [Discussions](https://github.com/dyanikoglu/ALSV4_CPP/discussions) section to discuss anything about the plugin, and ask questions. Please do not open an issue to ask questions about the plugin.
+- See [Issues](https://github.com/dyanikoglu/ALS-Community/issues) section for list of known issues
+- See [Discussions](https://github.com/dyanikoglu/ALS-Community/discussions) section to discuss anything about the plugin, and ask questions. Please do not open an issue to ask questions about the plugin.
 
 ## Setting Up The Plugin
 - **C++ project is a requirement. BP projects are currently not supported.**
@@ -26,7 +28,7 @@ Replicated & optimized C++ port of [Advanced Locomotion System V4](https://www.u
 - Put `Config/DefaultInput.ini` from the plugin folder inside your project's config folder. If your project already have this .ini file, merge it into yours.
 - Regenerate visual studio project files and build your project.
 - Launch the project, and enable plugin content viewer as seen below. This will show contents of the plugin in your content browser:
-![image](https://github.com/dyanikoglu/ALSV4_CPP/raw/main/Resources/Readme_Content_1.png)
+![image](https://github.com/dyanikoglu/ALS-Community/raw/main/Resources/Readme_Content_1.png)
 
 ## License & Contribution
 **Source code** of the plugin is licensed under MIT license, and other developers are encouraged to fork the repository, open issues & pull requests to help the development.

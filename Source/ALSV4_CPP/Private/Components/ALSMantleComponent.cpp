@@ -148,12 +148,15 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 	}
 
 	// Step 1: Trace forward to find a wall / object the character cannot walk on.
+	const FVector& TraceDirection = OwnerCharacter->HasMovementInput()
+		                                ? OwnerCharacter->GetPlayerMovementInput()
+		                                : OwnerCharacter->GetActorForwardVector();
 	const FVector& CapsuleBaseLocation = UALSMathLibrary::GetCapsuleBaseLocation(
 		2.0f, OwnerCharacter->GetCapsuleComponent());
-	FVector TraceStart = CapsuleBaseLocation + OwnerCharacter->GetPlayerMovementInput() * -30.0f;
+	FVector TraceStart = CapsuleBaseLocation + TraceDirection * -30.0f;
 	TraceStart.Z += (TraceSettings.MaxLedgeHeight + TraceSettings.MinLedgeHeight) / 2.0f;
-	const FVector TraceEnd = TraceStart + (OwnerCharacter->GetPlayerMovementInput() * TraceSettings.ReachDistance);
-	const float HalfHeight = 1.0f + ((TraceSettings.MaxLedgeHeight - TraceSettings.MinLedgeHeight) / 2.0f);
+	const FVector TraceEnd = TraceStart + TraceDirection * TraceSettings.ReachDistance;
+	const float HalfHeight = 1.0f + (TraceSettings.MaxLedgeHeight - TraceSettings.MinLedgeHeight) / 2.0f;
 
 	UWorld* World = GetWorld();
 	check(World);
@@ -363,6 +366,7 @@ void UALSMantleComponent::OnOwnerJumpInput()
 		}
 		else if (OwnerCharacter->GetMovementState() == EALSMovementState::InAir)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("A"));
 			MantleCheck(FallingTraceSettings);
 		}
 	}
