@@ -99,7 +99,7 @@ FVector AALSCharacter::GetFirstPersonCameraTarget()
 	return GetMesh()->GetSocketLocation(TEXT("FP_Camera"));
 }
 
-void AALSCharacter::OnOverlayStateChanged(EALSOverlayState PreviousState)
+void AALSCharacter::OnOverlayStateChanged(uint8 PreviousState)
 {
 	Super::OnOverlayStateChanged(PreviousState);
 	UpdateHeldObject();

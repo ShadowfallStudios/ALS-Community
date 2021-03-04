@@ -49,7 +49,7 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	virtual void OnOverlayStateChanged(EALSOverlayState PreviousState) override;
+	virtual void OnOverlayStateChanged(uint8 PreviousState) override;
 
 	/** Implement on BP to update animation states of held objects */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|HeldObject")

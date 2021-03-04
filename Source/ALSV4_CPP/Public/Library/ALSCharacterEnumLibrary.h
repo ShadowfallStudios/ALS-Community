@@ -63,27 +63,6 @@ enum class EALSMovementState : uint8
 };
 
 /**
- * Character overlay state. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
- */
-UENUM(BlueprintType)
-enum class EALSOverlayState : uint8
-{
-	Default,
-	Masculine,
-	Feminine,
-	Injured,
-	HandsTied,
-	Rifle,
-	PistolOneHanded,
-	PistolTwoHanded,
-	Bow,
-	Torch,
-	Binoculars,
-	Box,
-	Barrel
-};
-
-/**
  * Character rotation mode. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
  */
 UENUM(BlueprintType)

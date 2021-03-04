@@ -196,7 +196,7 @@ public:
 	FALSStance Stance = EALSStance::Standing;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information")
-	FALSOverlayState OverlayState = EALSOverlayState::Default;
+	uint8 OverlayState;
 protected:
 	/** Anim Graph - Grounded */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded", Meta = (
