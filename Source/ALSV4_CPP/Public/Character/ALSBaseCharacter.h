@@ -630,7 +630,4 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ALS|Essential Information")
 		bool IsMale = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|State Values")
-		bool PlayRattle = false;
 };

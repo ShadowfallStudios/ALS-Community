@@ -39,8 +39,7 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 		TArray<AActor*> ActorsToIgnore;
 
 		
-		int32 SurfaceIndex = 0;
-		;
+		int32 SurfaceIndex = -1;
 
 		if (PawnOwner == nullptr || SpawnedAudio == nullptr)
 		{
@@ -70,7 +69,6 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 			SpawnedAudio->SetIntParameter(FName(TEXT("FootstepType")), static_cast<int32>(FootstepType));
 			SpawnedAudio->SetIntParameter(FName(TEXT("SurfaceType")), SurfaceIndex);
 			SpawnedAudio->SetBoolParameter(FName(TEXT("IsMale")), static_cast<bool>(Character->IsMale));
-			SpawnedAudio->SetBoolParameter(FName(TEXT("PlayRattle")), static_cast<bool>(Character->PlayRattle));
 			SpawnedAudio->SetBoolParameter(FName(TEXT("PlayStep")), static_cast<bool>(PlayStep));
 			SpawnedAudio->SetBoolParameter(FName(TEXT("PlayVoice")), static_cast<bool>(PlayVoice));
 
