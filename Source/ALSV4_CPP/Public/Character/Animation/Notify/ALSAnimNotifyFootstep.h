@@ -11,7 +11,10 @@
 #include "CoreMinimal.h"
 #include "Runtime/Engine/Classes/Sound/SoundBase.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
+#include "Character/ALSBaseCharacter.h"
 #include "Library/ALSCharacterEnumLibrary.h"
+
+#include "Containers/Array.h"
 
 #include "ALSAnimNotifyFootstep.generated.h"
 
@@ -38,6 +41,12 @@ public:
 	EALSFootstepType FootstepType = EALSFootstepType::Step;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
+	bool PlayStep = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
+	bool PlayVoice = (FootstepType == EALSFootstepType::Land || FootstepType == EALSFootstepType::Jump) ? true : false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
 	float VolumeMultiplier = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
@@ -45,4 +54,5 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
 	bool bOverrideMaskCurve = false;
+
 };

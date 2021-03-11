@@ -7,10 +7,13 @@
 
 
 #include "Character/Animation/Notify/ALSAnimNotifyFootstep.h"
-
-
+#include "Math/Vector.h"
+#include "Character/ALSCharacter.h"
+#include "Character/ALSBaseCharacter.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Engine/World.h"
 
 void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
@@ -28,9 +31,50 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 		                                                                     FVector::ZeroVector, FRotator::ZeroRotator,
 		                                                                     EAttachLocation::Type::KeepRelativeOffset,
 		                                                                     true, FinalVolMult, PitchMultiplier);
+		UAnimInstance* CurrentAnimInstance = MeshComp->GetAnimInstance();
+		APawn* PawnOwner = CurrentAnimInstance->TryGetPawnOwner();
+		
+		FHitResult StepHit;
+		UWorld* World = GetWorld();
+		TArray<AActor*> ActorsToIgnore;
+
+		
+		int32 SurfaceIndex = 0;
+		;
+
+		if (PawnOwner == nullptr || SpawnedAudio == nullptr)
+		{
+			return;
+		}
+		AALSCharacter* Character = static_cast<AALSCharacter*>(PawnOwner);
+
+		const FVector TraceStart = SpawnedAudio->GetComponentLocation() + FVector(0,0,50);
+		const FVector TraceEnd = (TraceStart - FVector(0, 0, 100));
+		
+		UKismetSystemLibrary::LineTraceSingle(SpawnedAudio, TraceStart, TraceEnd, ETraceTypeQuery::TraceTypeQuery4, true, ActorsToIgnore, GIsPlayInEditorWorld ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None, StepHit, true, FLinearColor::Red, FLinearColor::Green, 5.0f);
+
+		
+		if(StepHit.bBlockingHit)
+		if (StepHit.PhysMaterial != nullptr)
+		{
+			UPhysicalMaterial* PhysMat = StepHit.PhysMaterial.Get();
+
+			SurfaceIndex = static_cast<int32>(PhysMat->SurfaceType);
+		}
+		
+		
+
+
 		if (SpawnedAudio)
 		{
 			SpawnedAudio->SetIntParameter(FName(TEXT("FootstepType")), static_cast<int32>(FootstepType));
+			SpawnedAudio->SetIntParameter(FName(TEXT("SurfaceType")), SurfaceIndex);
+			SpawnedAudio->SetBoolParameter(FName(TEXT("IsMale")), static_cast<bool>(Character->IsMale));
+			SpawnedAudio->SetBoolParameter(FName(TEXT("PlayRattle")), static_cast<bool>(Character->PlayRattle));
+			SpawnedAudio->SetBoolParameter(FName(TEXT("PlayStep")), static_cast<bool>(PlayStep));
+			SpawnedAudio->SetBoolParameter(FName(TEXT("PlayVoice")), static_cast<bool>(PlayVoice));
+
+
 		}
 	}
 }

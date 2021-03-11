@@ -506,6 +506,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
 	float AimYawRate = 0.0f;
 
+
 	/** Replicated Essential Information*/
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Essential Information")
@@ -625,4 +626,11 @@ protected:
 
 	/** We won't use curve based movement and a few other features on networked games */
 	bool bEnableNetworkOptimizations = false;
+public:
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ALS|Essential Information")
+		bool IsMale = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|State Values")
+		bool PlayRattle = false;
 };
