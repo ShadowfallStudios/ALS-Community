@@ -50,7 +50,7 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 		const FVector TraceStart = SpawnedAudio->GetComponentLocation() + FVector(0,0,50);
 		const FVector TraceEnd = (TraceStart - FVector(0, 0, 100));
 		
-		UKismetSystemLibrary::LineTraceSingle(SpawnedAudio, TraceStart, TraceEnd, ETraceTypeQuery::TraceTypeQuery4, true, ActorsToIgnore, GIsPlayInEditorWorld ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None, StepHit, true, FLinearColor::Red, FLinearColor::Green, 5.0f);
+		UKismetSystemLibrary::LineTraceSingle(SpawnedAudio, TraceStart, TraceEnd, ETraceTypeQuery::TraceTypeQuery4, true, ActorsToIgnore, EDrawDebugTrace::None, StepHit, true, FLinearColor::Red, FLinearColor::Green, 5.0f);
 
 		
 		if(StepHit.bBlockingHit)
@@ -68,9 +68,9 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 		{
 			SpawnedAudio->SetIntParameter(FName(TEXT("FootstepType")), static_cast<int32>(FootstepType));
 			SpawnedAudio->SetIntParameter(FName(TEXT("SurfaceType")), SurfaceIndex);
-			SpawnedAudio->SetBoolParameter(FName(TEXT("IsMale")), static_cast<bool>(Character->IsMale));
-			SpawnedAudio->SetBoolParameter(FName(TEXT("PlayStep")), static_cast<bool>(PlayStep));
-			SpawnedAudio->SetBoolParameter(FName(TEXT("PlayVoice")), static_cast<bool>(PlayVoice));
+			SpawnedAudio->SetBoolParameter(FName(TEXT("IsMale")), static_cast<bool>(Character->bIsMale));
+			SpawnedAudio->SetBoolParameter(FName(TEXT("PlayStep")), static_cast<bool>(bPlayStep));
+			SpawnedAudio->SetBoolParameter(FName(TEXT("PlayVoice")), static_cast<bool>(bPlayVoice));
 
 
 		}

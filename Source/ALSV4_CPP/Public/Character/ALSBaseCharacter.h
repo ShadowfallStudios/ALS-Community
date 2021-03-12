@@ -629,5 +629,5 @@ protected:
 public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ALS|Essential Information")
-		bool IsMale = true;
+	bool bIsMale = true;
 };

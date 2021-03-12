@@ -41,10 +41,10 @@ public:
 	EALSFootstepType FootstepType = EALSFootstepType::Step;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	bool PlayStep = true;
+	bool bPlayStep = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	bool PlayVoice = (FootstepType == EALSFootstepType::Land || FootstepType == EALSFootstepType::Jump) ? true : false;
+	bool bPlayVoice = (FootstepType == EALSFootstepType::Land || FootstepType == EALSFootstepType::Jump) ? true : false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
 	float VolumeMultiplier = 1.0f;
