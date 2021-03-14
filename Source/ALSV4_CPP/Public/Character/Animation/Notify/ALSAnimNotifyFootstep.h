@@ -44,7 +44,7 @@ public:
 	TEnumAsByte<EDrawDebugTrace::Type> DrawDebugType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trace")
-	float TraceLength = 20.0f;
+	float TraceLength = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
 	bool bMirrorDecalX = false;
