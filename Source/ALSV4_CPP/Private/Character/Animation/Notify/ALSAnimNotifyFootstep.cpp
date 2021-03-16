@@ -42,67 +42,64 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 
 			const EPhysicalSurface SurfaceType = Hit.PhysMaterial.Get()->SurfaceType;
 
-			//const FRotator NormalRotation = UKismetMathLibrary::MakeRotFromX(Hit.Normal);
-				
-            for (auto& Data : HitDataTable->GetRowMap())
+			TArray<FALSHitFX*> HitFXRows;
+			HitDataTable->GetAllRows<FALSHitFX>(FString(),HitFXRows);
+            for (auto& HitFX : HitFXRows)
             {
-                if (FALSHitFX* HitFX = reinterpret_cast<FALSHitFX*>(Data.Value))
+                if (SurfaceType == HitFX->SurfaceType)
                 {
-                	if (SurfaceType == HitFX->SurfaceType)
+                	if (HitFX->Sound)
                 	{
-                		if (HitFX->Sound)
-                		{
-                			UAudioComponent* SpawnedSound = nullptr;
-  
-                			const float MaskCurveValue = MeshComp->GetAnimInstance()->GetCurveValue(FName(TEXT("Mask_FootstepSound")));
-                			const float FinalVolMult = bOverrideMaskCurve ? VolumeMultiplier : VolumeMultiplier * (1.0f - MaskCurveValue);
-                			
-                			switch (HitFX->SoundSpawnType)
-                			{
-                			case EALSSpawnType::Location:
-                				SpawnedSound = UGameplayStatics::SpawnSoundAtLocation(World,HitFX->Sound,Hit.Location + HitFX->SoundLocationOffset,
-                					 HitFX->SoundRotationOffset,FinalVolMult,PitchMultiplier);
-                				break;
-  
-                			case EALSSpawnType::Attached:
-                				 SpawnedSound = UGameplayStatics::SpawnSoundAttached(HitFX->Sound, MeshComp, FootSocketName,HitFX->SoundLocationOffset,
-                				 	HitFX->SoundRotationOffset,HitFX->SoundAttachmentType,true, FinalVolMult, PitchMultiplier);
-                				
-                				break;
-                			}
-                			if (SpawnedSound)
-                			{
-                				SpawnedSound->SetIntParameter(SoundParameterName, static_cast<int32>(FootstepType));
-                			}
-                		}
-  
-                        if (HitFX->NiagaraSystem)
-                        {
-                        	UNiagaraComponent* SpawnedParticle = nullptr;
-	                        switch (HitFX->NiagaraSpawnType)
-                        	{
-	                        case EALSSpawnType::Location:
-	                        	SpawnedParticle = UNiagaraFunctionLibrary::SpawnSystemAtLocation(World,HitFX->NiagaraSystem,Hit.Location + HitFX->NiagaraLocationOffset,FootRotation + HitFX->NiagaraRotationOffset);
-	                        		break;
-  
-	                        case EALSSpawnType::Attached:
-	                        	SpawnedParticle = UNiagaraFunctionLibrary::SpawnSystemAttached(HitFX->NiagaraSystem,MeshComp,FootSocketName,HitFX->NiagaraLocationOffset,
-	                        		HitFX->NiagaraRotationOffset,HitFX->NiagaraAttachmentType,true);
-	                        		break;
-	                        }
-                        }
-  
-                        if (HitFX->DecalMaterial)
-                        {
-	                        const FVector DecalSize = FVector(bMirrorDecalX ? -HitFX->DecalSize.X : HitFX->DecalSize.X,bMirrorDecalY ? -HitFX->DecalSize.Y : HitFX->DecalSize.Y,
-	                        	bMirrorDecalZ ? -HitFX->DecalSize.Z : HitFX->DecalSize.Z);
-                        	
-                        	UDecalComponent* SpawnedDecal = UGameplayStatics::SpawnDecalAtLocation(World,HitFX->DecalMaterial,DecalSize,Hit.Location + HitFX->DecalLocationOffset,
-                        		FootRotation + HitFX->DecalRotationOffset,HitFX->DecalLifeSpan);
-                        }
+                		UAudioComponent* SpawnedSound = nullptr;
+
+                		const float MaskCurveValue = MeshComp->GetAnimInstance()->GetCurveValue(FName(TEXT("Mask_FootstepSound")));
+                		const float FinalVolMult = bOverrideMaskCurve ? VolumeMultiplier : VolumeMultiplier * (1.0f - MaskCurveValue);
                 		
-                		return;
+                		switch (HitFX->SoundSpawnType)
+                		{
+                		case EALSSpawnType::Location:
+                			SpawnedSound = UGameplayStatics::SpawnSoundAtLocation(World,HitFX->Sound,Hit.Location + HitFX->SoundLocationOffset,
+                                 HitFX->SoundRotationOffset,FinalVolMult,PitchMultiplier);
+                			break;
+
+                		case EALSSpawnType::Attached:
+                			SpawnedSound = UGameplayStatics::SpawnSoundAttached(HitFX->Sound, MeshComp, FootSocketName,HitFX->SoundLocationOffset,
+                                HitFX->SoundRotationOffset,HitFX->SoundAttachmentType,true, FinalVolMult, PitchMultiplier);
+                			
+                			break;
+                		}
+                		if (SpawnedSound)
+                		{
+                			SpawnedSound->SetIntParameter(SoundParameterName, static_cast<int32>(FootstepType));
+                		}
                 	}
+
+                	if (HitFX->NiagaraSystem)
+                	{
+                		UNiagaraComponent* SpawnedParticle = nullptr;
+                		switch (HitFX->NiagaraSpawnType)
+                		{
+                		case EALSSpawnType::Location:
+                			SpawnedParticle = UNiagaraFunctionLibrary::SpawnSystemAtLocation(World,HitFX->NiagaraSystem,Hit.Location + HitFX->NiagaraLocationOffset,FootRotation + HitFX->NiagaraRotationOffset);
+                			break;
+
+                		case EALSSpawnType::Attached:
+                			SpawnedParticle = UNiagaraFunctionLibrary::SpawnSystemAttached(HitFX->NiagaraSystem,MeshComp,FootSocketName,HitFX->NiagaraLocationOffset,
+                                HitFX->NiagaraRotationOffset,HitFX->NiagaraAttachmentType,true);
+                			break;
+                		}
+                	}
+
+                	if (HitFX->DecalMaterial)
+                	{
+                		const FVector DecalSize = FVector(bMirrorDecalX ? -HitFX->DecalSize.X : HitFX->DecalSize.X,bMirrorDecalY ? -HitFX->DecalSize.Y : HitFX->DecalSize.Y,
+                            bMirrorDecalZ ? -HitFX->DecalSize.Z : HitFX->DecalSize.Z);
+                        
+                		UDecalComponent* SpawnedDecal = UGameplayStatics::SpawnDecalAtLocation(World,HitFX->DecalMaterial,DecalSize,Hit.Location + HitFX->DecalLocationOffset,
+                            FootRotation + HitFX->DecalRotationOffset,HitFX->DecalLifeSpan);
+                	}
+                	
+                	return;
                 }
             }
 		}
