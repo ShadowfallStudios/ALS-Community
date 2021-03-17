@@ -14,10 +14,10 @@
 #include "Character/Animation/ALSPlayerCameraBehavior.h"
 #include "Kismet/GameplayStatics.h"
 
-bool UALSDebugComponent::bDebugView;
-bool UALSDebugComponent::bShowTraces;
-bool UALSDebugComponent::bShowDebugShapes;
-bool UALSDebugComponent::bShowLayerColors;
+bool UALSDebugComponent::bDebugView = false;
+bool UALSDebugComponent::bShowTraces = false;
+bool UALSDebugComponent::bShowDebugShapes = false;
+bool UALSDebugComponent::bShowLayerColors = false;
 
 UALSDebugComponent::UALSDebugComponent()
 {

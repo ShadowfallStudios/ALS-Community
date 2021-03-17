@@ -100,7 +100,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
 	USkeletalMesh* DebugSkeletalMesh = nullptr;
-
+private:
 	static bool bDebugView;
 
 	static bool bShowTraces;
@@ -109,11 +109,10 @@ public:
 
 	static bool bShowLayerColors;
 
-private:
 	bool bNeedsColorReset = false;
 
 	bool bDebugMeshVisible = false;
 
-	UPROPERTY()
 	USkeletalMesh* DefaultSkeletalMesh = nullptr;
 };
+
