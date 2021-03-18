@@ -41,7 +41,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
 	void SetDynamicMaterials();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void ToggleGlobalTimeDilationLocal(float TimeDilation);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
