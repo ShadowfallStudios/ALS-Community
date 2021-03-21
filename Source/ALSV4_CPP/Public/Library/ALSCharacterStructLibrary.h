@@ -275,6 +275,12 @@ struct FALSHitFX : public FTableRowBase
 	UMaterialInterface* DecalMaterial;
 
 	UPROPERTY(EditAnywhere, Category = "Decal")
+	EALSSpawnType DecalSpawnType;
+
+	UPROPERTY(EditAnywhere, Category = "Decal", meta = (EditCondition = "DecalSpawnType == EALSSpawnType::Attached"))
+	TEnumAsByte<EAttachLocation::Type> DecalAttachmentType;
+
+	UPROPERTY(EditAnywhere, Category = "Decal")
 	float DecalLifeSpan = 10.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Decal")

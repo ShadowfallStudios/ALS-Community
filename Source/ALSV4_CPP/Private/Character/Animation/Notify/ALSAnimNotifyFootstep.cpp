@@ -84,7 +84,7 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
             if (bSpawnNiagara && HitFX->NiagaraSystem)
             {
                 UNiagaraComponent* SpawnedParticle = nullptr;
-                FVector Location = Hit.Location + MeshOwner->GetTransform().TransformVector(HitFX->DecalLocationOffset);
+                const FVector Location = Hit.Location + MeshOwner->GetTransform().TransformVector(HitFX->DecalLocationOffset);
 
                 switch (HitFX->NiagaraSpawnType)
                 {
@@ -101,13 +101,23 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 
             if (bSpawnDecal && HitFX->DecalMaterial)
             {
-                FVector Location = Hit.Location + MeshOwner->GetTransform().TransformVector(HitFX->DecalLocationOffset);
+                const FVector Location = Hit.Location + MeshOwner->GetTransform().TransformVector(HitFX->DecalLocationOffset);
 
                 const FVector DecalSize = FVector(bMirrorDecalX ? -HitFX->DecalSize.X : HitFX->DecalSize.X, bMirrorDecalY ? -HitFX->DecalSize.Y : HitFX->DecalSize.Y,
                     bMirrorDecalZ ? -HitFX->DecalSize.Z : HitFX->DecalSize.Z);
 
-                UDecalComponent* SpawnedDecal = UGameplayStatics::SpawnDecalAtLocation(World, HitFX->DecalMaterial, DecalSize, Location,
-                    FootRotation + HitFX->DecalRotationOffset, HitFX->DecalLifeSpan);
+                UDecalComponent* SpawnedDecal = nullptr;
+                switch (HitFX->DecalSpawnType)
+                {
+                case EALSSpawnType::Location:
+                    SpawnedDecal = UGameplayStatics::SpawnDecalAtLocation(World, HitFX->DecalMaterial, DecalSize, Location, FootRotation + HitFX->DecalRotationOffset, HitFX->DecalLifeSpan);
+                    break;
+
+                case EALSSpawnType::Attached:
+                    SpawnedDecal = UGameplayStatics::SpawnDecalAttached(HitFX->DecalMaterial, DecalSize, Hit.Component.Get(), NAME_None, Location,
+                        FootRotation + HitFX->DecalRotationOffset, HitFX->DecalAttachmentType, HitFX->DecalLifeSpan);
+                    break;
+                }
             }
         }
     }
