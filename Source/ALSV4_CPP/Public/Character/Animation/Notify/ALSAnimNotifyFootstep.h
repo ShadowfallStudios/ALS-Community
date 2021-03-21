@@ -45,6 +45,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trace")
 	float TraceLength = 50.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
+    bool bSpawnDecal = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
 	bool bMirrorDecalX = false;
@@ -54,6 +57,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
 	bool bMirrorDecalZ = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	bool bSpawnSound = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	FName SoundParameterName = FName(TEXT("FootstepType"));
@@ -69,5 +75,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	float PitchMultiplier = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Niagara")
+	bool bSpawnNiagara = true;
 	
 };

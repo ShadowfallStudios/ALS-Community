@@ -55,7 +55,7 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
                 return;
             }
 
-            if (HitFX->Sound)
+            if (bSpawnSound && HitFX->Sound)
             {
                 UAudioComponent* SpawnedSound = nullptr;
 
@@ -81,7 +81,7 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
                 }
             }
 
-            if (HitFX->NiagaraSystem)
+            if (bSpawnNiagara && HitFX->NiagaraSystem)
             {
                 UNiagaraComponent* SpawnedParticle = nullptr;
                 FVector Location = Hit.Location + MeshOwner->GetTransform().TransformVector(HitFX->DecalLocationOffset);
@@ -99,7 +99,7 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
                 }
             }
 
-            if (HitFX->DecalMaterial)
+            if (bSpawnDecal && HitFX->DecalMaterial)
             {
                 FVector Location = Hit.Location + MeshOwner->GetTransform().TransformVector(HitFX->DecalLocationOffset);
 
