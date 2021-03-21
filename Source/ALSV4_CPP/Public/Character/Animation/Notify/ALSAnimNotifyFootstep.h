@@ -64,10 +64,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	bool bOverrideMaskCurve = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound", meta=(EditCondition= bOverrideMaskCurve))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	float VolumeMultiplier = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound", meta=(EditCondition= bOverrideMaskCurve))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	float PitchMultiplier = 1.0f;
 	
 };
