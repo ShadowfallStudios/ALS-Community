@@ -10,9 +10,9 @@
 
 #include "ALSCharacterEnumLibrary.h"
 #include "CoreMinimal.h"
+#include "Library/ALSCharacterStructLibrary.h"
 #include "ALSMathLibrary.generated.h"
 
-struct FALSComponentAndTransform;
 class UCapsuleComponent;
 
 /**
