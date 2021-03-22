@@ -10,9 +10,9 @@
 
 #include "ALSCharacterEnumLibrary.h"
 #include "CoreMinimal.h"
+#include "Library/ALSCharacterStructLibrary.h"
 #include "ALSMathLibrary.generated.h"
 
-struct FALSComponentAndTransform;
 class UCapsuleComponent;
 
 /**
@@ -24,39 +24,39 @@ class ALSV4_CPP_API UALSMathLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "ALS|Math Utils")
 	static FTransform MantleComponentLocalToWorld(const FALSComponentAndTransform& CompAndTransform);
 
 	static TPair<float, float> FixDiagonalGamepadValues(float X, float Y);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "ALS|Math Utils")
 	static FTransform TransfromSub(const FTransform& T1, const FTransform& T2)
 	{
 		return FTransform(T1.GetRotation().Rotator() - T2.GetRotation().Rotator(),
 		                  T1.GetLocation() - T2.GetLocation(), T1.GetScale3D() - T2.GetScale3D());
 	}
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "ALS|Math Utils")
 	static FTransform TransfromAdd(const FTransform& T1, const FTransform& T2)
 	{
 		return FTransform(T1.GetRotation().Rotator() + T2.GetRotation().Rotator(),
 		                  T1.GetLocation() + T2.GetLocation(), T1.GetScale3D() + T2.GetScale3D());
 	}
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "ALS|Math Utils")
 	static FVector GetCapsuleBaseLocation(float ZOffset, UCapsuleComponent* Capsule);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "ALS|Math Utils")
 	static FVector GetCapsuleLocationFromBase(FVector BaseLocation, float ZOffset, UCapsuleComponent* Capsule);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "ALS|Math Utils")
 	static bool CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector TargetLocation, float HeightOffset,
 	                                float RadiusOffset);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "ALS|Math Utils")
 	static bool AngleInRange(float Angle, float MinAngle, float MaxAngle, float Buffer, bool IncreaseBuffer);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "ALS|Math Utils")
 	static EALSMovementDirection CalculateQuadrant(EALSMovementDirection Current, float FRThreshold, float FLThreshold,
 	                                               float BRThreshold,
 	                                               float BLThreshold, float Buffer, float Angle);

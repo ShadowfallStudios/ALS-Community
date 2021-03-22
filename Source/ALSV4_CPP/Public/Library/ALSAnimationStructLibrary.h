@@ -392,10 +392,10 @@ struct FALSAnimTurnInPlace
 	float ElapsedDelayTime = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MinAngleDelay = 0.75f;
+	float MinAngleDelay = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MaxAngleDelay = 0.0f;
+	float MaxAngleDelay = 0.75f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FALSTurnInPlaceAsset N_TurnIP_L90;
