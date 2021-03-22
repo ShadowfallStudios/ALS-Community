@@ -47,7 +47,7 @@ public:
 	float TraceLength = 50.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
-    bool bSpawnDecal = true;
+    bool bSpawnDecal = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
 	bool bMirrorDecalX = false;
@@ -77,6 +77,6 @@ public:
 	float PitchMultiplier = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Niagara")
-	bool bSpawnNiagara = true;
+	bool bSpawnNiagara = false;
 	
 };

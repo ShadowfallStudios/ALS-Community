@@ -257,7 +257,7 @@ struct FALSHitFX : public FTableRowBase
 	TEnumAsByte<EPhysicalSurface> SurfaceType;
 
 	UPROPERTY(EditAnywhere, Category = "Sound")
-	USoundBase* Sound;
+	TSoftObjectPtr<USoundBase> Sound;
 
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	EALSSpawnType SoundSpawnType;
@@ -272,7 +272,7 @@ struct FALSHitFX : public FTableRowBase
 	FRotator SoundRotationOffset;
 
 	UPROPERTY(EditAnywhere, Category = "Decal")
-	UMaterialInterface* DecalMaterial;
+	TSoftObjectPtr<UMaterialInterface> DecalMaterial;
 
 	UPROPERTY(EditAnywhere, Category = "Decal")
 	EALSSpawnType DecalSpawnType;
@@ -293,7 +293,7 @@ struct FALSHitFX : public FTableRowBase
 	FRotator DecalRotationOffset;
 
 	UPROPERTY(EditAnywhere, Category = "Niagara")
-	UNiagaraSystem* NiagaraSystem;
+	TSoftObjectPtr<class UNiagaraSystem> NiagaraSystem;
 
 	UPROPERTY(EditAnywhere, Category = "Niagara")
 	EALSSpawnType NiagaraSpawnType;
