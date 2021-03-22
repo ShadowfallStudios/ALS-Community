@@ -24,8 +24,15 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"AIModule",
-				"GameplayTasks"
+				"GameplayTasks",
+				"PhysicsCore"
 			]
 		}
-	]
+	],
+  "Plugins": [
+    {
+      "Name": "Niagara",
+      "Enabled": true
+    }
+  ]
 }
