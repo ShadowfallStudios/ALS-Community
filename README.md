@@ -16,6 +16,7 @@ Replicated and optimized community version of [Advanced Locomotion System V4](ht
 - Plugin structure
 - Highly optimized for production
 - Mantling and debugging features are implemented as a separate plug-in/plug-out type actor component to reduce total overhead on base character class
+- Improved footstep behavior with Niagara particle & footstep decal support.
 - Lots of bug fixes additional to marketplace version
 
 ## Known Issues & Discussion
