@@ -45,13 +45,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trace")
 	float TraceLength = 50.0f;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
-    bool bSpawnDecal = false;
+	bool bSpawnDecal = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
 	bool bMirrorDecalX = false;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
 	bool bMirrorDecalY = false;
 
@@ -78,5 +78,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Niagara")
 	bool bSpawnNiagara = false;
-	
 };
