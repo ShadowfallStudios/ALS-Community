@@ -64,6 +64,10 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 			{
 				HitFX = *DefaultResult;
 			}
+			else
+			{
+				return;
+			}
 
 			if (bSpawnSound && HitFX->Sound.LoadSynchronous())
 			{
