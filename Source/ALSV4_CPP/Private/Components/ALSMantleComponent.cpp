@@ -71,7 +71,7 @@ void UALSMantleComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
                                       EALSMantleType MantleType)
 {
-	if (!OwnerCharacter)
+	if (OwnerCharacter == nullptr || MantleLedgeWS.Component == nullptr || MantleTimeline == nullptr)
 	{
 		return;
 	}
