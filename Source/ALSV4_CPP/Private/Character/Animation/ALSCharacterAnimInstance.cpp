@@ -304,7 +304,7 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
 	{
 		UseFootLockCurve = FMath::Abs(GetCurveValue(FName(TEXT("RotationAmount")))) <= 0.001f ||
 			Character->GetLocalRole() != ROLE_AutonomousProxy;
-		FootLockCurveVal = GetCurveValue(FootLockCurve);
+		FootLockCurveVal = GetCurveValue(FootLockCurve) * (1.f / GetSkelMeshComponent()->AnimUpdateRateParams->UpdateRate);
 	}
 	else
 	{
