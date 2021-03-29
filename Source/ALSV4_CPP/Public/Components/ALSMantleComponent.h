@@ -14,7 +14,6 @@
 
 #include "ALSMantleComponent.generated.h"
 
-
 UCLASS(Blueprintable, BlueprintType)
 class ALSV4_CPP_API UALSMantleComponent : public UActorComponent
 {
@@ -24,15 +23,15 @@ public:
 	UALSMantleComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+							   FActorComponentTickFunction *ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
-	bool MantleCheck(const FALSMantleTraceSettings& TraceSettings,
-	                 EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::None);
+	bool MantleCheck(const FALSMantleTraceSettings &TraceSettings,
+					 EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::None);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
-	void MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
-	                 EALSMantleType MantleType);
+	void MantleStart(float MantleHeight, const FALSComponentAndTransform &MantleLedgeWS,
+					 EALSMantleType MantleType);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
 	void MantleUpdate(float BlendIn);
@@ -56,16 +55,16 @@ protected:
 
 	/** Mantling*/
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Mantle System")
-	void Server_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
-	                        EALSMantleType MantleType);
+	void Server_MantleStart(float MantleHeight, const FALSComponentAndTransform &MantleLedgeWS,
+							EALSMantleType MantleType);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Mantle System")
-	void Multicast_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
-	                           EALSMantleType MantleType);
+	void Multicast_MantleStart(float MantleHeight, const FALSComponentAndTransform &MantleLedgeWS,
+							   EALSMantleType MantleType);
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTimelineComponent* MantleTimeline = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Mantle System")
+	UTimelineComponent *MantleTimeline = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
 	FALSMantleTraceSettings GroundedTraceSettings;
@@ -77,7 +76,7 @@ protected:
 	FALSMantleTraceSettings FallingTraceSettings;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
-	UCurveFloat* MantleTimelineCurve;
+	UCurveFloat *MantleTimelineCurve;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Mantle System")
 	FALSMantleParams MantleParams;
@@ -100,5 +99,5 @@ protected:
 
 private:
 	UPROPERTY()
-	AALSBaseCharacter* OwnerCharacter;
+	AALSBaseCharacter *OwnerCharacter;
 };

@@ -3,8 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    
-
+// Contributors:
 
 #pragma once
 
@@ -25,14 +24,13 @@ class ALSV4_CPP_API UALSAnimNotifyFootstep : public UAnimNotify
 {
 	GENERATED_BODY()
 
-	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+	virtual void Notify(USkeletalMeshComponent *MeshComp, UAnimSequenceBase *Animation) override;
 
 	virtual FString GetNotifyName_Implementation() const override;
 
 public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UDataTable* HitDataTable;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
+	UDataTable *HitDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")
 	FName FootSocketName = FName(TEXT("Foot_R"));

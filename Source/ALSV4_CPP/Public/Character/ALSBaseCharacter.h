@@ -5,7 +5,6 @@
 // Original Author: Doğa Can Yanıkoğlu
 // Contributors:    Haziq Fadhil, Drakynfly
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -37,10 +36,10 @@ class ALSV4_CPP_API AALSBaseCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	AALSBaseCharacter(const FObjectInitializer& ObjectInitializer);
+	AALSBaseCharacter(const FObjectInitializer &ObjectInitializer);
 
-	UFUNCTION(BlueprintCallable, Category= "ALS|Movement")
-	FORCEINLINE class UALSCharacterMovementComponent* GetMyMovementComponent() const
+	UFUNCTION(BlueprintCallable, Category = "ALS|Movement")
+	FORCEINLINE class UALSCharacterMovementComponent *GetMyMovementComponent() const
 	{
 		return MyCharacterMovementComponent;
 	}
@@ -51,17 +50,17 @@ public:
 
 	virtual void PreInitializeComponents() override;
 
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(UInputComponent *PlayerInputComponent) override;
 
 	virtual void PostInitializeComponents() override;
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const override;
 
 	/** Ragdoll System */
 
 	/** Implement on BP to get required get up animation according to character's state */
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ALS|Ragdoll System")
-	UAnimMontage* GetGetUpAnimation(bool bRagdollFaceUpState);
+	UAnimMontage *GetGetUpAnimation(bool bRagdollFaceUpState);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Ragdoll System")
 	virtual void RagdollStart();
@@ -151,10 +150,10 @@ public:
 
 	/** Rolling Montage Play Replication*/
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
-	void Server_PlayMontage(UAnimMontage* Montage, float PlayRate);
+	void Server_PlayMontage(UAnimMontage *Montage, float PlayRate);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
-	void Multicast_PlayMontage(UAnimMontage* Montage, float PlayRate);
+	void Multicast_PlayMontage(UAnimMontage *Montage, float PlayRate);
 
 	/** Ragdolling*/
 	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
@@ -229,7 +228,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
 	EALSGait GetAllowedGait() const;
 
-	UFUNCTION(BlueprintCallable, Category = "ALS|Movement States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
 	EALSGait GetActualGait(EALSGait AllowedGait) const;
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
@@ -242,17 +241,17 @@ public:
 
 	/** BP implementable function that called when A Montage starts, e.g. during rolling */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Movement System")
-	void Replicated_PlayMontage(UAnimMontage* Montage, float PlayRate);
-	virtual void Replicated_PlayMontage_Implementation(UAnimMontage* Montage, float PlayRate);
+	void Replicated_PlayMontage(UAnimMontage *Montage, float PlayRate);
+	virtual void Replicated_PlayMontage_Implementation(UAnimMontage *Montage, float PlayRate);
 
 	/** Implement on BP to get required roll animation according to character's state */
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "ALS|Movement System")
-	UAnimMontage* GetRollAnimation();
+	UAnimMontage *GetRollAnimation();
 
 	/** Utility */
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Utility")
-	UALSCharacterAnimInstance* GetMainAnimInstance() { return MainAnimInstance; }
+	UALSCharacterAnimInstance *GetMainAnimInstance() { return MainAnimInstance; }
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Utility")
 	float GetAnimCurveValue(FName CurveName) const;
@@ -266,7 +265,7 @@ public:
 	void SetRightShoulder(bool bNewRightShoulder);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
-	virtual ECollisionChannel GetThirdPersonTraceParams(FVector& TraceOrigin, float& TraceRadius);
+	virtual ECollisionChannel GetThirdPersonTraceParams(FVector &TraceOrigin, float &TraceRadius);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
 	virtual FTransform GetThirdPersonPivotTarget();
@@ -275,10 +274,10 @@ public:
 	virtual FVector GetFirstPersonCameraTarget();
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
-	void GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bool& bRightShoulderOut) const;
+	void GetCameraParameters(float &TPFOVOut, float &FPFOVOut, bool &bRightShoulderOut) const;
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera System")
-	void SetCameraBehavior(UALSPlayerCameraBehavior* CamBeh) { CameraBehavior = CamBeh; }
+	void SetCameraBehavior(UALSPlayerCameraBehavior *CamBeh) { CameraBehavior = CamBeh; }
 
 	/** Essential Information Getters/Setters */
 
@@ -286,7 +285,7 @@ public:
 	FVector GetAcceleration() const { return Acceleration; }
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
-	void SetAcceleration(const FVector& NewAcceleration);
+	void SetAcceleration(const FVector &NewAcceleration);
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	bool IsMoving() const { return bIsMoving; }
@@ -319,7 +318,7 @@ public:
 	void SetAimYawRate(float NewAimYawRate);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
-	void GetControlForwardRightVector(FVector& Forward, FVector& Right) const;
+	void GetControlForwardRightVector(FVector &Forward, FVector &Right) const;
 
 protected:
 	/** Ragdoll System */
@@ -352,7 +351,7 @@ protected:
 
 	virtual void OnJumped_Implementation() override;
 
-	virtual void Landed(const FHitResult& Hit) override;
+	virtual void Landed(const FHitResult &Hit) override;
 
 	void OnLandFrictionReset();
 
@@ -425,7 +424,7 @@ protected:
 protected:
 	/* Custom movement component*/
 	UPROPERTY()
-	UALSCharacterMovementComponent* MyCharacterMovementComponent;
+	UALSCharacterMovementComponent *MyCharacterMovementComponent;
 
 	/** Input */
 
@@ -563,8 +562,7 @@ protected:
 	bool bBreakfallOnLand = true;
 
 	/** If player hits to the ground with an amount of velocity greater than specified value, switch to breakfall state */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Breakfall System", meta = (EditCondition =
-		"bBreakfallOnLand"))
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Breakfall System", meta = (EditCondition = "bBreakfallOnLand"))
 	float BreakfallOnLandVelocity = 600.0f;
 
 	/** Ragdoll System */
@@ -574,8 +572,7 @@ protected:
 	bool bRagdollOnLand = false;
 
 	/** If player hits to the ground with an amount of velocity greater than specified value, switch to ragdoll state */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Ragdoll System", meta = (EditCondition =
-		"bRagdollOnLand"))
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Ragdoll System", meta = (EditCondition = "bRagdollOnLand"))
 	float RagdollOnLandVelocity = 1000.0f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Ragdoll System")
@@ -602,11 +599,11 @@ protected:
 
 	float PreviousAimYaw = 0.0f;
 
-	UPROPERTY(BlueprintReadOnly)
-	UALSCharacterAnimInstance* MainAnimInstance = nullptr;
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Utility")
+	UALSCharacterAnimInstance *MainAnimInstance = nullptr;
 
-	UPROPERTY(BlueprintReadOnly)
-	UALSPlayerCameraBehavior* CameraBehavior;
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Camera")
+	UALSPlayerCameraBehavior *CameraBehavior;
 
 	/** Last time the 'first' crouch/roll button is pressed */
 	float LastStanceInputTime = 0.0f;
