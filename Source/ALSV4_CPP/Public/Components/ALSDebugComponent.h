@@ -23,7 +23,7 @@ public:
 	UALSDebugComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-                               FActorComponentTickFunction* ThisTickFunction) override;
+	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	/** Implemented on BP to update layering colors */
 	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")

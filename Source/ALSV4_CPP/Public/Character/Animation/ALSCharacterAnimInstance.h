@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:
+// Contributors:    
 
 
 #pragma once
@@ -122,8 +122,8 @@ private:
 	/** Foot IK */
 
 	void SetFootLocking(float DeltaSeconds, FName EnableFootIKCurve, FName FootLockCurve, FName IKFootBone,
-                        float& CurFootLockAlpha, bool& UseFootLockCurve,
-                        FVector& CurFootLockLoc, FRotator& CurFootLockRot);
+                          float& CurFootLockAlpha, bool& UseFootLockCurve,
+                          FVector& CurFootLockLoc, FRotator& CurFootLockRot);
 
 	void SetFootLockOffsets(float DeltaSeconds, FVector& LocalLoc, FRotator& LocalRot);
 
@@ -132,7 +132,7 @@ private:
 	void ResetIKOffsets(float DeltaSeconds);
 
 	void SetFootOffsets(float DeltaSeconds, FName EnableFootIKCurve, FName IKFootBone, FName RootBone,
-                        FVector& CurLocationTarget, FVector& CurLocationOffset, FRotator& CurRotationOffset);
+                          FVector& CurLocationTarget, FVector& CurLocationOffset, FRotator& CurRotationOffset);
 
 	/** Grounded */
 
@@ -177,7 +177,7 @@ protected:
 
 	/** Character Information */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information", Meta = (
-		    ShowOnlyInnerProperties))
+		ShowOnlyInnerProperties))
 	FALSAnimCharacterInformation CharacterInformation;
 
 public:
@@ -202,7 +202,7 @@ public:
 protected:
 	/** Anim Graph - Grounded */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded", Meta = (
-		    ShowOnlyInnerProperties))
+		ShowOnlyInnerProperties))
 	FALSAnimGraphGrounded Grounded;
 
 public:
@@ -224,12 +224,12 @@ public:
 protected:
 	/** Anim Graph - In Air */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - In Air", Meta = (
-		    ShowOnlyInnerProperties))
+		ShowOnlyInnerProperties))
 	FALSAnimGraphInAir InAir;
 
 	/** Anim Graph - Aiming Values */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Aiming Values", Meta = (
-		    ShowOnlyInnerProperties))
+		ShowOnlyInnerProperties))
 	FALSAnimGraphAimingValues AimingValues;
 
 public:
@@ -243,17 +243,17 @@ protected:
 
 	/** Anim Graph - Layer Blending */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Layer Blending", Meta = (
-		    ShowOnlyInnerProperties))
+		ShowOnlyInnerProperties))
 	FALSAnimGraphLayerBlending LayerBlendingValues;
 
 	/** Anim Graph - Foot IK */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Foot IK", Meta = (
-		    ShowOnlyInnerProperties))
+		ShowOnlyInnerProperties))
 	FALSAnimGraphFootIK FootIKValues;
 
 	/** Turn In Place */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Turn In Place", Meta = (
-		    ShowOnlyInnerProperties))
+		ShowOnlyInnerProperties))
 	FALSAnimTurnInPlace TurnInPlaceValues;
 
 	/** Rotate In Place */
@@ -263,7 +263,7 @@ protected:
 
 	/** Configuration */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Main Configuration", Meta = (
-		    ShowOnlyInnerProperties))
+		ShowOnlyInnerProperties))
 	FALSAnimConfiguration Config;
 
 	/** Blend Curves */
