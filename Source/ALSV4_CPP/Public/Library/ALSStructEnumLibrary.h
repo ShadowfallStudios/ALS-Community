@@ -12,6 +12,7 @@
 
 #include "ALSStructEnumLibrary.generated.h"
 
+
 USTRUCT(BlueprintType)
 struct FALSMovementState
 {
@@ -43,11 +44,11 @@ public:
 
 	FALSMovementState(const EALSMovementState InitialState) { *this = InitialState; }
 
-	const bool &None() const { return None_; }
-	const bool &Grounded() const { return Grounded_; }
-	const bool &InAir() const { return InAir_; }
-	const bool &Mantling() const { return Mantling_; }
-	const bool &Ragdoll() const { return Ragdoll_; }
+	const bool& None() const { return None_; }
+	const bool& Grounded() const { return Grounded_; }
+	const bool& InAir() const { return InAir_; }
+	const bool& Mantling() const { return Mantling_; }
+	const bool& Ragdoll() const { return Ragdoll_; }
 
 	operator EALSMovementState() const { return State; }
 
@@ -84,8 +85,8 @@ public:
 
 	FALSStance(const EALSStance InitialStance) { *this = InitialStance; }
 
-	const bool &Standing() const { return Standing_; }
-	const bool &Crouching() const { return Crouching_; }
+	const bool& Standing() const { return Standing_; }
+	const bool& Crouching() const { return Crouching_; }
 
 	operator EALSStance() const { return Stance; }
 
@@ -122,9 +123,9 @@ public:
 
 	FALSRotationMode(const EALSRotationMode InitialRotationMode) { *this = InitialRotationMode; }
 
-	const bool &VelocityDirection() const { return VelocityDirection_; }
-	const bool &LookingDirection() const { return LookingDirection_; }
-	const bool &Aiming() const { return Aiming_; }
+	const bool& VelocityDirection() const { return VelocityDirection_; }
+	const bool& LookingDirection() const { return LookingDirection_; }
+	const bool& Aiming() const { return Aiming_; }
 
 	operator EALSRotationMode() const { return RotationMode; }
 
@@ -168,10 +169,10 @@ public:
 		*this = InitialMovementDirection;
 	}
 
-	const bool &Forward() const { return Forward_; }
-	const bool &Right() const { return Right_; }
-	const bool &Left() const { return Left_; }
-	const bool &Backward() const { return Backward_; }
+	const bool& Forward() const { return Forward_; }
+	const bool& Right() const { return Right_; }
+	const bool& Left() const { return Left_; }
+	const bool& Backward() const { return Backward_; }
 
 	operator EALSMovementDirection() const { return MovementDirection; }
 
@@ -216,11 +217,11 @@ public:
 
 	FALSMovementAction(const EALSMovementAction InitialAction) { *this = InitialAction; }
 
-	const bool &None() const { return None_; }
-	const bool &LowMantle() const { return LowMantle_; }
-	const bool &HighMantle() const { return HighMantle_; }
-	const bool &Rolling() const { return Rolling_; }
-	const bool &GettingUp() const { return GettingUp_; }
+	const bool& None() const { return None_; }
+	const bool& LowMantle() const { return LowMantle_; }
+	const bool& HighMantle() const { return HighMantle_; }
+	const bool& Rolling() const { return Rolling_; }
+	const bool& GettingUp() const { return GettingUp_; }
 
 	operator EALSMovementAction() const { return Action; }
 
@@ -260,9 +261,9 @@ public:
 
 	FALSGait(const EALSGait InitialGait) { *this = InitialGait; }
 
-	const bool &Walking() const { return Walking_; }
-	const bool &Running() const { return Running_; }
-	const bool &Sprinting() const { return Sprinting_; }
+	const bool& Walking() const { return Walking_; }
+	const bool& Running() const { return Running_; }
+	const bool& Sprinting() const { return Sprinting_; }
 
 	operator EALSGait() const { return Gait; }
 
@@ -330,19 +331,19 @@ public:
 
 	FALSOverlayState(const EALSOverlayState InitialState) { *this = InitialState; }
 
-	const bool &Default() const { return Default_; }
-	const bool &Masculine() const { return Masculine_; }
-	const bool &Feminine() const { return Feminine_; }
-	const bool &Injured() const { return Injured_; }
-	const bool &HandsTied() const { return HandsTied_; }
-	const bool &Rifle() const { return Rifle_; }
-	const bool &PistolOneHanded() const { return PistolOneHanded_; }
-	const bool &PistolTwoHanded() const { return PistolTwoHanded_; }
-	const bool &Bow() const { return Bow_; }
-	const bool &Torch() const { return Torch_; }
-	const bool &Binoculars() const { return Binoculars_; }
-	const bool &Box() const { return Box_; }
-	const bool &Barrel() const { return Barrel_; }
+	const bool& Default() const { return Default_; }
+	const bool& Masculine() const { return Masculine_; }
+	const bool& Feminine() const { return Feminine_; }
+	const bool& Injured() const { return Injured_; }
+	const bool& HandsTied() const { return HandsTied_; }
+	const bool& Rifle() const { return Rifle_; }
+	const bool& PistolOneHanded() const { return PistolOneHanded_; }
+	const bool& PistolTwoHanded() const { return PistolTwoHanded_; }
+	const bool& Bow() const { return Bow_; }
+	const bool& Torch() const { return Torch_; }
+	const bool& Binoculars() const { return Binoculars_; }
+	const bool& Box() const { return Box_; }
+	const bool& Barrel() const { return Barrel_; }
 
 	operator EALSOverlayState() const { return State; }
 
@@ -387,8 +388,8 @@ public:
 
 	FALSGroundedEntryState(const EALSGroundedEntryState InitialState) { *this = InitialState; }
 
-	const bool &None() const { return None_; }
-	const bool &Roll() const { return Roll_; }
+	const bool& None() const { return None_; }
+	const bool& Roll() const { return Roll_; }
 
 	operator EALSGroundedEntryState() const { return State; }
 

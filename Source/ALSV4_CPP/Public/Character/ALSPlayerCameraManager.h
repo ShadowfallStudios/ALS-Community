@@ -5,6 +5,7 @@
 // Original Author: Doğa Can Yanıkoğlu
 // Contributors:
 
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -25,7 +26,7 @@ public:
 	AALSPlayerCameraManager();
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera")
-	void OnPossess(AALSBaseCharacter *NewCharacter);
+	void OnPossess(AALSBaseCharacter* NewCharacter);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera")
 	float GetCameraBehaviorParam(FName CurveName) const;
@@ -35,21 +36,21 @@ public:
 	void DrawDebugTargets(FVector PivotTargetLocation);
 
 protected:
-	virtual void UpdateViewTargetInternal(FTViewTarget &OutVT, float DeltaTime) override;
+	virtual void UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera")
 	static FVector CalculateAxisIndependentLag(
 		FVector CurrentLocation, FVector TargetLocation, FRotator CameraRotation, FVector LagSpeeds, float DeltaTime);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera")
-	bool CustomCameraBehavior(float DeltaTime, FVector &Location, FRotator &Rotation, float &FOV);
+	bool CustomCameraBehavior(float DeltaTime, FVector& Location, FRotator& Rotation, float& FOV);
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS|Camera")
-	AALSBaseCharacter *ControlledCharacter = nullptr;
+	AALSBaseCharacter* ControlledCharacter = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS|Camera")
-	USkeletalMeshComponent *CameraBehavior = nullptr;
+	USkeletalMeshComponent* CameraBehavior = nullptr;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ALS|Camera")

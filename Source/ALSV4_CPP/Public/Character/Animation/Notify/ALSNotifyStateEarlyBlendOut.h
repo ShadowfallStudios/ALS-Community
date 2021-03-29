@@ -3,8 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    
-
+// Contributors:
 
 #pragma once
 
@@ -22,14 +21,14 @@ class ALSV4_CPP_API UALSNotifyStateEarlyBlendOut : public UAnimNotifyState
 {
 	GENERATED_BODY()
 
-	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-	                        float FrameDeltaTime) override;
+	virtual void NotifyTick(USkeletalMeshComponent *MeshComp, UAnimSequenceBase *Animation,
+							float FrameDeltaTime) override;
 
 	virtual FString GetNotifyName_Implementation() const override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	UAnimMontage* ThisMontage = nullptr;
+	UAnimMontage *ThisMontage = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
 	float BlendOutTime = 0.25f;

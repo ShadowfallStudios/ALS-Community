@@ -5,13 +5,16 @@
 // Original Author: Doğa Can Yanıkoğlu
 // Contributors:
 
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Runtime/Engine/Classes/Animation/AnimSequenceBase.h"
 #include "ALSCharacterEnumLibrary.h"
 
+
 #include "ALSAnimationStructLibrary.generated.h"
+
 
 USTRUCT(BlueprintType)
 struct FALSDynamicMontageParams
@@ -19,7 +22,7 @@ struct FALSDynamicMontageParams
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Dynamic Transition")
-	UAnimSequenceBase *Animation = nullptr;
+	UAnimSequenceBase* Animation = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Dynamic Transition")
 	float BlendInTime = 0.0f;
@@ -70,7 +73,7 @@ struct FALSTurnInPlaceAsset
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Turn In Place")
-	UAnimSequenceBase *Animation = nullptr;
+	UAnimSequenceBase* Animation = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Turn In Place")
 	float AnimatedAngle = 0.0f;

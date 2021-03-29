@@ -5,6 +5,7 @@
 // Original Author: Doğa Can Yanıkoğlu
 // Contributors:
 
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -28,7 +29,7 @@ struct FALSComponentAndTransform
 	FTransform Transform;
 
 	UPROPERTY(EditAnywhere, Category = "ALS|Character Struct Library")
-	class UPrimitiveComponent *Component = nullptr;
+	class UPrimitiveComponent* Component = nullptr;
 };
 
 USTRUCT(BlueprintType)
@@ -91,10 +92,10 @@ struct FALSMantleAsset
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
-	UAnimMontage *AnimMontage = nullptr;
+	UAnimMontage* AnimMontage = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
-	UCurveVector *PositionCorrectionCurve = nullptr;
+	UCurveVector* PositionCorrectionCurve = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
 	FVector StartingOffset;
@@ -124,10 +125,10 @@ struct FALSMantleParams
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
-	UAnimMontage *AnimMontage = nullptr;
+	UAnimMontage* AnimMontage = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
-	UCurveVector *PositionCorrectionCurve = nullptr;
+	UCurveVector* PositionCorrectionCurve = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
 	float StartingPosition = 0.0f;
@@ -175,10 +176,10 @@ struct FALSMovementSettings
 	float SprintSpeed = 0.0f;
 
 	UPROPERTY(EditAnywhere, Category = "ALS|Movement Settings")
-	UCurveVector *MovementCurve = nullptr;
+	UCurveVector* MovementCurve = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "ALS|Movement Settings")
-	UCurveFloat *RotationRateCurve = nullptr;
+	UCurveFloat* RotationRateCurve = nullptr;
 
 	float GetSpeedForGait(const EALSGait Gait) const
 	{
@@ -229,7 +230,7 @@ struct FALSRotateInPlaceAsset
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category = "ALS|Rotation System")
-	UAnimSequenceBase *Animation = nullptr;
+	UAnimSequenceBase* Animation = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "ALS|Rotation System")
 	FName SlotName;

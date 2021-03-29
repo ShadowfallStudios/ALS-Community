@@ -33,10 +33,10 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Animation")
-	void PlayTransition(const FALSDynamicMontageParams &Parameters);
+	void PlayTransition(const FALSDynamicMontageParams& Parameters);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Animation")
-	void PlayTransitionChecked(const FALSDynamicMontageParams &Parameters);
+	void PlayTransitionChecked(const FALSDynamicMontageParams& Parameters);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Animation")
 	void PlayDynamicTransition(float ReTriggerDelay, FALSDynamicMontageParams Parameters);
@@ -90,7 +90,7 @@ public:
 	bool CanDynamicTransition() const;
 
 	/** Return mutable reference of character information to edit them easily inside character class */
-	FALSAnimCharacterInformation &GetCharacterInformationMutable()
+	FALSAnimCharacterInformation& GetCharacterInformationMutable()
 	{
 		return CharacterInformation;
 	}
@@ -121,17 +121,17 @@ private:
 	/** Foot IK */
 
 	void SetFootLocking(float DeltaSeconds, FName EnableFootIKCurve, FName FootLockCurve, FName IKFootBone,
-						float &CurFootLockAlpha, bool &UseFootLockCurve,
-						FVector &CurFootLockLoc, FRotator &CurFootLockRot);
+                    float& CurFootLockAlpha, bool& UseFootLockCurve,
+                    FVector& CurFootLockLoc, FRotator& CurFootLockRot);
 
-	void SetFootLockOffsets(float DeltaSeconds, FVector &LocalLoc, FRotator &LocalRot);
+	void SetFootLockOffsets(float DeltaSeconds, FVector& LocalLoc, FRotator& LocalRot);
 
 	void SetPelvisIKOffset(float DeltaSeconds, FVector FootOffsetLTarget, FVector FootOffsetRTarget);
 
 	void ResetIKOffsets(float DeltaSeconds);
 
 	void SetFootOffsets(float DeltaSeconds, FName EnableFootIKCurve, FName IKFootBone, FName RootBone,
-						FVector &CurLocationTarget, FVector &CurLocationOffset, FRotator &CurRotationOffset);
+                    FVector& CurLocationTarget, FVector& CurLocationOffset, FRotator& CurRotationOffset);
 
 	/** Grounded */
 
@@ -167,12 +167,12 @@ private:
 
 	/** Util */
 
-	float GetAnimCurveClamped(const FName &Name, float Bias, float ClampMin, float ClampMax) const;
+	float GetAnimCurveClamped(const FName& Name, float Bias, float ClampMin, float ClampMax) const;
 
 protected:
 	/** References */
 	UPROPERTY(BlueprintReadOnly, Category = "Read Only Data|Character Information")
-	AALSBaseCharacter *Character = nullptr;
+	AALSBaseCharacter* Character = nullptr;
 
 	/** Character Information */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information", Meta = (ShowOnlyInnerProperties))
@@ -259,34 +259,34 @@ protected:
 	/** Blend Curves */
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	UCurveFloat *DiagonalScaleAmountCurve = nullptr;
+	UCurveFloat* DiagonalScaleAmountCurve = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	UCurveFloat *StrideBlend_N_Walk = nullptr;
+	UCurveFloat* StrideBlend_N_Walk = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	UCurveFloat *StrideBlend_N_Run = nullptr;
+	UCurveFloat* StrideBlend_N_Run = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	UCurveFloat *StrideBlend_C_Walk = nullptr;
+	UCurveFloat* StrideBlend_C_Walk = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	UCurveFloat *LandPredictionCurve = nullptr;
+	UCurveFloat* LandPredictionCurve = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	UCurveFloat *LeanInAirCurve = nullptr;
+	UCurveFloat* LeanInAirCurve = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	UCurveVector *YawOffset_FB = nullptr;
+	UCurveVector* YawOffset_FB = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	UCurveVector *YawOffset_LR = nullptr;
+	UCurveVector* YawOffset_LR = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Dynamic Transition")
-	UAnimSequenceBase *TransitionAnim_R = nullptr;
+	UAnimSequenceBase* TransitionAnim_R = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Dynamic Transition")
-	UAnimSequenceBase *TransitionAnim_L = nullptr;
+	UAnimSequenceBase* TransitionAnim_L = nullptr;
 
 private:
 	FTimerHandle OnPivotTimer;
