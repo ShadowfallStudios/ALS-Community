@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:
+// Contributors:    
 
 #pragma once
 
@@ -23,7 +23,7 @@ public:
 	UALSDebugComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-							   FActorComponentTickFunction *ThisTickFunction) override;
+                               FActorComponentTickFunction* ThisTickFunction) override;
 
 	/** Implemented on BP to update layering colors */
 	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")

@@ -5,6 +5,7 @@
 // Original Author: Doğa Can Yanıkoğlu
 // Contributors:
 
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -121,8 +122,8 @@ private:
 	/** Foot IK */
 
 	void SetFootLocking(float DeltaSeconds, FName EnableFootIKCurve, FName FootLockCurve, FName IKFootBone,
-                    float& CurFootLockAlpha, bool& UseFootLockCurve,
-                    FVector& CurFootLockLoc, FRotator& CurFootLockRot);
+                        float& CurFootLockAlpha, bool& UseFootLockCurve,
+                        FVector& CurFootLockLoc, FRotator& CurFootLockRot);
 
 	void SetFootLockOffsets(float DeltaSeconds, FVector& LocalLoc, FRotator& LocalRot);
 
@@ -131,7 +132,7 @@ private:
 	void ResetIKOffsets(float DeltaSeconds);
 
 	void SetFootOffsets(float DeltaSeconds, FName EnableFootIKCurve, FName IKFootBone, FName RootBone,
-                    FVector& CurLocationTarget, FVector& CurLocationOffset, FRotator& CurRotationOffset);
+                        FVector& CurLocationTarget, FVector& CurLocationOffset, FRotator& CurRotationOffset);
 
 	/** Grounded */
 
@@ -175,7 +176,8 @@ protected:
 	AALSBaseCharacter* Character = nullptr;
 
 	/** Character Information */
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information", Meta = (
+		    ShowOnlyInnerProperties))
 	FALSAnimCharacterInformation CharacterInformation;
 
 public:
@@ -199,7 +201,8 @@ public:
 
 protected:
 	/** Anim Graph - Grounded */
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded", Meta = (
+		    ShowOnlyInnerProperties))
 	FALSAnimGraphGrounded Grounded;
 
 public:
@@ -220,11 +223,13 @@ public:
 
 protected:
 	/** Anim Graph - In Air */
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - In Air", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - In Air", Meta = (
+		    ShowOnlyInnerProperties))
 	FALSAnimGraphInAir InAir;
 
 	/** Anim Graph - Aiming Values */
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Aiming Values", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Aiming Values", Meta = (
+		    ShowOnlyInnerProperties))
 	FALSAnimGraphAimingValues AimingValues;
 
 public:
@@ -237,23 +242,28 @@ protected:
 	float FlailRate = 0.0f;
 
 	/** Anim Graph - Layer Blending */
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Layer Blending", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Layer Blending", Meta = (
+		    ShowOnlyInnerProperties))
 	FALSAnimGraphLayerBlending LayerBlendingValues;
 
 	/** Anim Graph - Foot IK */
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Foot IK", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Foot IK", Meta = (
+		    ShowOnlyInnerProperties))
 	FALSAnimGraphFootIK FootIKValues;
 
 	/** Turn In Place */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Turn In Place", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Turn In Place", Meta = (
+		    ShowOnlyInnerProperties))
 	FALSAnimTurnInPlace TurnInPlaceValues;
 
 	/** Rotate In Place */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Rotate In Place", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Rotate In Place", Meta = (
+		    ShowOnlyInnerProperties))
 	FALSAnimRotateInPlace RotateInPlace;
 
 	/** Configuration */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Main Configuration", Meta = (ShowOnlyInnerProperties))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Main Configuration", Meta = (
+		    ShowOnlyInnerProperties))
 	FALSAnimConfiguration Config;
 
 	/** Blend Curves */
