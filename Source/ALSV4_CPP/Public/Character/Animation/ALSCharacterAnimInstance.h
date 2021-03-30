@@ -122,8 +122,8 @@ private:
 	/** Foot IK */
 
 	void SetFootLocking(float DeltaSeconds, FName EnableFootIKCurve, FName FootLockCurve, FName IKFootBone,
-	                    float& CurFootLockAlpha, bool& UseFootLockCurve,
-	                    FVector& CurFootLockLoc, FRotator& CurFootLockRot);
+                          float& CurFootLockAlpha, bool& UseFootLockCurve,
+                          FVector& CurFootLockLoc, FRotator& CurFootLockRot);
 
 	void SetFootLockOffsets(float DeltaSeconds, FVector& LocalLoc, FRotator& LocalRot);
 
@@ -132,7 +132,7 @@ private:
 	void ResetIKOffsets(float DeltaSeconds);
 
 	void SetFootOffsets(float DeltaSeconds, FName EnableFootIKCurve, FName IKFootBone, FName RootBone,
-	                    FVector& CurLocationTarget, FVector& CurLocationOffset, FRotator& CurRotationOffset);
+                          FVector& CurLocationTarget, FVector& CurLocationOffset, FRotator& CurRotationOffset);
 
 	/** Grounded */
 
@@ -172,13 +172,14 @@ private:
 
 protected:
 	/** References */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Read Only Data|Character Information")
 	AALSBaseCharacter* Character = nullptr;
 
 	/** Character Information */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information", Meta = (
 		ShowOnlyInnerProperties))
 	FALSAnimCharacterInformation CharacterInformation;
+
 public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information")
 	FALSMovementState MovementState = EALSMovementState::None;
@@ -197,11 +198,13 @@ public:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information")
 	FALSOverlayState OverlayState = EALSOverlayState::Default;
+
 protected:
 	/** Anim Graph - Grounded */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded", Meta = (
 		ShowOnlyInnerProperties))
 	FALSAnimGraphGrounded Grounded;
+
 public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded")
 	FALSVelocityBlend VelocityBlend;
@@ -217,6 +220,7 @@ public:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Grounded")
 	FALSMovementDirection MovementDirection = EALSMovementDirection::Forward;
+
 protected:
 	/** Anim Graph - In Air */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - In Air", Meta = (
@@ -227,9 +231,11 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Aiming Values", Meta = (
 		ShowOnlyInnerProperties))
 	FALSAnimGraphAimingValues AimingValues;
+
 public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Aiming Values")
 	FVector2D SmoothedAimingAngle = FVector2D::ZeroVector;
+
 protected:
 	/** Anim Graph - Ragdoll */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Anim Graph - Ragdoll")
@@ -252,7 +258,7 @@ protected:
 
 	/** Rotate In Place */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Rotate In Place", Meta = (
-		ShowOnlyInnerProperties))
+		    ShowOnlyInnerProperties))
 	FALSAnimRotateInPlace RotateInPlace;
 
 	/** Configuration */

@@ -30,8 +30,7 @@ class ALSV4_CPP_API UALSAnimNotifyFootstep : public UAnimNotify
 	virtual FString GetNotifyName_Implementation() const override;
 
 public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
 	UDataTable* HitDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")
