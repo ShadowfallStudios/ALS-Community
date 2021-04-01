@@ -18,7 +18,13 @@
 
 void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	if (!MeshComp || !MeshComp->GetAnimInstance())
+	if (!MeshComp)
+	{
+		return;
+	}
+	
+	AActor* MeshOwner = MeshComp->GetOwner();
+	if (!MeshOwner)
 	{
 		return;
 	}
@@ -26,7 +32,7 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 	if (HitDataTable)
 	{
 		UWorld* World = MeshComp->GetWorld();
-		AActor* MeshOwner = MeshComp->GetOwner();
+		check(World);
 
 		const FVector FootLocation = MeshComp->GetSocketLocation(FootSocketName);
 		const FRotator FootRotation = MeshComp->GetSocketRotation(FootSocketName);
