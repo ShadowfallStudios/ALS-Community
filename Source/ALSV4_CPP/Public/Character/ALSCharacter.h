@@ -56,13 +56,13 @@ protected:
 	void UpdateHeldObjectAnimations();
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Component")
 	USceneComponent* HeldObjectRoot = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Component")
 	USkeletalMeshComponent* SkeletalMesh = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Component")
 	UStaticMeshComponent* StaticMesh = nullptr;
 
 private:
