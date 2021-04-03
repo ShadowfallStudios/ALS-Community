@@ -26,23 +26,24 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
 	bool MantleCheck(const FALSMantleTraceSettings& TraceSettings,
 	                 EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::None);
 
-
+	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
 	void MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
 	                 EALSMantleType MantleType);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
 	void MantleUpdate(float BlendIn);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
 	void MantleEnd();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
 	void OnOwnerJumpInput();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
 	void OnOwnerRagdollStateChanged(bool bRagdollState);
 
 	/** Implement on BP to get correct mantle parameter set according to character state */
@@ -54,11 +55,11 @@ protected:
 	virtual void BeginPlay() override;
 
 	/** Mantling*/
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Mantle System")
 	void Server_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
 	                        EALSMantleType MantleType);
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Character States")
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ALS|Mantle System")
 	void Multicast_MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
 	                           EALSMantleType MantleType);
 

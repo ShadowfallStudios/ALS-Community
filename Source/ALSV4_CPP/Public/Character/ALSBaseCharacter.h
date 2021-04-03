@@ -39,7 +39,7 @@ class ALSV4_CPP_API AALSBaseCharacter : public ACharacter
 public:
 	AALSBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(BlueprintCallable, Category= "Movement")
+	UFUNCTION(BlueprintCallable, Category= "ALS|Movement")
 	FORCEINLINE class UALSCharacterMovementComponent* GetMyMovementComponent() const
 	{
 		return MyCharacterMovementComponent;
@@ -309,7 +309,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	void SetSpeed(float NewSpeed);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	FRotator GetAimingRotation() const { return AimingRotation; }
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
@@ -413,13 +413,13 @@ protected:
 	void LookingDirectionPressedAction();
 
 	/** Replication */
-	UFUNCTION()
+	UFUNCTION(Category = "ALS|Replication")
 	void OnRep_RotationMode(EALSRotationMode PrevRotMode);
 
-	UFUNCTION()
+	UFUNCTION(Category = "ALS|Replication")
 	void OnRep_ViewMode(EALSViewMode PrevViewMode);
 
-	UFUNCTION()
+	UFUNCTION(Category = "ALS|Replication")
 	void OnRep_OverlayState(EALSOverlayState PrevOverlayState);
 
 protected:

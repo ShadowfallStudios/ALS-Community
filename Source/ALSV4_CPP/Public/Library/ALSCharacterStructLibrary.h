@@ -18,6 +18,7 @@ class UCurveVector;
 class UAnimMontage;
 class UAnimSequenceBase;
 class UCurveFloat;
+class UNiagaraSystem;
 
 USTRUCT(BlueprintType)
 struct FALSComponentAndTransform
@@ -245,4 +246,64 @@ struct FALSRotateInPlaceAsset
 
 	UPROPERTY(EditAnywhere)
 	float FastPlayRate = 1.0f;
+};
+
+USTRUCT(BlueprintType)
+struct FALSHitFX : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category = "Surface")
+	TEnumAsByte<EPhysicalSurface> SurfaceType;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	TSoftObjectPtr<USoundBase> Sound;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	EALSSpawnType SoundSpawnType;
+
+	UPROPERTY(EditAnywhere, Category = "Sound", meta = (EditCondition = "SoundSpawnType == EALSSpawnType::Attached"))
+	TEnumAsByte<EAttachLocation::Type> SoundAttachmentType;
+	
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	FVector SoundLocationOffset;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	FRotator SoundRotationOffset;
+
+	UPROPERTY(EditAnywhere, Category = "Decal")
+	TSoftObjectPtr<UMaterialInterface> DecalMaterial;
+
+	UPROPERTY(EditAnywhere, Category = "Decal")
+	EALSSpawnType DecalSpawnType;
+
+	UPROPERTY(EditAnywhere, Category = "Decal", meta = (EditCondition = "DecalSpawnType == EALSSpawnType::Attached"))
+	TEnumAsByte<EAttachLocation::Type> DecalAttachmentType;
+
+	UPROPERTY(EditAnywhere, Category = "Decal")
+	float DecalLifeSpan = 10.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Decal")
+	FVector DecalSize;
+
+	UPROPERTY(EditAnywhere, Category = "Decal")
+	FVector DecalLocationOffset;
+
+	UPROPERTY(EditAnywhere, Category = "Decal")
+	FRotator DecalRotationOffset;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara")
+	TSoftObjectPtr<class UNiagaraSystem> NiagaraSystem;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara")
+	EALSSpawnType NiagaraSpawnType;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara", meta = (EditCondition = "NiagaraSpawnType == EALSSpawnType::Attached"))
+	TEnumAsByte<EAttachLocation::Type> NiagaraAttachmentType;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara")
+	FVector NiagaraLocationOffset;
+
+	UPROPERTY(EditAnywhere, Category = "Niagara")
+	FRotator NiagaraRotationOffset;
 };

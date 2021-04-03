@@ -9,7 +9,7 @@
 #include "Character/ALSCharacter.h"
 
 #include "Engine/StaticMesh.h"
-#include "Character/AI/ALSAIController.h"
+#include "AI/ALSAIController.h"
 #include "Kismet/GameplayStatics.h"
 
 AALSCharacter::AALSCharacter(const FObjectInitializer& ObjectInitializer)

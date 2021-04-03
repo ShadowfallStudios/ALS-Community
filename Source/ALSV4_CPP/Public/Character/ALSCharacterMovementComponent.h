@@ -9,6 +9,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Library/ALSCharacterStructLibrary.h"
+
 #include "ALSCharacterMovementComponent.generated.h"
 
 /**
@@ -73,6 +75,6 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 	UFUNCTION(BlueprintCallable, Category = "Movement Settings")
 	void SetMaxWalkingSpeed(float UpdateMaxWalkSpeed);
 
-	UFUNCTION(Reliable, Server)
+	UFUNCTION(Reliable, Server, Category = "Movement Settings")
 	void Server_SetMaxWalkingSpeed(float UpdateMaxWalkSpeed);
 };

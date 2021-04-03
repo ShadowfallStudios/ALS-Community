@@ -9,11 +9,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Runtime/Engine/Classes/Sound/SoundBase.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "Library/ALSCharacterEnumLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "ALSAnimNotifyFootstep.generated.h"
+
+class UDataTable;
 
 /**
  * Character footstep anim notify
@@ -28,21 +30,52 @@ class ALSV4_CPP_API UALSAnimNotifyFootstep : public UAnimNotify
 	virtual FString GetNotifyName_Implementation() const override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	USoundBase* Sound = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	FName AttachPointName = FName(TEXT("root"));
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UDataTable* HitDataTable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")
+	FName FootSocketName = FName(TEXT("Foot_R"));
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trace")
+	TEnumAsByte<ETraceTypeQuery> TraceChannel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trace")
+	TEnumAsByte<EDrawDebugTrace::Type> DrawDebugType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trace")
+	float TraceLength = 50.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
+	bool bSpawnDecal = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
+	bool bMirrorDecalX = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
+	bool bMirrorDecalY = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decal")
+	bool bMirrorDecalZ = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	bool bSpawnSound = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	FName SoundParameterName = FName(TEXT("FootstepType"));
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	EALSFootstepType FootstepType = EALSFootstepType::Step;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	bool bOverrideMaskCurve = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	float VolumeMultiplier = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	float PitchMultiplier = 1.0f;;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	float PitchMultiplier = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
-	bool bOverrideMaskCurve = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Niagara")
+	bool bSpawnNiagara = false;
 };
