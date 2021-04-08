@@ -366,7 +366,6 @@ void UALSMantleComponent::OnOwnerJumpInput()
 		}
 		else if (OwnerCharacter->GetMovementState() == EALSMovementState::InAir)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("A"));
 			MantleCheck(FallingTraceSettings);
 		}
 	}
