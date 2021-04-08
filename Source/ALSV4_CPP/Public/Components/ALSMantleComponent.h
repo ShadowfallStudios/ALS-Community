@@ -32,7 +32,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
 	void MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
-	                 EALSMantleType MantleType);
+	                EALSMantleType MantleType);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Mantle System")
 	void MantleUpdate(float BlendIn);
@@ -64,7 +64,7 @@ protected:
 	                           EALSMantleType MantleType);
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Mantle System")
 	UTimelineComponent* MantleTimeline = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")

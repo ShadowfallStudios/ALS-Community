@@ -69,13 +69,13 @@ public:
 	bool GetDebugView() { return bDebugView; }
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
-    bool GetShowTraces() { return bShowTraces; }
+	bool GetShowTraces() { return bShowTraces; }
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
-    bool GetShowDebugShapes() { return bShowDebugShapes; }
+	bool GetShowDebugShapes() { return bShowDebugShapes; }
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
-    bool GetShowLayerColors() { return bShowLayerColors; }
+	bool GetShowLayerColors() { return bShowLayerColors; }
 
 protected:
 	virtual void BeginPlay() override;

@@ -39,7 +39,7 @@ class ALSV4_CPP_API AALSBaseCharacter : public ACharacter
 public:
 	AALSBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(BlueprintCallable, Category= "ALS|Movement")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Movement")
 	FORCEINLINE class UALSCharacterMovementComponent* GetMyMovementComponent() const
 	{
 		return MyCharacterMovementComponent;
@@ -229,7 +229,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
 	EALSGait GetAllowedGait() const;
 
-	UFUNCTION(BlueprintCallable, Category = "ALS|Movement States")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
 	EALSGait GetActualGait(EALSGait AllowedGait) const;
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
@@ -564,7 +564,7 @@ protected:
 
 	/** If player hits to the ground with an amount of velocity greater than specified value, switch to breakfall state */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Breakfall System", meta = (EditCondition =
-		"bBreakfallOnLand"))
+	        "bBreakfallOnLand"))
 	float BreakfallOnLandVelocity = 600.0f;
 
 	/** Ragdoll System */
@@ -575,7 +575,7 @@ protected:
 
 	/** If player hits to the ground with an amount of velocity greater than specified value, switch to ragdoll state */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Ragdoll System", meta = (EditCondition =
-		"bRagdollOnLand"))
+	        "bRagdollOnLand"))
 	float RagdollOnLandVelocity = 1000.0f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Ragdoll System")
@@ -602,10 +602,10 @@ protected:
 
 	float PreviousAimYaw = 0.0f;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Utility")
 	UALSCharacterAnimInstance* MainAnimInstance = nullptr;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Camera")
 	UALSPlayerCameraBehavior* CameraBehavior;
 
 	/** Last time the 'first' crouch/roll button is pressed */
