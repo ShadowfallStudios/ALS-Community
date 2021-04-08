@@ -71,7 +71,7 @@ void UALSMantleComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAndTransform& MantleLedgeWS,
                                       EALSMantleType MantleType)
 {
-	if (OwnerCharacter == nullptr || MantleLedgeWS.Component == nullptr || MantleTimeline == nullptr)
+	if (OwnerCharacter == nullptr || !IsValid(MantleLedgeWS.Component) || !IsValid(MantleTimeline))
 	{
 		return;
 	}
@@ -85,7 +85,8 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 	SetComponentTickEnabledAsync(false);
 
 	// Step 1: Get the Mantle Asset and use it to set the new Mantle Params.
-	const FALSMantleAsset& MantleAsset = GetMantleAsset(MantleType, OwnerCharacter->GetOverlayState());
+	const FALSMantleAsset MantleAsset = GetMantleAsset(MantleType, OwnerCharacter->GetOverlayState());
+	check(MantleAsset.PositionCorrectionCurve)
 
 	MantleParams.AnimMontage = MantleAsset.AnimMontage;
 	MantleParams.PositionCorrectionCurve = MantleAsset.PositionCorrectionCurve;
