@@ -177,15 +177,15 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 		if (m_debugComponent && m_debugComponent->GetShowTraces())
 		{
 			UALSDebugComponent::DrawDebugCapsuleTraceSingle(World,
-				                                              TraceStart,
-				                                              TraceEnd,
-				                                              CapsuleCollisionShape,
-				                                              DebugType,
-				                                              bHit,
-				                                              HitResult,
-				                                              FLinearColor::Black,
-				                                              FLinearColor::Black,
-				                                              1.0f);
+			                                                TraceStart,
+			                                                TraceEnd,
+			                                                CapsuleCollisionShape,
+			                                                DebugType,
+			                                                bHit,
+			                                                HitResult,
+			                                                FLinearColor::Black,
+			                                                FLinearColor::Black,
+			                                                1.0f);
 		}
 	}
 
