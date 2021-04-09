@@ -12,7 +12,7 @@
 #include "Components/ActorComponent.h"
 #include "ALSDebugComponent.generated.h"
 
-class AALSCharacter;
+class AALSBaseCharacter;
 
 UCLASS(Blueprintable, BlueprintType)
 class ALSV4_CPP_API UALSDebugComponent : public UActorComponent
@@ -82,12 +82,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	bool GetShowLayerColors() { return bShowLayerColors; }
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
+	void PreviousFocusedDebugCharacter();
+
+	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
+	void NextFocusedDebugCharacter();
+
 protected:
 	virtual void BeginPlay() override;
 
 public:
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
-	AALSCharacter* OwnerCharacter;
+	AALSBaseCharacter* OwnerCharacter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
 	bool bSlomo = false;
@@ -100,6 +106,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
 	USkeletalMesh* DebugSkeletalMesh = nullptr;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	TArray<AALSBaseCharacter*> AvailableDebugCharacters;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	AALSBaseCharacter* DebugFocusCharacter = nullptr;
 private:
 	static bool bDebugView;
 
@@ -114,5 +126,9 @@ private:
 	bool bDebugMeshVisible = false;
 
 	USkeletalMesh* DefaultSkeletalMesh = nullptr;
+	
+	/// Stores the index, which is used to select the next focused debug ALSBaseCharacter.
+	/// If no characters where found during BeginPlay the value should be set to INDEX_NONE.
+	int32 FocusedDebugCharacterIndex = INDEX_NONE;
 };
 

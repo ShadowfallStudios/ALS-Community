@@ -9,7 +9,6 @@
 
 
 #include "Character/ALSBaseCharacter.h"
-#include "Character/ALSCharacter.h"
 #include "Character/ALSPlayerCameraManager.h"
 #include "Character/Animation/ALSPlayerCameraBehavior.h"
 #include "Kismet/GameplayStatics.h"
@@ -82,16 +81,74 @@ void UALSDebugComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
 	bShowLayerColors = false;
 }
 
+void UALSDebugComponent::PreviousFocusedDebugCharacter()
+{
+	if (FocusedDebugCharacterIndex == INDEX_NONE)
+	{ // Return here as no AALSBaseCharacter where found during call of BeginPlay.
+		// Moreover, for savety set also no focused debug character.
+		DebugFocusCharacter = nullptr;
+		return;
+	}
+
+	FocusedDebugCharacterIndex++;
+	if (FocusedDebugCharacterIndex >= AvailableDebugCharacters.Num()) {
+		FocusedDebugCharacterIndex = 0;
+	}
+
+	DebugFocusCharacter = AvailableDebugCharacters[FocusedDebugCharacterIndex];
+}
+
+void UALSDebugComponent::NextFocusedDebugCharacter()
+{
+	if (FocusedDebugCharacterIndex == INDEX_NONE)
+	{ // Return here as no AALSBaseCharacter where found during call of BeginPlay.
+		// Moreover, for savety set also no focused debug character.
+		DebugFocusCharacter = nullptr;
+		return;
+	}
+
+	FocusedDebugCharacterIndex--;
+	if (FocusedDebugCharacterIndex < 0) {
+		FocusedDebugCharacterIndex = AvailableDebugCharacters.Num() - 1;
+	}
+
+	DebugFocusCharacter = AvailableDebugCharacters[FocusedDebugCharacterIndex];
+}
+
 void UALSDebugComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	OwnerCharacter = Cast<AALSCharacter>(GetOwner());
-
+	OwnerCharacter = Cast<AALSBaseCharacter>(GetOwner());
+	DebugFocusCharacter = OwnerCharacter;
 	if (OwnerCharacter)
 	{
 		SetDynamicMaterials();
 		SetResetColors();
+	}
+
+	// Get all ALSBaseCharacter's, which are currently present to show them later in the ALS HUD for debugging purposes.
+	TArray<AActor*> AlsBaseCharacters;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AALSBaseCharacter::StaticClass(), AlsBaseCharacters);
+
+	AvailableDebugCharacters.Empty();
+	if (AlsBaseCharacters.Num() > 0)
+	{
+		AvailableDebugCharacters.Reserve(AlsBaseCharacters.Num());
+		for (auto Character : AlsBaseCharacters)
+		{
+			if (auto AlsBaseCharacter = Cast<AALSBaseCharacter>(Character))
+			{
+				AvailableDebugCharacters.Add(AlsBaseCharacter);
+			}
+		}
+
+		FocusedDebugCharacterIndex = AvailableDebugCharacters.Find(DebugFocusCharacter);
+		if (FocusedDebugCharacterIndex == INDEX_NONE && AvailableDebugCharacters.Num() > 0)
+		{ // seems to be that this component was not attached to and AALSBaseCharacter,
+			// therefore the index will be set to the first element in the array.
+			FocusedDebugCharacterIndex = 0;
+		}
 	}
 }
 
