@@ -61,7 +61,7 @@ void UALSMantleComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (OwnerCharacter->GetMovementState() == EALSMovementState::InAir)
+	if (OwnerCharacter && OwnerCharacter->GetMovementState() == EALSMovementState::InAir)
 	{
 		// Perform a mantle check if falling while movement input is pressed.
 		if (OwnerCharacter->HasMovementInput())
