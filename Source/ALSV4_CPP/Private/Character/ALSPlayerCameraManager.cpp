@@ -12,6 +12,8 @@
 #include "Character/ALSBaseCharacter.h"
 #include "Character/ALSPlayerController.h"
 #include "Character/Animation/ALSPlayerCameraBehavior.h"
+#include "Components/ALSDebugComponent.h"
+
 #include "Kismet/KismetMathLibrary.h"
 
 AALSPlayerCameraManager::AALSPlayerCameraManager()
@@ -45,6 +47,8 @@ void AALSPlayerCameraManager::OnPossess(AALSBaseCharacter* NewCharacter)
 	const FVector& TPSLoc = ControlledCharacter->GetThirdPersonPivotTarget().GetLocation();
 	SetActorLocation(TPSLoc);
 	SmoothedPivotTarget.SetLocation(TPSLoc);
+
+	m_debugComponent = ControlledCharacter->FindComponentByClass<UALSDebugComponent>();
 }
 
 float AALSPlayerCameraManager::GetCameraBehaviorParam(FName CurveName) const
@@ -167,8 +171,23 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 	Params.AddIgnoredActor(ControlledCharacter);
 
 	FHitResult HitResult;
-	World->SweepSingleByChannel(HitResult, TraceOrigin, TargetCameraLocation, FQuat::Identity,
-	                            TraceChannel, FCollisionShape::MakeSphere(TraceRadius), Params);
+	const auto SphereCollisionShape = FCollisionShape::MakeSphere(TraceRadius);
+	const bool bHit = World->SweepSingleByChannel(HitResult, TraceOrigin, TargetCameraLocation, FQuat::Identity,
+	                                              TraceChannel, SphereCollisionShape, Params);
+
+	if (m_debugComponent && m_debugComponent->GetShowTraces())
+	{
+		UALSDebugComponent::DrawDebugSphereTraceSingle(World,
+		                                               TraceOrigin,
+		                                               TargetCameraLocation,
+		                                               SphereCollisionShape,
+		                                               EDrawDebugTrace::Type::ForOneFrame,
+		                                               bHit,
+		                                               HitResult,
+		                                               FLinearColor::Red,
+		                                               FLinearColor::Green,
+		                                               5.0f);
+	}
 
 	if (HitResult.IsValidBlockingHit())
 	{

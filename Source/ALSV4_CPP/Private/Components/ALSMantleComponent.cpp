@@ -10,6 +10,7 @@
 
 #include "Character/ALSCharacter.h"
 #include "Character/Animation/ALSCharacterAnimInstance.h"
+#include "Components/ALSDebugComponent.h"
 #include "Curves/CurveVector.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -48,6 +49,8 @@ void UALSMantleComponent::BeginPlay()
 			OwnerCharacter->JumpPressedDelegate.AddUniqueDynamic(this, &UALSMantleComponent::OnOwnerJumpInput);
 			OwnerCharacter->RagdollStateChangedDelegate.AddUniqueDynamic(
 				this, &UALSMantleComponent::OnOwnerRagdollStateChanged);
+
+			m_debugComponent = OwnerCharacter->FindComponentByClass<UALSDebugComponent>();
 		}
 	}
 }
@@ -63,7 +66,7 @@ void UALSMantleComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		// Perform a mantle check if falling while movement input is pressed.
 		if (OwnerCharacter->HasMovementInput())
 		{
-			MantleCheck(FallingTraceSettings);
+			MantleCheck(FallingTraceSettings, EDrawDebugTrace::Type::ForOneFrame);
 		}
 	}
 }
@@ -166,8 +169,25 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 	Params.AddIgnoredActor(OwnerCharacter);
 
 	FHitResult HitResult;
-	World->SweepSingleByProfile(HitResult, TraceStart, TraceEnd, FQuat::Identity, MantleObjectDetectionProfile,
-	                            FCollisionShape::MakeCapsule(TraceSettings.ForwardTraceRadius, HalfHeight), Params);
+	{
+		const auto CapsuleCollisionShape = FCollisionShape::MakeCapsule(TraceSettings.ForwardTraceRadius, HalfHeight);
+		const bool bHit = World->SweepSingleByProfile(HitResult, TraceStart, TraceEnd, FQuat::Identity, MantleObjectDetectionProfile,
+	                                                  CapsuleCollisionShape, Params);
+
+		if (m_debugComponent && m_debugComponent->GetShowTraces())
+		{
+			UALSDebugComponent::DrawDebugCapsuleTraceSingle(World,
+				                                              TraceStart,
+				                                              TraceEnd,
+				                                              CapsuleCollisionShape,
+				                                              DebugType,
+				                                              bHit,
+				                                              HitResult,
+				                                              FLinearColor::Black,
+				                                              FLinearColor::Black,
+				                                              1.0f);
+		}
+	}
 
 	if (!HitResult.IsValidBlockingHit() || OwnerCharacter->GetCharacterMovement()->IsWalkable(HitResult))
 	{
@@ -195,9 +215,26 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 	FVector DownwardTraceStart = DownwardTraceEnd;
 	DownwardTraceStart.Z += TraceSettings.MaxLedgeHeight + TraceSettings.DownwardTraceRadius + 1.0f;
 
-	World->SweepSingleByChannel(HitResult, DownwardTraceStart, DownwardTraceEnd, FQuat::Identity,
-	                            WalkableSurfaceDetectionChannel, FCollisionShape::MakeSphere(TraceSettings.DownwardTraceRadius),
-	                            Params);
+	{
+		const auto SphereCollisionShape = FCollisionShape::MakeSphere(TraceSettings.DownwardTraceRadius);
+		const bool bHit = World->SweepSingleByChannel(HitResult, DownwardTraceStart, DownwardTraceEnd, FQuat::Identity,
+	                                                  WalkableSurfaceDetectionChannel, SphereCollisionShape,
+	                                                  Params);
+
+		if (m_debugComponent && m_debugComponent->GetShowTraces())
+		{
+			UALSDebugComponent::DrawDebugSphereTraceSingle(World,
+			                                               TraceStart,
+			                                               TraceEnd,
+			                                               SphereCollisionShape,
+			                                               DebugType,
+			                                               bHit,
+			                                               HitResult,
+			                                               FLinearColor::Black,
+			                                               FLinearColor::Black,
+			                                               1.0f);
+		}
+	}
 
 
 	if (!OwnerCharacter->GetCharacterMovement()->IsWalkable(HitResult))
@@ -215,7 +252,7 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 		DownTraceLocation, 2.0f, OwnerCharacter->GetCapsuleComponent());
 	const bool bCapsuleHasRoom = UALSMathLibrary::CapsuleHasRoomCheck(OwnerCharacter->GetCapsuleComponent(),
 	                                                                  CapsuleLocationFBase, 0.0f,
-	                                                                  0.0f);
+	                                                                  0.0f, DebugType, m_debugComponent && m_debugComponent->GetShowTraces());
 
 	if (!bCapsuleHasRoom)
 	{
@@ -362,12 +399,12 @@ void UALSMantleComponent::OnOwnerJumpInput()
 		{
 			if (OwnerCharacter->HasMovementInput())
 			{
-				MantleCheck(GroundedTraceSettings);
+				MantleCheck(GroundedTraceSettings, EDrawDebugTrace::Type::ForDuration);
 			}
 		}
 		else if (OwnerCharacter->GetMovementState() == EALSMovementState::InAir)
 		{
-			MantleCheck(FallingTraceSettings);
+			MantleCheck(FallingTraceSettings, EDrawDebugTrace::Type::ForDuration);
 		}
 	}
 }

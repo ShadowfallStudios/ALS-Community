@@ -3,12 +3,13 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    
+// Contributors:    Achim Turan
 
 #pragma once
 
 #include "CoreMinimal.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "Components/ActorComponent.h"
 #include "ALSDebugComponent.generated.h"
 
@@ -87,6 +88,42 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void NextFocusedDebugCharacter();
+
+	// utility functions to draw trace debug shapes,
+	// which are derived from Engine/Private/KismetTraceUtils.h.
+	// Sadly the functions are private, which was the reason
+	// why there reimplemented here.
+	static void DrawDebugLineTraceSingle(const UWorld* World,
+	                                     const FVector& Start,
+	                                     const FVector& End,
+	                                     EDrawDebugTrace::Type DrawDebugType,
+	                                     bool bHit,
+	                                     const FHitResult& OutHit,
+	                                     FLinearColor TraceColor,
+	                                     FLinearColor TraceHitColor,
+	                                     float DrawTime);
+
+	static void DrawDebugCapsuleTraceSingle(const UWorld* World,
+	                                        const FVector& Start,
+	                                        const FVector& End,
+	                                        const FCollisionShape& CollisionShape,
+	                                        EDrawDebugTrace::Type DrawDebugType,
+	                                        bool bHit,
+	                                        const FHitResult& OutHit,
+	                                        FLinearColor TraceColor,
+	                                        FLinearColor TraceHitColor,
+	                                        float DrawTime);
+
+	static void DrawDebugSphereTraceSingle(const UWorld* World,
+	                                       const FVector& Start,
+	                                       const FVector& End,
+	                                       const FCollisionShape& CollisionShape,
+	                                       EDrawDebugTrace::Type DrawDebugType,
+	                                       bool bHit,
+	                                       const FHitResult& OutHit,
+	                                       FLinearColor TraceColor,
+	                                       FLinearColor TraceHitColor,
+	                                       float DrawTime);
 
 protected:
 	virtual void BeginPlay() override;
