@@ -3,7 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    Haziq Fadhil, Drakynfly
+// Contributors:    Haziq Fadhil, Drakynfly, CanisHelix
 
 
 #include "Character/ALSBaseCharacter.h"
@@ -902,6 +902,7 @@ void AALSBaseCharacter::OnVisibleMeshChanged(const USkeletalMesh* PrevVisibleMes
 	// Update the Skeletal Mesh before we update materials and anim bp variables
 	GetMesh()->SetSkeletalMesh(VisibleMesh);
 
+	// Reset materials to their new mesh defaults
 	if (GetMesh() != nullptr)
 	{
 		for (int32 MaterialIndex = 0; MaterialIndex < GetMesh()->GetNumMaterials(); ++MaterialIndex)
