@@ -78,6 +78,7 @@ void AALSBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME_CONDITION(AALSBaseCharacter, RotationMode, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(AALSBaseCharacter, OverlayState, COND_SkipOwner);
 	DOREPLIFETIME_CONDITION(AALSBaseCharacter, ViewMode, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(AALSBaseCharacter, VisibleMesh, COND_SkipOwner);
 }
 
 void AALSBaseCharacter::OnBreakfall_Implementation()
@@ -377,6 +378,7 @@ void AALSBaseCharacter::SetRotationMode(const EALSRotationMode NewRotationMode)
 	}
 }
 
+
 void AALSBaseCharacter::Server_SetRotationMode_Implementation(EALSRotationMode NewRotationMode)
 {
 	SetRotationMode(NewRotationMode);
@@ -627,6 +629,26 @@ float AALSBaseCharacter::GetAnimCurveValue(FName CurveName) const
 	return 0.0f;
 }
 
+void AALSBaseCharacter::SetVisibleMesh(USkeletalMesh* NewVisibleMesh)
+{
+	if (VisibleMesh != NewVisibleMesh)
+	{
+		const USkeletalMesh* Prev = VisibleMesh;
+		VisibleMesh = NewVisibleMesh;
+		OnVisibleMeshChanged(Prev);
+
+		if (GetLocalRole() != ROLE_Authority)
+		{
+			Server_SetVisibleMesh(NewVisibleMesh);
+		}
+	}
+}
+
+void AALSBaseCharacter::Server_SetVisibleMesh_Implementation(USkeletalMesh* NewVisibleMesh)
+{
+	SetVisibleMesh(NewVisibleMesh);
+}
+
 void AALSBaseCharacter::SetRightShoulder(bool bNewRightShoulder)
 {
 	bRightShoulder = bNewRightShoulder;
@@ -873,6 +895,30 @@ void AALSBaseCharacter::OnViewModeChanged(const EALSViewMode PreviousViewMode)
 void AALSBaseCharacter::OnOverlayStateChanged(const EALSOverlayState PreviousState)
 {
 	MainAnimInstance->OverlayState = OverlayState;
+}
+
+void AALSBaseCharacter::OnVisibleMeshChanged(const USkeletalMesh* PrevVisibleMesh)
+{
+	// Update the Skeletal Mesh before we update materials and anim bp variables
+	GetMesh()->SetSkeletalMesh(VisibleMesh);
+
+	if (GetMesh() != nullptr)
+	{
+		for (int32 MaterialIndex = 0; MaterialIndex < GetMesh()->GetNumMaterials(); ++MaterialIndex)
+		{
+			GetMesh()->SetMaterial(MaterialIndex, nullptr);
+		}
+	}
+
+	// Force set variables in anim bp. This ensures anim instance & character stay synchronized on mesh changes
+	FALSAnimCharacterInformation& AnimData = MainAnimInstance->GetCharacterInformationMutable();
+	MainAnimInstance->Gait = Gait;
+	MainAnimInstance->Stance = Stance;
+	MainAnimInstance->RotationMode = RotationMode;
+	AnimData.ViewMode = ViewMode;
+	MainAnimInstance->OverlayState = OverlayState;
+	AnimData.PrevMovementState = PrevMovementState;
+	MainAnimInstance->MovementState = MovementState;
 }
 
 void AALSBaseCharacter::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
@@ -1462,4 +1508,9 @@ void AALSBaseCharacter::OnRep_ViewMode(EALSViewMode PrevViewMode)
 void AALSBaseCharacter::OnRep_OverlayState(EALSOverlayState PrevOverlayState)
 {
 	OnOverlayStateChanged(PrevOverlayState);
+}
+
+void AALSBaseCharacter::OnRep_VisibleMesh(USkeletalMesh* NewVisibleMesh)
+{
+	OnVisibleMeshChanged(NewVisibleMesh);
 }

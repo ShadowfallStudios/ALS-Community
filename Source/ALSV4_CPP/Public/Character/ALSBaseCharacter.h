@@ -257,6 +257,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Utility")
 	float GetAnimCurveValue(FName CurveName) const;
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Utility")
+	void SetVisibleMesh(USkeletalMesh* NewSkeletalMesh);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Utility")
+    void Server_SetVisibleMesh(USkeletalMesh* NewSkeletalMesh);
+
 	/** Camera System */
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Camera System")
@@ -346,6 +352,8 @@ protected:
 
 	virtual void OnOverlayStateChanged(EALSOverlayState PreviousState);
 
+	virtual void OnVisibleMeshChanged(const USkeletalMesh* PreviousSkeletalMesh);
+
 	virtual void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
 
 	virtual void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
@@ -421,6 +429,9 @@ protected:
 
 	UFUNCTION(Category = "ALS|Replication")
 	void OnRep_OverlayState(EALSOverlayState PrevOverlayState);
+
+	UFUNCTION(Category = "ALS|Replication")
+    void OnRep_VisibleMesh(USkeletalMesh* NewVisibleMesh);
 
 protected:
 	/* Custom movement component*/
@@ -516,6 +527,10 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "ALS|Essential Information")
 	FRotator ReplicatedControlRotation = FRotator::ZeroRotator;
+
+	/** Replicated Skeletal Mesh Information*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Skeletal Mesh", ReplicatedUsing = OnRep_VisibleMesh)
+	USkeletalMesh* VisibleMesh = nullptr;
 
 	/** State Values */
 
