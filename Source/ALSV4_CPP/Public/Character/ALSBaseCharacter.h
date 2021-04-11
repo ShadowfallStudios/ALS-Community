@@ -261,7 +261,7 @@ public:
 	void SetVisibleMesh(USkeletalMesh* NewSkeletalMesh);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Utility")
-    void Server_SetVisibleMesh(USkeletalMesh* NewSkeletalMesh);
+	void Server_SetVisibleMesh(USkeletalMesh* NewSkeletalMesh);
 
 	/** Camera System */
 
@@ -431,7 +431,7 @@ protected:
 	void OnRep_OverlayState(EALSOverlayState PrevOverlayState);
 
 	UFUNCTION(Category = "ALS|Replication")
-    void OnRep_VisibleMesh(USkeletalMesh* NewVisibleMesh);
+	void OnRep_VisibleMesh(USkeletalMesh* NewVisibleMesh);
 
 protected:
 	/* Custom movement component*/
