@@ -268,7 +268,7 @@ void UALSDebugComponent::DrawDebugCapsuleTraceSingle(const UWorld* World,
 	}
 }
 
-void DrawDebugSweptSphere(const UWorld* InWorld,
+static void DrawDebugSweptSphere(const UWorld* InWorld,
 	                        FVector const& Start,
 	                        FVector const& End,
 	                        float Radius,
