@@ -293,7 +293,7 @@ struct FALSHitFX : public FTableRowBase
 	FRotator DecalRotationOffset;
 
 	UPROPERTY(EditAnywhere, Category = "Niagara")
-	TSoftObjectPtr<class UNiagaraSystem> NiagaraSystem;
+	TSoftObjectPtr<UNiagaraSystem> NiagaraSystem;
 
 	UPROPERTY(EditAnywhere, Category = "Niagara")
 	EALSSpawnType NiagaraSpawnType;
@@ -306,4 +306,91 @@ struct FALSHitFX : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, Category = "Niagara")
 	FRotator NiagaraRotationOffset;
+};
+
+USTRUCT(BlueprintType)
+struct FALSGetUpAnimation
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UAnimMontage> FaceUp;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UAnimMontage> FaceDown;
+};
+
+USTRUCT(BlueprintType)
+struct FALSSkeletalMesh
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<USkeletalMesh> SkeletalMesh;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAnimInstance> AnimationInstanceType;
+	
+	UPROPERTY(EditAnywhere)
+	FName SocketName = "VB RHS_ik_hand_gun";
+
+	UPROPERTY(EditAnywhere)
+	FTransform Offset;
+};
+
+USTRUCT(BlueprintType)
+struct FALSStaticMesh
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UStaticMesh> StaticMesh;
+	
+	UPROPERTY(EditAnywhere)
+	FName SocketName = "VB RHS_ik_hand_gun";
+
+	UPROPERTY(EditAnywhere)
+	FTransform Offset;
+};
+
+USTRUCT(BlueprintType)
+struct FALSChildActor
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ActorType;
+	
+	UPROPERTY(EditAnywhere)
+	FName SocketName = "VB RHS_ik_hand_gun";
+
+	UPROPERTY(EditAnywhere)
+	FTransform Offset;
+};
+
+USTRUCT(BlueprintType)
+struct FALSOverlay : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAnimInstance> AnimationInstanceLayerType;
+
+	UPROPERTY(EditAnywhere)
+	FALSGetUpAnimation GetUpAnimations;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UAnimMontage> RollAnimationMontage;
+
+	UPROPERTY(EditAnywhere)
+	TMap<EALSMantleType,FALSMantleAsset> MantleAsset;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FALSSkeletalMesh> SkeletalMeshes;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FALSStaticMesh> StaticMeshes;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FALSChildActor> ChildActors;
 };
