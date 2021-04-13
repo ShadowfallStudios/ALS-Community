@@ -50,7 +50,7 @@ void UALSMantleComponent::BeginPlay()
 			OwnerCharacter->RagdollStateChangedDelegate.AddUniqueDynamic(
 				this, &UALSMantleComponent::OnOwnerRagdollStateChanged);
 
-			m_debugComponent = OwnerCharacter->FindComponentByClass<UALSDebugComponent>();
+			DebugComponent = OwnerCharacter->FindComponentByClass<UALSDebugComponent>();
 		}
 	}
 }
@@ -174,7 +174,7 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 		const bool bHit = World->SweepSingleByProfile(HitResult, TraceStart, TraceEnd, FQuat::Identity, MantleObjectDetectionProfile,
 	                                                  CapsuleCollisionShape, Params);
 
-		if (m_debugComponent && m_debugComponent->GetShowTraces())
+		if (DebugComponent && DebugComponent->GetShowTraces())
 		{
 			UALSDebugComponent::DrawDebugCapsuleTraceSingle(World,
 			                                                TraceStart,
@@ -221,7 +221,7 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 	                                                  WalkableSurfaceDetectionChannel, SphereCollisionShape,
 	                                                  Params);
 
-		if (m_debugComponent && m_debugComponent->GetShowTraces())
+		if (DebugComponent && DebugComponent->GetShowTraces())
 		{
 			UALSDebugComponent::DrawDebugSphereTraceSingle(World,
 			                                               TraceStart,
@@ -252,7 +252,7 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 		DownTraceLocation, 2.0f, OwnerCharacter->GetCapsuleComponent());
 	const bool bCapsuleHasRoom = UALSMathLibrary::CapsuleHasRoomCheck(OwnerCharacter->GetCapsuleComponent(),
 	                                                                  CapsuleLocationFBase, 0.0f,
-	                                                                  0.0f, DebugType, m_debugComponent && m_debugComponent->GetShowTraces());
+	                                                                  0.0f, DebugType, DebugComponent && DebugComponent->GetShowTraces());
 
 	if (!bCapsuleHasRoom)
 	{

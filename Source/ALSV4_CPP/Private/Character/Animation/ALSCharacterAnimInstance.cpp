@@ -28,7 +28,7 @@ void UALSCharacterAnimInstance::NativeBeginPlay()
 	// This is the reason why it is tried here to get the ALS debug component.
 	if (auto Owner = TryGetPawnOwner())
 	{
-		m_debugComponent = Owner->FindComponentByClass<UALSDebugComponent>();
+		DebugComponent = Owner->FindComponentByClass<UALSDebugComponent>();
 	}
 }
 
@@ -446,7 +446,7 @@ void UALSCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableF
 	                                                  TraceEnd,
 	                                                  ECC_Visibility, Params);
 
-	if (m_debugComponent && m_debugComponent->GetShowTraces())
+	if (DebugComponent && DebugComponent->GetShowTraces())
 	{
 		UALSDebugComponent::DrawDebugLineTraceSingle(
 			World,
@@ -771,7 +771,7 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 	const bool bHit = World->SweepSingleByChannel(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity,
 	                                              ECC_Visibility, CapsuleCollisionShape, Params);
 
-	if (m_debugComponent && m_debugComponent->GetShowTraces())
+	if (DebugComponent && DebugComponent->GetShowTraces())
 	{
 		UALSDebugComponent::DrawDebugCapsuleTraceSingle(World,
 		                                                CapsuleWorldLoc,

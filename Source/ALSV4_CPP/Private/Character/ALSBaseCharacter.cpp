@@ -144,7 +144,7 @@ void AALSBaseCharacter::BeginPlay()
 		MainAnimInstance->SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);
 	}
 
-	m_debugComponent = FindComponentByClass<UALSDebugComponent>();
+	DebugComponent = FindComponentByClass<UALSDebugComponent>();
 }
 
 void AALSBaseCharacter::PreInitializeComponents()
@@ -756,7 +756,7 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 	const bool bHit = World->LineTraceSingleByChannel(HitResult, TargetRagdollLocation, TraceVect,
 	                                                  ECC_Visibility, Params);
 
-	if (m_debugComponent && m_debugComponent->GetShowTraces())
+	if (DebugComponent && DebugComponent->GetShowTraces())
 	{
 		UALSDebugComponent::DrawDebugLineTraceSingle(World,
 		                                             TargetRagdollLocation,

@@ -648,5 +648,5 @@ protected:
 	bool bEnableNetworkOptimizations = false;
 
 private:
-	UALSDebugComponent* m_debugComponent = nullptr;
+	UALSDebugComponent* DebugComponent = nullptr;
 };

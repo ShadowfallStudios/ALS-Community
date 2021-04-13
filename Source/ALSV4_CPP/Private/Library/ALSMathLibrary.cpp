@@ -65,7 +65,7 @@ bool UALSMathLibrary::CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector Ta
 	Params.AddIgnoredActor(Capsule->GetOwner());
 
 	FHitResult HitResult;
-	const auto SphereCollisionShape = FCollisionShape::MakeSphere(Radius);
+	const FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(Radius);
 	const bool bHit = World->SweepSingleByChannel(HitResult, TraceStart, TraceEnd, FQuat::Identity,
 	                                              ECC_Visibility, FCollisionShape::MakeSphere(Radius), Params);
 
