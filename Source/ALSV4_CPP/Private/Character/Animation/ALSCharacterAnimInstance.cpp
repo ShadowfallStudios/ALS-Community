@@ -263,10 +263,10 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 
 	// Update Foot Locking values.
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("FootLock_L")),
-	               FName(TEXT("ik_foot_l")), FootIKValues.FootLock_L_Alpha, FootIKValues.UseFootLockCurve_L,
+	               IkFootL_BoneName, FootIKValues.FootLock_L_Alpha, FootIKValues.UseFootLockCurve_L,
 	               FootIKValues.FootLock_L_Location, FootIKValues.FootLock_L_Rotation);
 	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("FootLock_R")),
-	               FName(TEXT("ik_foot_r")), FootIKValues.FootLock_R_Alpha, FootIKValues.UseFootLockCurve_R,
+	               IkFootR_BoneName, FootIKValues.FootLock_R_Alpha, FootIKValues.UseFootLockCurve_R,
 	               FootIKValues.FootLock_R_Location, FootIKValues.FootLock_R_Rotation);
 
 	if (MovementState.InAir())
@@ -278,10 +278,10 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 	else if (!MovementState.Ragdoll())
 	{
 		// Update all Foot Lock and Foot Offset values when not In Air
-		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("ik_foot_l")), FName(TEXT("root")),
+		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), IkFootL_BoneName, FName(TEXT("root")),
 		               FootOffsetLTarget,
 		               FootIKValues.FootOffset_L_Location, FootIKValues.FootOffset_L_Rotation);
-		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("ik_foot_r")), FName(TEXT("root")),
+		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), IkFootR_BoneName, FName(TEXT("root")),
 		               FootOffsetRTarget,
 		               FootIKValues.FootOffset_R_Location, FootIKValues.FootOffset_R_Rotation);
 		SetPelvisIKOffset(DeltaSeconds, FootOffsetLTarget, FootOffsetRTarget);
@@ -509,7 +509,7 @@ void UALSCharacterAnimInstance::DynamicTransitionCheck()
 	// (determined via a virtual bone) exceeds a threshold. If it does, play an additive transition animation on that foot.
 	// The currently set transition plays the second half of a 2 foot transition animation, so that only a single foot moves.
 	// Because only the IK_Foot bone can be locked, the separate virtual bone allows the system to know its desired location when locked.
-	FTransform SocketTransformA = GetOwningComponent()->GetSocketTransform(FName(TEXT("ik_foot_l")), RTS_Component);
+	FTransform SocketTransformA = GetOwningComponent()->GetSocketTransform(IkFootL_BoneName, RTS_Component);
 	FTransform SocketTransformB = GetOwningComponent()->GetSocketTransform(
 		FName(TEXT("VB foot_target_l")), RTS_Component);
 	float Distance = (SocketTransformB.GetLocation() - SocketTransformA.GetLocation()).Size();
@@ -524,7 +524,7 @@ void UALSCharacterAnimInstance::DynamicTransitionCheck()
 		PlayDynamicTransition(0.1f, Params);
 	}
 
-	SocketTransformA = GetOwningComponent()->GetSocketTransform(FName(TEXT("ik_foot_r")), RTS_Component);
+	SocketTransformA = GetOwningComponent()->GetSocketTransform(IkFootR_BoneName, RTS_Component);
 	SocketTransformB = GetOwningComponent()->GetSocketTransform(FName(TEXT("VB foot_target_r")), RTS_Component);
 	Distance = (SocketTransformB.GetLocation() - SocketTransformA.GetLocation()).Size();
 	if (Distance > Config.DynamicTransitionThreshold)
