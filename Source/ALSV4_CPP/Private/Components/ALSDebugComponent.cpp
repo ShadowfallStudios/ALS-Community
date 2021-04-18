@@ -136,9 +136,9 @@ void UALSDebugComponent::BeginPlay()
 	if (AlsBaseCharacters.Num() > 0)
 	{
 		AvailableDebugCharacters.Reserve(AlsBaseCharacters.Num());
-		for (auto Character : AlsBaseCharacters)
+		for (AActor* Character : AlsBaseCharacters)
 		{
-			if (auto AlsBaseCharacter = Cast<AALSBaseCharacter>(Character))
+			if (AALSBaseCharacter* AlsBaseCharacter = Cast<AALSBaseCharacter>(Character))
 			{
 				AvailableDebugCharacters.Add(AlsBaseCharacter);
 			}

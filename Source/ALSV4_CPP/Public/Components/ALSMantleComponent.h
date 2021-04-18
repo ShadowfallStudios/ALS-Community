@@ -51,11 +51,11 @@ public:
 	FALSMantleAsset GetMantleAsset(EALSMantleType MantleType, EALSOverlayState CurrentOverlayState);
 
 protected:
-	void TickComponent(float DeltaTime, ELevelTick TickType, 
-	                   FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, 
+	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Called when the game starts
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
 
 	/** Mantling*/
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Mantle System")

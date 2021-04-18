@@ -171,7 +171,7 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 	Params.AddIgnoredActor(ControlledCharacter);
 
 	FHitResult HitResult;
-	const auto SphereCollisionShape = FCollisionShape::MakeSphere(TraceRadius);
+	const FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(TraceRadius);
 	const bool bHit = World->SweepSingleByChannel(HitResult, TraceOrigin, TargetCameraLocation, FQuat::Identity,
 	                                              TraceChannel, SphereCollisionShape, Params);
 

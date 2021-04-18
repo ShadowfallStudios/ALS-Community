@@ -31,11 +31,11 @@ class ALSV4_CPP_API UALSCharacterAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 
 public:
-	void NativeInitializeAnimation() override;
+	virtual void NativeInitializeAnimation() override;
 
-	void NativeBeginPlay() override;
+	virtual void NativeBeginPlay() override;
 
-	void NativeUpdateAnimation(float DeltaSeconds) override;
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Animation")
 	void PlayTransition(const FALSDynamicMontageParams& Parameters);

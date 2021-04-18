@@ -26,7 +26,7 @@ void UALSCharacterAnimInstance::NativeBeginPlay()
 	// it seems to be that the player pawn components are not really initialized
 	// when the call to NativeInitializeAnimation() happens.
 	// This is the reason why it is tried here to get the ALS debug component.
-	if (auto Owner = TryGetPawnOwner())
+	if (APawn* Owner = TryGetPawnOwner())
 	{
 		DebugComponent = Owner->FindComponentByClass<UALSDebugComponent>();
 	}
@@ -765,8 +765,8 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 	Params.AddIgnoredActor(Character);
 
 	FHitResult HitResult;
-	const auto CapsuleCollisionShape = FCollisionShape::MakeCapsule(CapsuleComp->GetUnscaledCapsuleRadius(),
-	                                                                CapsuleComp->GetUnscaledCapsuleHalfHeight());
+	const FCollisionShape CapsuleCollisionShape = FCollisionShape::MakeCapsule(CapsuleComp->GetUnscaledCapsuleRadius(),
+	                                                                           CapsuleComp->GetUnscaledCapsuleHalfHeight());
 	const float HalfHeight = 0.0f;
 	const bool bHit = World->SweepSingleByChannel(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity,
 	                                              ECC_Visibility, CapsuleCollisionShape, Params);
