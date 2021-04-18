@@ -584,6 +584,10 @@ protected:
 
 	/** Ragdoll System */
 
+	/** If the skeleton uses a reversed pelvis bone, flip the calculation operator */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Ragdoll System")
+	bool bReversedPelvis = false;
+
 	/** If player hits to the ground with a specified amount of velocity, switch to ragdoll state */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Ragdoll System")
 	bool bRagdollOnLand = false;

@@ -727,7 +727,13 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 	// Determine wether the ragdoll is facing up or down and set the target rotation accordingly.
 	const FRotator PelvisRot = GetMesh()->GetSocketRotation(FName(TEXT("Pelvis")));
 
-	bRagdollFaceUp = PelvisRot.Roll < 0.0f;
+	if (bReversedPelvis) {
+		bRagdollFaceUp = PelvisRot.Roll > 0.0f;
+	} else
+	{
+		bRagdollFaceUp = PelvisRot.Roll < 0.0f;
+	}
+
 
 	const FRotator TargetRagdollRotation(0.0f, bRagdollFaceUp ? PelvisRot.Yaw - 180.0f : PelvisRot.Yaw, 0.0f);
 
