@@ -360,13 +360,13 @@ protected:
 
 	void UpdateCharacterMovement();
 
-	void UpdateGroundedRotation(float DeltaTime);
+	virtual void UpdateGroundedRotation(float DeltaTime);
 
-	void UpdateInAirRotation(float DeltaTime);
+	virtual void UpdateInAirRotation(float DeltaTime);
 
 	/** Utils */
 
-	void SmoothCharacterRotation(FRotator Target, float TargetInterpSpeed, float ActorInterpSpeed, float DeltaTime);
+	virtual void SmoothCharacterRotation(FRotator Target, float TargetInterpSpeed, float ActorInterpSpeed, float DeltaTime);
 
 	float CalculateGroundedRotationRate() const;
 
