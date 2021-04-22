@@ -298,7 +298,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Dynamic Transition")
 	UAnimSequenceBase* TransitionAnim_L = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration|Dynamic Transition")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration|Foot IK")
 	bool bUseIKFootLocking = true;
 
 private:
