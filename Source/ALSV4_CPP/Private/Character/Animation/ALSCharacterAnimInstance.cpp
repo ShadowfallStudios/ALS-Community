@@ -292,7 +292,11 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
                                                FName IKFootBone, float& CurFootLockAlpha, bool& UseFootLockCurve,
                                                FVector& CurFootLockLoc, FRotator& CurFootLockRot)
 {
-	if (!bUseIKFootLocking) return;
+	if (!bUseIKFootLocking)
+	{
+		return;
+	}
+
 	if (GetCurveValue(EnableFootIKCurve) <= 0.0f)
 	{
 		return;
