@@ -298,6 +298,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Dynamic Transition")
 	UAnimSequenceBase* TransitionAnim_L = nullptr;
 
+	/** IK Bone Names */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Anim Graph - Foot IK")
+	FName IkFootL_BoneName = FName(TEXT("ik_foot_l"));
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Anim Graph - Foot IK")
+	FName IkFootR_BoneName = FName(TEXT("ik_foot_r"));
+
 private:
 	FTimerHandle OnPivotTimer;
 
