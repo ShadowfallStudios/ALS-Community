@@ -266,6 +266,9 @@ protected:
 		ShowOnlyInnerProperties))
 	FALSAnimConfiguration Config;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration|Foot IK")
+	bool bUseIKFootLocking = true;
+
 	/** Blend Curves */
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
@@ -297,9 +300,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Dynamic Transition")
 	UAnimSequenceBase* TransitionAnim_L = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration|Foot IK")
-	bool bUseIKFootLocking = true;
 
 private:
 	FTimerHandle OnPivotTimer;
