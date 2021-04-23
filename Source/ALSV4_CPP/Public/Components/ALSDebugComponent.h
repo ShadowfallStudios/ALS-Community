@@ -25,6 +25,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
+	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
+
 	/** Implemented on BP to update layering colors */
 	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
 	void UpdateColoringSystem();

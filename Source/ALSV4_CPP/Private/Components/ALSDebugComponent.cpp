@@ -71,6 +71,17 @@ void UALSDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 #endif
 }
 
+void UALSDebugComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
+{
+	Super::OnComponentDestroyed(bDestroyingHierarchy);
+
+	// Keep static values false on destroy
+	bDebugView = false;
+	bShowTraces = false;
+	bShowDebugShapes = false;
+	bShowLayerColors = false;
+}
+
 void UALSDebugComponent::BeginPlay()
 {
 	Super::BeginPlay();
