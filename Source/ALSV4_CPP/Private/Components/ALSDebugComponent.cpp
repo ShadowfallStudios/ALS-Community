@@ -114,3 +114,17 @@ void UALSDebugComponent::ToggleDebugView()
 		}
 	}
 }
+
+void UALSDebugComponent::ToggleDebugMesh()
+{
+	if (bDebugMeshVisible)
+	{
+		OwnerCharacter->SetVisibleMesh(DefaultSkeletalMesh);
+	}
+	else
+	{
+		DefaultSkeletalMesh = OwnerCharacter->GetMesh()->SkeletalMesh;
+		OwnerCharacter->SetVisibleMesh(DebugSkeletalMesh);
+	}
+	bDebugMeshVisible = !bDebugMeshVisible;
+}

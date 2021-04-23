@@ -54,6 +54,9 @@ public:
 	void ToggleDebugView();
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
+	void ToggleDebugMesh();
+
+	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void ToggleTraces() { bShowTraces = !bShowTraces; }
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
@@ -93,6 +96,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
 	bool bShowCharacterInfo = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
+	USkeletalMesh* DebugSkeletalMesh = nullptr;
+
 	static bool bDebugView;
 
 	static bool bShowTraces;
@@ -103,4 +109,9 @@ public:
 
 private:
 	bool bNeedsColorReset = false;
+
+	bool bDebugMeshVisible = false;
+
+	UPROPERTY()
+	USkeletalMesh* DefaultSkeletalMesh = nullptr;
 };

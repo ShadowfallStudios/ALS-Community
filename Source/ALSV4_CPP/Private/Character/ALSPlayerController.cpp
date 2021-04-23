@@ -68,6 +68,7 @@ void AALSPlayerController::SetupDebugInputs()
 				InputComponent->BindKey(FKey("U"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleLayerColors);
 				InputComponent->BindKey(FKey("I"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleCharacterInfo);
 				InputComponent->BindKey(FKey("Z"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleSlomo);
+				InputComponent->BindKey(FKey("M"), EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleDebugMesh);
 			}
 		}
 	}
