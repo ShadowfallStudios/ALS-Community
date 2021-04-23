@@ -25,10 +25,10 @@ struct FALSComponentAndTransform
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Character Struct Library")
+	UPROPERTY(EditAnywhere, Category = "Character Struct Library")
 	FTransform Transform;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Character Struct Library")
+	UPROPERTY(EditAnywhere, Category = "Character Struct Library")
 	class UPrimitiveComponent* Component = nullptr;
 };
 
@@ -37,19 +37,19 @@ struct FALSCameraSettings
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	float TargetArmLength = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	FVector SocketOffset;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	float LagSpeed = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	float RotationLagSpeed = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	bool bDoCollisionTest = true;
 };
 
@@ -58,16 +58,16 @@ struct FALSCameraGaitSettings
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	FALSCameraSettings Walking;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	FALSCameraSettings Running;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	FALSCameraSettings Sprinting;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	FALSCameraSettings Crouching;
 };
 
@@ -76,13 +76,13 @@ struct FALSCameraStateSettings
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	FALSCameraGaitSettings VelocityDirection;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	FALSCameraGaitSettings LookingDirection;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	FALSCameraGaitSettings Aiming;
 };
 
@@ -91,31 +91,31 @@ struct FALSMantleAsset
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	UAnimMontage* AnimMontage = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	UCurveVector* PositionCorrectionCurve = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	FVector StartingOffset;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float LowHeight = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float LowPlayRate = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float LowStartPosition = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float HighHeight = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float HighPlayRate = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float HighStartPosition = 0.0f;
 };
 
@@ -124,19 +124,19 @@ struct FALSMantleParams
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	UAnimMontage* AnimMontage = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	UCurveVector* PositionCorrectionCurve = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float StartingPosition = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float PlayRate = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	FVector StartingOffset;
 };
 
@@ -145,19 +145,19 @@ struct FALSMantleTraceSettings
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float MaxLedgeHeight = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float MinLedgeHeight = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float ReachDistance = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float ForwardTraceRadius = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Mantle System")
+	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float DownwardTraceRadius = 0.0f;
 };
 
@@ -166,19 +166,19 @@ struct FALSMovementSettings
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Movement Settings")
+	UPROPERTY(EditAnywhere, Category = "Movement Settings")
 	float WalkSpeed = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Movement Settings")
+	UPROPERTY(EditAnywhere, Category = "Movement Settings")
 	float RunSpeed = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Movement Settings")
+	UPROPERTY(EditAnywhere, Category = "Movement Settings")
 	float SprintSpeed = 0.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Movement Settings")
+	UPROPERTY(EditAnywhere, Category = "Movement Settings")
 	UCurveVector* MovementCurve = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Movement Settings")
+	UPROPERTY(EditAnywhere, Category = "Movement Settings")
 	UCurveFloat* RotationRateCurve = nullptr;
 
 	float GetSpeedForGait(const EALSGait Gait) const
@@ -202,10 +202,10 @@ struct FALSMovementStanceSettings
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Movement Settings")
+	UPROPERTY(EditAnywhere, Category = "Movement Settings")
 	FALSMovementSettings Standing;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Movement Settings")
+	UPROPERTY(EditAnywhere, Category = "Movement Settings")
 	FALSMovementSettings Crouching;
 };
 
@@ -214,13 +214,13 @@ struct FALSMovementStateSettings : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Movement Settings")
+	UPROPERTY(EditAnywhere, Category = "Movement Settings")
 	FALSMovementStanceSettings VelocityDirection;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Movement Settings")
+	UPROPERTY(EditAnywhere, Category = "Movement Settings")
 	FALSMovementStanceSettings LookingDirection;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Movement Settings")
+	UPROPERTY(EditAnywhere, Category = "Movement Settings")
 	FALSMovementStanceSettings Aiming;
 };
 
@@ -229,22 +229,22 @@ struct FALSRotateInPlaceAsset
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Rotation System")
+	UPROPERTY(EditAnywhere, Category = "Rotation System")
 	UAnimSequenceBase* Animation = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Rotation System")
+	UPROPERTY(EditAnywhere, Category = "Rotation System")
 	FName SlotName;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Rotation System")
+	UPROPERTY(EditAnywhere, Category = "Rotation System")
 	float SlowTurnRate = 90.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Rotation System")
+	UPROPERTY(EditAnywhere, Category = "Rotation System")
 	float FastTurnRate = 90.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Rotation System")
+	UPROPERTY(EditAnywhere, Category = "Rotation System")
 	float SlowPlayRate = 1.0f;
 
-	UPROPERTY(EditAnywhere, Category = "ALS|Rotation System")
+	UPROPERTY(EditAnywhere, Category = "Rotation System")
 	float FastPlayRate = 1.0f;
 };
 

@@ -25,6 +25,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
+	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
+
 	/** Implemented on BP to update layering colors */
 	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
 	void UpdateColoringSystem();
@@ -52,6 +54,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void ToggleDebugView();
+
+	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
+	void ToggleDebugMesh();
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void ToggleTraces() { bShowTraces = !bShowTraces; }
@@ -93,6 +98,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
 	bool bShowCharacterInfo = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
+	USkeletalMesh* DebugSkeletalMesh = nullptr;
+
 	static bool bDebugView;
 
 	static bool bShowTraces;
@@ -103,4 +111,9 @@ public:
 
 private:
 	bool bNeedsColorReset = false;
+
+	bool bDebugMeshVisible = false;
+
+	UPROPERTY()
+	USkeletalMesh* DefaultSkeletalMesh = nullptr;
 };

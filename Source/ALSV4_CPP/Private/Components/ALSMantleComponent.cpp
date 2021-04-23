@@ -166,7 +166,7 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 	Params.AddIgnoredActor(OwnerCharacter);
 
 	FHitResult HitResult;
-	World->SweepSingleByProfile(HitResult, TraceStart, TraceEnd, FQuat::Identity, FName(TEXT("IgnoreOnlyPawn")),
+	World->SweepSingleByProfile(HitResult, TraceStart, TraceEnd, FQuat::Identity, MantleObjectDetectionProfile,
 	                            FCollisionShape::MakeCapsule(TraceSettings.ForwardTraceRadius, HalfHeight), Params);
 
 	if (!HitResult.IsValidBlockingHit() || OwnerCharacter->GetCharacterMovement()->IsWalkable(HitResult))
@@ -196,7 +196,7 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 	DownwardTraceStart.Z += TraceSettings.MaxLedgeHeight + TraceSettings.DownwardTraceRadius + 1.0f;
 
 	World->SweepSingleByChannel(HitResult, DownwardTraceStart, DownwardTraceEnd, FQuat::Identity,
-	                            ECC_GameTraceChannel2, FCollisionShape::MakeSphere(TraceSettings.DownwardTraceRadius),
+	                            WalkableSurfaceDetectionChannel, FCollisionShape::MakeSphere(TraceSettings.DownwardTraceRadius),
 	                            Params);
 
 

@@ -71,6 +71,17 @@ void UALSDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 #endif
 }
 
+void UALSDebugComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
+{
+	Super::OnComponentDestroyed(bDestroyingHierarchy);
+
+	// Keep static values false on destroy
+	bDebugView = false;
+	bShowTraces = false;
+	bShowDebugShapes = false;
+	bShowLayerColors = false;
+}
+
 void UALSDebugComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -113,4 +124,18 @@ void UALSDebugComponent::ToggleDebugView()
 			CameraBehavior->bDebugView = bDebugView;
 		}
 	}
+}
+
+void UALSDebugComponent::ToggleDebugMesh()
+{
+	if (bDebugMeshVisible)
+	{
+		OwnerCharacter->SetVisibleMesh(DefaultSkeletalMesh);
+	}
+	else
+	{
+		DefaultSkeletalMesh = OwnerCharacter->GetMesh()->SkeletalMesh;
+		OwnerCharacter->SetVisibleMesh(DebugSkeletalMesh);
+	}
+	bDebugMeshVisible = !bDebugMeshVisible;
 }
