@@ -3,6 +3,10 @@
 
 Replicated and optimized community version of [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1) for **Unreal Engine 4.26** with additional bug fixes.
 
+<p align="center">
+  <a href="https://discord.com/channels/671128082110742561/671136858507575328/762783975235518484"><img src="https://i.imgur.com/LP9bZQj.png"></a>
+</p>
+
 ## Supported Platforms
 - Windows
 - Linux
