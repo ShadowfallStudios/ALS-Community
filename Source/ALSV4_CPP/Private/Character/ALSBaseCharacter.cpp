@@ -995,8 +995,7 @@ void AALSBaseCharacter::UpdateCharacterMovement()
 	MyCharacterMovementComponent->SetMovementSettings(GetTargetMovementSettings());
 
 	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
-	const float NewMaxSpeed = MyCharacterMovementComponent->CurrentMovementSettings.GetSpeedForGait(AllowedGait);
-	MyCharacterMovementComponent->SetMaxWalkingSpeed(NewMaxSpeed);
+	MyCharacterMovementComponent->SetAllowedGait(AllowedGait);
 }
 
 void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
