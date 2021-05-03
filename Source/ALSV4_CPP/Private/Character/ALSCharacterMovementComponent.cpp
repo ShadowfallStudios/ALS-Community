@@ -32,6 +32,8 @@ void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FV
 		const float UpdateMaxWalkSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
 		MaxWalkSpeed = UpdateMaxWalkSpeed;
 		MaxWalkSpeedCrouched = UpdateMaxWalkSpeed;
+
+		bRequestMovementSettingsChange = false;
 	}
 }
 
@@ -96,7 +98,7 @@ void UALSCharacterMovementComponent::FSavedMove_My::Clear()
 	Super::Clear();
 
 	bSavedRequestMovementSettingsChange = false;
-	SavedAllowedGait = EALSGait::Running;
+	SavedAllowedGait = EALSGait::Walking;
 }
 
 uint8 UALSCharacterMovementComponent::FSavedMove_My::GetCompressedFlags() const

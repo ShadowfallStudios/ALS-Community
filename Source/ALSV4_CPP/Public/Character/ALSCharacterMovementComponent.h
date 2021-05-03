@@ -35,7 +35,7 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 
 		// Walk Speed Update
 		uint8 bSavedRequestMovementSettingsChange : 1;
-		EALSGait SavedAllowedGait = EALSGait::Running;
+		EALSGait SavedAllowedGait = EALSGait::Walking;
 	};
 
 	class FNetworkPredictionData_Client_My : public FNetworkPredictionData_Client_Character
@@ -62,7 +62,7 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 	uint8 bRequestMovementSettingsChange = 1;
 
 	UPROPERTY()
-	EALSGait AllowedGait = EALSGait::Running;
+	EALSGait AllowedGait = EALSGait::Walking;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Movement System")
 	FALSMovementSettings CurrentMovementSettings;
