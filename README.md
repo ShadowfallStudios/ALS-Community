@@ -25,7 +25,7 @@ Replicated and optimized community version of [Advanced Locomotion System V4](ht
 
 ## Known Issues & Discussion
 - See [Issues](https://github.com/dyanikoglu/ALS-Community/issues) section for list of known issues
-- See [Discussions](https://github.com/dyanikoglu/ALS-Community/discussions) section to discuss anything about the plugin, and ask questions. Please do not open an issue to ask questions about the plugin.
+- See [Discussions](https://github.com/dyanikoglu/ALS-Community/discussions) section to discuss anything about the plugin, and ask questions. Please do not open an issue for questions.
 
 ## Setting Up The Plugin
 - **C++ project is a requirement. BP projects are currently not supported.**
