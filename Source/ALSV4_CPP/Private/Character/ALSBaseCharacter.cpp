@@ -23,6 +23,17 @@
 #include "TimerManager.h"
 #include "Net/UnrealNetwork.h"
 
+
+const FName NAME_FP_Camera(TEXT("FP_Camera"));
+const FName NAME_Pelvis(TEXT("Pelvis"));
+const FName NAME_RagdollPose(TEXT("RagdollPose"));
+const FName NAME_RotationAmount(TEXT("RotationAmount"));
+const FName NAME_YawOffset(TEXT("YawOffset"));
+const FName NAME_pelvis(TEXT("pelvis"));
+const FName NAME_root(TEXT("root"));
+const FName NAME_spine_03(TEXT("spine_03"));
+
+
 AALSBaseCharacter::AALSBaseCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UALSCharacterMovementComponent>(CharacterMovementComponentName))
 {
@@ -205,7 +216,7 @@ void AALSBaseCharacter::RagdollStart()
 		DefVisBasedTickOp = GetMesh()->VisibilityBasedAnimTickOption;
 		GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 	}
-	TargetRagdollLocation = GetMesh()->GetSocketLocation(FName(TEXT("Pelvis")));
+	TargetRagdollLocation = GetMesh()->GetSocketLocation(NAME_Pelvis);
 	ServerRagdollPull = 0;
 
 	// Step 1: Clear the Character Movement Mode and set the Movement State to Ragdoll
@@ -216,7 +227,7 @@ void AALSBaseCharacter::RagdollStart()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionObjectType(ECC_PhysicsBody);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GetMesh()->SetAllBodiesBelowSimulatePhysics(FName(TEXT("Pelvis")), true, true);
+	GetMesh()->SetAllBodiesBelowSimulatePhysics(NAME_Pelvis, true, true);
 
 	// Step 3: Stop any active montages.
 	MainAnimInstance->Montage_Stop(0.2f);
@@ -243,7 +254,7 @@ void AALSBaseCharacter::RagdollEnd()
 	}
 
 	// Step 1: Save a snapshot of the current Ragdoll Pose for use in AnimGraph to blend out of the ragdoll
-	MainAnimInstance->SavePoseSnapshot(FName(TEXT("RagdollPose")));
+	MainAnimInstance->SavePoseSnapshot(NAME_RagdollPose);
 
 	// Step 2: If the ragdoll is on the ground, set the movement mode to walking and play a Get Up animation.
 	// If not, set the movement mode to falling and update the character movement velocity to match the last ragdoll velocity.
@@ -672,7 +683,7 @@ FTransform AALSBaseCharacter::GetThirdPersonPivotTarget()
 
 FVector AALSBaseCharacter::GetFirstPersonCameraTarget()
 {
-	return GetMesh()->GetSocketLocation(FName(TEXT("FP_Camera")));
+	return GetMesh()->GetSocketLocation(NAME_FP_Camera);
 }
 
 void AALSBaseCharacter::GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bool& bRightShoulderOut) const
@@ -693,7 +704,7 @@ void AALSBaseCharacter::SetAcceleration(const FVector& NewAcceleration)
 void AALSBaseCharacter::RagdollUpdate(float DeltaTime)
 {
 	// Set the Last Ragdoll Velocity.
-	const FVector NewRagdollVel = GetMesh()->GetPhysicsLinearVelocity(FName(TEXT("root")));
+	const FVector NewRagdollVel = GetMesh()->GetPhysicsLinearVelocity(NAME_root);
 	LastRagdollVelocity = (NewRagdollVel != FVector::ZeroVector || IsLocallyControlled())
 		                      ? NewRagdollVel
 		                      : LastRagdollVelocity / 2;
@@ -717,7 +728,7 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 	if (IsLocallyControlled())
 	{
 		// Set the pelvis as the target location.
-		TargetRagdollLocation = GetMesh()->GetSocketLocation(FName(TEXT("Pelvis")));
+		TargetRagdollLocation = GetMesh()->GetSocketLocation(NAME_Pelvis);
 		if (!HasAuthority())
 		{
 			Server_SetMeshLocationDuringRagdoll(TargetRagdollLocation);
@@ -725,7 +736,7 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 	}
 
 	// Determine wether the ragdoll is facing up or down and set the target rotation accordingly.
-	const FRotator PelvisRot = GetMesh()->GetSocketRotation(FName(TEXT("Pelvis")));
+	const FRotator PelvisRot = GetMesh()->GetSocketRotation(NAME_Pelvis);
 
 	if (bReversedPelvis) {
 		bRagdollFaceUp = PelvisRot.Roll > 0.0f;
@@ -761,7 +772,7 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 	{
 		ServerRagdollPull = FMath::FInterpTo(ServerRagdollPull, 750, DeltaTime, 0.6);
 		float RagdollSpeed = FVector(LastRagdollVelocity.X, LastRagdollVelocity.Y, 0).Size();
-		FName RagdollSocketPullName = RagdollSpeed > 300 ? FName(TEXT("spine_03")) : FName(TEXT("pelvis"));
+		FName RagdollSocketPullName = RagdollSpeed > 300 ? NAME_spine_03 : NAME_pelvis;
 		GetMesh()->AddForce(
 			(TargetRagdollLocation - GetMesh()->GetSocketLocation(RagdollSocketPullName)) * ServerRagdollPull,
 			RagdollSocketPullName, true);
@@ -1077,7 +1088,7 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 				else
 				{
 					// Walking or Running..
-					const float YawOffsetCurveVal = MainAnimInstance->GetCurveValue(FName(TEXT("YawOffset")));
+					const float YawOffsetCurveVal = MainAnimInstance->GetCurveValue(NAME_YawOffset);
 					YawValue = AimingRotation.Yaw + YawOffsetCurveVal;
 				}
 				SmoothCharacterRotation({0.0f, YawValue, 0.0f}, 500.0f, GroundedRotationRate, DeltaTime);
@@ -1102,7 +1113,7 @@ void AALSBaseCharacter::UpdateGroundedRotation(float DeltaTime)
 			// The Rotation Amount curve defines how much rotation should be applied each frame,
 			// and is calculated for animations that are animated at 30fps.
 
-			const float RotAmountCurve = MainAnimInstance->GetCurveValue(FName(TEXT("RotationAmount")));
+			const float RotAmountCurve = MainAnimInstance->GetCurveValue(NAME_RotationAmount);
 
 			if (FMath::Abs(RotAmountCurve) > 0.001f)
 			{

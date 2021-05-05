@@ -16,12 +16,19 @@
 #include "Library/ALSMathLibrary.h"
 
 
+const FName NAME_MantleEnd(TEXT("MantleEnd"));
+const FName NAME_MantleUpdate(TEXT("MantleUpdate"));
+const FName NAME_MantleTimeline(TEXT("MantleTimeline"));
+
+FName UALSMantleComponent::NAME_IgnoreOnlyPawn(TEXT("IgnoreOnlyPawn"));
+
+
 UALSMantleComponent::UALSMantleComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = true;
 
-	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(FName(TEXT("MantleTimeline")));
+	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(NAME_MantleTimeline);
 }
 
 void UALSMantleComponent::BeginPlay()
@@ -38,8 +45,8 @@ void UALSMantleComponent::BeginPlay()
 			// Bindings
 			FOnTimelineFloat TimelineUpdated;
 			FOnTimelineEvent TimelineFinished;
-			TimelineUpdated.BindUFunction(this, FName(TEXT("MantleUpdate")));
-			TimelineFinished.BindUFunction(this, FName(TEXT("MantleEnd")));
+			TimelineUpdated.BindUFunction(this, NAME_MantleUpdate);
+			TimelineFinished.BindUFunction(this, NAME_MantleEnd);
 			MantleTimeline->SetTimelineFinishedFunc(TimelineFinished);
 			MantleTimeline->SetLooping(false);
 			MantleTimeline->SetTimelineLengthMode(TL_TimelineLength);
