@@ -45,7 +45,11 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 		const FVector TraceEnd = FootLocation - MeshOwner->GetActorUpVector() * TraceLength;
 
 		FHitResult Hit;
-		TArray<AActor*> ActorsToIgnore;
+
+		check(IsInGameThread());
+		static TArray<AActor*> ActorsToIgnore;
+		ActorsToIgnore.Reset();
+
 		ActorsToIgnore.Add(MeshOwner);
 		ActorsToIgnore.Append(MeshOwner->Children);
 		if (UKismetSystemLibrary::LineTraceSingle(World, FootLocation, TraceEnd, TraceChannel, true, ActorsToIgnore,
@@ -58,7 +62,10 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 
 			const EPhysicalSurface SurfaceType = Hit.PhysMaterial.Get()->SurfaceType;
 
-			TArray<FALSHitFX*> HitFXRows;
+			check(IsInGameThread());
+			static TArray<FALSHitFX*> HitFXRows;
+			HitFXRows.Reset();
+
 			HitDataTable->GetAllRows<FALSHitFX>(FString(), HitFXRows);
 
 			FALSHitFX* HitFX = nullptr;
