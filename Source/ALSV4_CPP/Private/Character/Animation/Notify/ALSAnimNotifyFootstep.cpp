@@ -40,15 +40,25 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 
 		FHitResult Hit;
 
-		check(IsInGameThread());
-		checkNoRecursion();
-		static TArray<AActor*> ActorsToIgnore;
-		ActorsToIgnore.Reset();
+		ECollisionChannel CollisionChannel = UEngineTypes::ConvertToCollisionChannel(TraceChannel);
 
-		ActorsToIgnore.Add(MeshOwner);
-		ActorsToIgnore.Append(MeshOwner->Children);
-		if (UKismetSystemLibrary::LineTraceSingle(World, FootLocation, TraceEnd, TraceChannel, true, ActorsToIgnore,
-		                                          DrawDebugType, Hit, true))
+		FCollisionQueryParams Params(SCENE_QUERY_STAT(ALSFootstep), true /*bTraceComplex*/, MeshOwner);
+		Params.bReturnPhysicalMaterial = true;
+		for (auto& Child : MeshOwner->Children)
+		{
+			Params.AddIgnoredActor(Child);
+		}
+
+		bool const bHit = MeshComp->GetWorld() ? World->LineTraceSingleByChannel(Hit, FootLocation, TraceEnd, CollisionChannel, Params) : false;
+
+#if ENABLE_DRAW_DEBUG
+		if (MeshComp->GetWorld())
+		{
+			DrawDebugLineTraceSingle(MeshComp->GetWorld(), FootLocation, TraceEnd, DrawDebugType, bHit, Hit, TraceColor, TraceHitColor, DrawTime);
+		}
+#endif
+
+		if (bHit)
 		{
 			if (!Hit.PhysMaterial.Get())
 			{
