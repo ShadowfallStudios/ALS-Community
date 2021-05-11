@@ -9,6 +9,8 @@
 #include "Character/Animation/ALSCharacterAnimInstance.h"
 #include "Character/ALSBaseCharacter.h"
 #include "Library/ALSMathLibrary.h"
+#include "Components/ALSDebugComponent.h"
+
 #include "Curves/CurveVector.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -51,6 +53,17 @@ void UALSCharacterAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 	Character = Cast<AALSBaseCharacter>(TryGetPawnOwner());
+}
+
+void UALSCharacterAnimInstance::NativeBeginPlay()
+{
+	// it seems to be that the player pawn components are not really initialized
+	// when the call to NativeInitializeAnimation() happens.
+	// This is the reason why it is tried here to get the ALS debug component.
+	if (APawn* Owner = TryGetPawnOwner())
+	{
+		DebugComponent = Owner->FindComponentByClass<UALSDebugComponent>();
+	}
 }
 
 void UALSCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -458,11 +471,28 @@ void UALSCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableF
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(Character);
 
+	const FVector TraceStart = IKFootFloorLoc + FVector(0.0, 0.0, Config.IK_TraceDistanceAboveFoot);
+	const FVector TraceEnd = IKFootFloorLoc - FVector(0.0, 0.0, Config.IK_TraceDistanceBelowFoot);
+
 	FHitResult HitResult;
-	World->LineTraceSingleByChannel(HitResult,
-	                                IKFootFloorLoc + FVector(0.0, 0.0, Config.IK_TraceDistanceAboveFoot),
-	                                IKFootFloorLoc - FVector(0.0, 0.0, Config.IK_TraceDistanceBelowFoot),
-	                                ECC_Visibility, Params);
+	const bool bHit = World->LineTraceSingleByChannel(HitResult,
+	                                                  TraceStart,
+	                                                  TraceEnd,
+	                                                  ECC_Visibility, Params);
+
+	if (DebugComponent && DebugComponent->GetShowTraces())
+	{
+		UALSDebugComponent::DrawDebugLineTraceSingle(
+			World,
+			TraceStart,
+			TraceEnd,
+			EDrawDebugTrace::Type::ForOneFrame,
+			bHit,
+			HitResult,
+			FLinearColor::Red,
+			FLinearColor::Green,
+			5.0f);
+	}
 
 	FRotator TargetRotOffset = FRotator::ZeroRotator;
 	if (Character->GetCharacterMovement()->IsWalkable(HitResult))
@@ -769,11 +799,25 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 	Params.AddIgnoredActor(Character);
 
 	FHitResult HitResult;
+	const FCollisionShape CapsuleCollisionShape = FCollisionShape::MakeCapsule(CapsuleComp->GetUnscaledCapsuleRadius(),
+	                                                                           CapsuleComp->GetUnscaledCapsuleHalfHeight());
+	const float HalfHeight = 0.0f;
+	const bool bHit = World->SweepSingleByChannel(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity,
+	                                              ECC_Visibility, CapsuleCollisionShape, Params);
 
-	World->SweepSingleByChannel(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity,
-	                            ECC_Visibility,
-	                            FCollisionShape::MakeCapsule(CapsuleComp->GetUnscaledCapsuleRadius(),
-	                                                         CapsuleComp->GetUnscaledCapsuleHalfHeight()), Params);
+	if (DebugComponent && DebugComponent->GetShowTraces())
+	{
+		UALSDebugComponent::DrawDebugCapsuleTraceSingle(World,
+		                                                CapsuleWorldLoc,
+		                                                CapsuleWorldLoc + TraceLength,
+		                                                CapsuleCollisionShape,
+		                                                EDrawDebugTrace::Type::ForOneFrame,
+		                                                bHit,
+		                                                HitResult,
+		                                                FLinearColor::Red,
+		                                                FLinearColor::Green,
+		                                                5.0f);
+	}
 
 	if (Character->GetCharacterMovement()->IsWalkable(HitResult))
 	{

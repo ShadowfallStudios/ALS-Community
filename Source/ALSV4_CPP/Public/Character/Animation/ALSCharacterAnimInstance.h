@@ -15,6 +15,8 @@
 
 #include "ALSCharacterAnimInstance.generated.h"
 
+// forward declarations
+class UALSDebugComponent;
 class AALSBaseCharacter;
 class UCurveFloat;
 class UAnimSequence;
@@ -30,6 +32,8 @@ class ALSV4_CPP_API UALSCharacterAnimInstance : public UAnimInstance
 
 public:
 	virtual void NativeInitializeAnimation() override;
+
+	virtual void NativeBeginPlay() override;
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
@@ -315,4 +319,6 @@ private:
 	FTimerHandle OnJumpedTimer;
 
 	bool bCanPlayDynamicTransition = true;
+
+	UALSDebugComponent* DebugComponent = nullptr;
 };

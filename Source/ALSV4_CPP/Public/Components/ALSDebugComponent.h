@@ -3,16 +3,17 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    
+// Contributors:    Achim Turan
 
 #pragma once
 
 #include "CoreMinimal.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "Components/ActorComponent.h"
 #include "ALSDebugComponent.generated.h"
 
-class AALSCharacter;
+class AALSBaseCharacter;
 
 UCLASS(Blueprintable, BlueprintType)
 class ALSV4_CPP_API UALSDebugComponent : public UActorComponent
@@ -82,12 +83,54 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	bool GetShowLayerColors() { return bShowLayerColors; }
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
+	void PreviousFocusedDebugCharacter();
+
+	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
+	void NextFocusedDebugCharacter();
+
+	// utility functions to draw trace debug shapes,
+	// which are derived from Engine/Private/KismetTraceUtils.h.
+	// Sadly the functions are private, which was the reason
+	// why there reimplemented here.
+	static void DrawDebugLineTraceSingle(const UWorld* World,
+	                                     const FVector& Start,
+	                                     const FVector& End,
+	                                     EDrawDebugTrace::Type DrawDebugType,
+	                                     bool bHit,
+	                                     const FHitResult& OutHit,
+	                                     FLinearColor TraceColor,
+	                                     FLinearColor TraceHitColor,
+	                                     float DrawTime);
+
+	static void DrawDebugCapsuleTraceSingle(const UWorld* World,
+	                                        const FVector& Start,
+	                                        const FVector& End,
+	                                        const FCollisionShape& CollisionShape,
+	                                        EDrawDebugTrace::Type DrawDebugType,
+	                                        bool bHit,
+	                                        const FHitResult& OutHit,
+	                                        FLinearColor TraceColor,
+	                                        FLinearColor TraceHitColor,
+	                                        float DrawTime);
+
+	static void DrawDebugSphereTraceSingle(const UWorld* World,
+	                                       const FVector& Start,
+	                                       const FVector& End,
+	                                       const FCollisionShape& CollisionShape,
+	                                       EDrawDebugTrace::Type DrawDebugType,
+	                                       bool bHit,
+	                                       const FHitResult& OutHit,
+	                                       FLinearColor TraceColor,
+	                                       FLinearColor TraceHitColor,
+	                                       float DrawTime);
+
 protected:
 	virtual void BeginPlay() override;
 
 public:
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
-	AALSCharacter* OwnerCharacter;
+	AALSBaseCharacter* OwnerCharacter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
 	bool bSlomo = false;
@@ -100,7 +143,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
 	USkeletalMesh* DebugSkeletalMesh = nullptr;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	TArray<AALSBaseCharacter*> AvailableDebugCharacters;
 
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	AALSBaseCharacter* DebugFocusCharacter = nullptr;
+private:
 	static bool bDebugView;
 
 	static bool bShowTraces;
@@ -109,11 +158,14 @@ public:
 
 	static bool bShowLayerColors;
 
-private:
 	bool bNeedsColorReset = false;
 
 	bool bDebugMeshVisible = false;
 
-	UPROPERTY()
 	USkeletalMesh* DefaultSkeletalMesh = nullptr;
+	
+	/// Stores the index, which is used to select the next focused debug ALSBaseCharacter.
+	/// If no characters where found during BeginPlay the value should be set to INDEX_NONE.
+	int32 FocusedDebugCharacterIndex = INDEX_NONE;
 };
+

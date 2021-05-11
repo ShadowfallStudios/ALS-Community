@@ -3,10 +3,14 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    
+// Contributors:    Achim Turan
 
 
 #include "Library/ALSMathLibrary.h"
+
+
+#include "Library/ALSCharacterStructLibrary.h"
+#include "Components/ALSDebugComponent.h"
 
 #include "Components/CapsuleComponent.h"
 
@@ -44,7 +48,7 @@ FVector UALSMathLibrary::GetCapsuleLocationFromBase(FVector BaseLocation, const 
 }
 
 bool UALSMathLibrary::CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector TargetLocation, float HeightOffset,
-                                          float RadiusOffset)
+                                          float RadiusOffset, EDrawDebugTrace::Type DebugType, bool DrawDebugTrace)
 {
 	// Perform a trace to see if the capsule has room to be at the target location.
 	const float ZTarget = Capsule->GetScaledCapsuleHalfHeight_WithoutHemisphere() - RadiusOffset + HeightOffset;
@@ -61,8 +65,23 @@ bool UALSMathLibrary::CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector Ta
 	Params.AddIgnoredActor(Capsule->GetOwner());
 
 	FHitResult HitResult;
-	World->SweepSingleByChannel(HitResult, TraceStart, TraceEnd, FQuat::Identity,
-	                            ECC_Visibility, FCollisionShape::MakeSphere(Radius), Params);
+	const FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(Radius);
+	const bool bHit = World->SweepSingleByChannel(HitResult, TraceStart, TraceEnd, FQuat::Identity,
+	                                              ECC_Visibility, FCollisionShape::MakeSphere(Radius), Params);
+
+	if (DrawDebugTrace)
+	{
+		UALSDebugComponent::DrawDebugSphereTraceSingle(World,
+		                                               TraceStart,
+		                                               TraceEnd,
+		                                               SphereCollisionShape,
+		                                               DebugType,
+		                                               bHit,
+		                                               HitResult,
+		                                               FLinearColor(0.130706f, 0.896269f, 0.144582f, 1.0f),  // light green
+		                                               FLinearColor(0.932733f, 0.29136f, 1.0f, 1.0f),        // light purple
+		                                               1.0f);
+	}
 
 	return !(HitResult.bBlockingHit || HitResult.bStartPenetrating);
 }

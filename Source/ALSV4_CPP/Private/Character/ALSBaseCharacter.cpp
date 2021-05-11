@@ -12,6 +12,8 @@
 #include "Character/Animation/ALSCharacterAnimInstance.h"
 #include "Character/Animation/ALSPlayerCameraBehavior.h"
 #include "Library/ALSMathLibrary.h"
+#include "Components/ALSDebugComponent.h"
+
 #include "Components/CapsuleComponent.h"
 #include "Components/TimelineComponent.h"
 #include "Curves/CurveFloat.h"
@@ -151,6 +153,8 @@ void AALSBaseCharacter::BeginPlay()
 	{
 		MainAnimInstance->SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);
 	}
+
+	DebugComponent = FindComponentByClass<UALSDebugComponent>();
 }
 
 void AALSBaseCharacter::PreInitializeComponents()
@@ -752,12 +756,28 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 	const FVector TraceVect(TargetRagdollLocation.X, TargetRagdollLocation.Y,
 	                        TargetRagdollLocation.Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 
+	UWorld* World = GetWorld();
+	check(World);
+
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 
 	FHitResult HitResult;
-	GetWorld()->LineTraceSingleByChannel(HitResult, TargetRagdollLocation, TraceVect,
-	                                     ECC_Visibility, Params);
+	const bool bHit = World->LineTraceSingleByChannel(HitResult, TargetRagdollLocation, TraceVect,
+	                                                  ECC_Visibility, Params);
+
+	if (DebugComponent && DebugComponent->GetShowTraces())
+	{
+		UALSDebugComponent::DrawDebugLineTraceSingle(World,
+		                                             TargetRagdollLocation,
+		                                             TraceVect,
+		                                             EDrawDebugTrace::Type::ForOneFrame,
+		                                             bHit,
+		                                             HitResult,
+		                                             FLinearColor::Red,
+		                                             FLinearColor::Green,
+		                                             1.0f);
+	}
 
 	bRagdollOnGround = HitResult.IsValidBlockingHit();
 	FVector NewRagdollLoc = TargetRagdollLocation;
