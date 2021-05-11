@@ -14,7 +14,6 @@
 #include "Library/ALSMathLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/TimelineComponent.h"
-#include "Curves/CurveVector.h"
 #include "Curves/CurveFloat.h"
 #include "Character/ALSCharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
