@@ -17,6 +17,8 @@
 
 #include "ALSBaseCharacter.generated.h"
 
+// forward declarations
+class UALSDebugComponent;
 class UTimelineComponent;
 class UAnimInstance;
 class UAnimMontage;
@@ -644,4 +646,7 @@ protected:
 
 	/** We won't use curve based movement and a few other features on networked games */
 	bool bEnableNetworkOptimizations = false;
+
+private:
+	UALSDebugComponent* DebugComponent = nullptr;
 };
