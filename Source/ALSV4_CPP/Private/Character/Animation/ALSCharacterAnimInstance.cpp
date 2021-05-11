@@ -13,6 +13,40 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+
+const FName NAME_BasePose_CLF(TEXT("BasePose_CLF"));
+const FName NAME_BasePose_N(TEXT("BasePose_N"));
+const FName NAME_Enable_FootIK_R(TEXT("Enable_FootIK_R"));
+const FName NAME_Enable_FootIK_L(TEXT("Enable_FootIK_L"));
+const FName NAME_Enable_HandIK_L(TEXT("Enable_HandIK_L"));
+const FName NAME_Enable_HandIK_R(TEXT("Enable_HandIK_R"));
+const FName NAME_Enable_Transition(TEXT("Enable_Transition"));
+const FName NAME_FootLock_L(TEXT("FootLock_L"));
+const FName NAME_FootLock_R(TEXT("FootLock_R"));
+const FName NAME_Grounded___Slot(TEXT("Grounded Slot"));
+const FName NAME_Layering_Arm_L(TEXT("Layering_Arm_L"));
+const FName NAME_Layering_Arm_L_Add(TEXT("Layering_Arm_L_Add"));
+const FName NAME_Layering_Arm_L_LS(TEXT("Layering_Arm_L_LS"));
+const FName NAME_Layering_Arm_R(TEXT("Layering_Arm_R"));
+const FName NAME_Layering_Arm_R_Add(TEXT("Layering_Arm_R_Add"));
+const FName NAME_Layering_Arm_R_LS(TEXT("Layering_Arm_R_LS"));
+const FName NAME_Layering_Hand_L(TEXT("Layering_Hand_L"));
+const FName NAME_Layering_Hand_R(TEXT("Layering_Hand_R"));
+const FName NAME_Layering_Head_Add(TEXT("Layering_Head_Add"));
+const FName NAME_Layering_Spine_Add(TEXT("Layering_Spine_Add"));
+const FName NAME_Mask_AimOffset(TEXT("Mask_AimOffset"));
+const FName NAME_Mask_LandPrediction(TEXT("Mask_LandPrediction"));
+const FName NAME__ALSCharacterAnimInstance__RotationAmount(TEXT("RotationAmount"));
+const FName NAME_VB___foot_target_l(TEXT("VB foot_target_l"));
+const FName NAME_VB___foot_target_r(TEXT("VB foot_target_r"));
+const FName NAME_W_Gait(TEXT("W_Gait"));
+const FName NAME__ALSCharacterAnimInstance__root(TEXT("root"));
+
+
+FName UALSCharacterAnimInstance::NAME_ik_foot_l(TEXT("ik_foot_l"));
+FName UALSCharacterAnimInstance::NAME_ik_foot_r(TEXT("ik_foot_r"));
+
+
 void UALSCharacterAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
@@ -102,7 +136,7 @@ void UALSCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UALSCharacterAnimInstance::PlayTransition(const FALSDynamicMontageParams& Parameters)
 {
-	PlaySlotAnimationAsDynamicMontage(Parameters.Animation, FName(TEXT("Grounded Slot")),
+	PlaySlotAnimationAsDynamicMontage(Parameters.Animation, NAME_Grounded___Slot,
 	                                  Parameters.BlendInTime, Parameters.BlendOutTime, Parameters.PlayRate, 1,
 	                                  0.0f, Parameters.StartTime);
 }
@@ -148,12 +182,12 @@ bool UALSCharacterAnimInstance::CanTurnInPlace() const
 {
 	return RotationMode.LookingDirection() &&
 		CharacterInformation.ViewMode == EALSViewMode::ThirdPerson &&
-		GetCurveValue(FName(TEXT("Enable_Transition"))) >= 0.99f;
+		GetCurveValue(NAME_Enable_Transition) >= 0.99f;
 }
 
 bool UALSCharacterAnimInstance::CanDynamicTransition() const
 {
-	return GetCurveValue(FName(TEXT("Enable_Transition"))) >= 0.99f;
+	return GetCurveValue(NAME_Enable_Transition) >= 0.99f;
 }
 
 void UALSCharacterAnimInstance::PlayDynamicTransitionDelay()
@@ -231,28 +265,28 @@ void UALSCharacterAnimInstance::UpdateAimingValues(float DeltaSeconds)
 void UALSCharacterAnimInstance::UpdateLayerValues()
 {
 	// Get the Aim Offset weight by getting the opposite of the Aim Offset Mask.
-	LayerBlendingValues.EnableAimOffset = FMath::Lerp(1.0f, 0.0f, GetCurveValue(FName(TEXT("Mask_AimOffset"))));
+	LayerBlendingValues.EnableAimOffset = FMath::Lerp(1.0f, 0.0f, GetCurveValue(NAME_Mask_AimOffset));
 	// Set the Base Pose weights
-	LayerBlendingValues.BasePose_N = GetCurveValue(FName(TEXT("BasePose_N")));
-	LayerBlendingValues.BasePose_CLF = GetCurveValue(FName(TEXT("BasePose_CLF")));
+	LayerBlendingValues.BasePose_N = GetCurveValue(NAME_BasePose_N);
+	LayerBlendingValues.BasePose_CLF = GetCurveValue(NAME_BasePose_CLF);
 	// Set the Additive amount weights for each body part
-	LayerBlendingValues.Spine_Add = GetCurveValue(FName(TEXT("Layering_Spine_Add")));
-	LayerBlendingValues.Head_Add = GetCurveValue(FName(TEXT("Layering_Head_Add")));
-	LayerBlendingValues.Arm_L_Add = GetCurveValue(FName(TEXT("Layering_Arm_L_Add")));
-	LayerBlendingValues.Arm_R_Add = GetCurveValue(FName(TEXT("Layering_Arm_R_Add")));
+	LayerBlendingValues.Spine_Add = GetCurveValue(NAME_Layering_Spine_Add);
+	LayerBlendingValues.Head_Add = GetCurveValue(NAME_Layering_Head_Add);
+	LayerBlendingValues.Arm_L_Add = GetCurveValue(NAME_Layering_Arm_L_Add);
+	LayerBlendingValues.Arm_R_Add = GetCurveValue(NAME_Layering_Arm_R_Add);
 	// Set the Hand Override weights
-	LayerBlendingValues.Hand_R = GetCurveValue(FName(TEXT("Layering_Hand_R")));
-	LayerBlendingValues.Hand_L = GetCurveValue(FName(TEXT("Layering_Hand_L")));
+	LayerBlendingValues.Hand_R = GetCurveValue(NAME_Layering_Hand_R);
+	LayerBlendingValues.Hand_L = GetCurveValue(NAME_Layering_Hand_L);
 	// Blend and set the Hand IK weights to ensure they only are weighted if allowed by the Arm layers.
-	LayerBlendingValues.EnableHandIK_L = FMath::Lerp(0.0f, GetCurveValue(FName(TEXT("Enable_HandIK_L"))),
-	                                                 GetCurveValue(FName(TEXT("Layering_Arm_L"))));
-	LayerBlendingValues.EnableHandIK_R = FMath::Lerp(0.0f, GetCurveValue(FName(TEXT("Enable_HandIK_R"))),
-	                                                 GetCurveValue(FName(TEXT("Layering_Arm_R"))));
+	LayerBlendingValues.EnableHandIK_L = FMath::Lerp(0.0f, GetCurveValue(NAME_Enable_HandIK_L),
+	                                                 GetCurveValue(NAME_Layering_Arm_L));
+	LayerBlendingValues.EnableHandIK_R = FMath::Lerp(0.0f, GetCurveValue(NAME_Enable_HandIK_R),
+	                                                 GetCurveValue(NAME_Layering_Arm_R));
 	// Set whether the arms should blend in mesh space or local space.
 	// The Mesh space weight will always be 1 unless the Local Space (LS) curve is fully weighted.
-	LayerBlendingValues.Arm_L_LS = GetCurveValue(FName(TEXT("Layering_Arm_L_LS")));
+	LayerBlendingValues.Arm_L_LS = GetCurveValue(NAME_Layering_Arm_L_LS);
 	LayerBlendingValues.Arm_L_MS = static_cast<float>(1 - FMath::FloorToInt(LayerBlendingValues.Arm_L_LS));
-	LayerBlendingValues.Arm_R_LS = GetCurveValue(FName(TEXT("Layering_Arm_R_LS")));
+	LayerBlendingValues.Arm_R_LS = GetCurveValue(NAME_Layering_Arm_R_LS);
 	LayerBlendingValues.Arm_R_MS = static_cast<float>(1 - FMath::FloorToInt(LayerBlendingValues.Arm_R_LS));
 }
 
@@ -262,10 +296,10 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 	FVector FootOffsetRTarget = FVector::ZeroVector;
 
 	// Update Foot Locking values.
-	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), FName(TEXT("FootLock_L")),
+	SetFootLocking(DeltaSeconds, NAME_Enable_FootIK_L, NAME_FootLock_L,
 	               IkFootL_BoneName, FootIKValues.FootLock_L_Alpha, FootIKValues.UseFootLockCurve_L,
 	               FootIKValues.FootLock_L_Location, FootIKValues.FootLock_L_Rotation);
-	SetFootLocking(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), FName(TEXT("FootLock_R")),
+	SetFootLocking(DeltaSeconds, NAME_Enable_FootIK_R, NAME_FootLock_R,
 	               IkFootR_BoneName, FootIKValues.FootLock_R_Alpha, FootIKValues.UseFootLockCurve_R,
 	               FootIKValues.FootLock_R_Location, FootIKValues.FootLock_R_Rotation);
 
@@ -278,10 +312,10 @@ void UALSCharacterAnimInstance::UpdateFootIK(float DeltaSeconds)
 	else if (!MovementState.Ragdoll())
 	{
 		// Update all Foot Lock and Foot Offset values when not In Air
-		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_L")), IkFootL_BoneName, FName(TEXT("root")),
+		SetFootOffsets(DeltaSeconds, NAME_Enable_FootIK_L, IkFootL_BoneName, NAME__ALSCharacterAnimInstance__root,
 		               FootOffsetLTarget,
 		               FootIKValues.FootOffset_L_Location, FootIKValues.FootOffset_L_Rotation);
-		SetFootOffsets(DeltaSeconds, FName(TEXT("Enable_FootIK_R")), IkFootR_BoneName, FName(TEXT("root")),
+		SetFootOffsets(DeltaSeconds, NAME_Enable_FootIK_R, IkFootR_BoneName, NAME__ALSCharacterAnimInstance__root,
 		               FootOffsetRTarget,
 		               FootIKValues.FootOffset_R_Location, FootIKValues.FootOffset_R_Rotation);
 		SetPelvisIKOffset(DeltaSeconds, FootOffsetLTarget, FootOffsetRTarget);
@@ -302,7 +336,7 @@ void UALSCharacterAnimInstance::SetFootLocking(float DeltaSeconds, FName EnableF
 
 	if (UseFootLockCurve)
 	{
-		UseFootLockCurve = FMath::Abs(GetCurveValue(FName(TEXT("RotationAmount")))) <= 0.001f ||
+		UseFootLockCurve = FMath::Abs(GetCurveValue(NAME__ALSCharacterAnimInstance__RotationAmount)) <= 0.001f ||
 			Character->GetLocalRole() != ROLE_AutonomousProxy;
 		FootLockCurveVal = GetCurveValue(FootLockCurve) * (1.f / GetSkelMeshComponent()->AnimUpdateRateParams->UpdateRate);
 	}
@@ -368,7 +402,7 @@ void UALSCharacterAnimInstance::SetPelvisIKOffset(float DeltaSeconds, FVector Fo
 {
 	// Calculate the Pelvis Alpha by finding the average Foot IK weight. If the alpha is 0, clear the offset.
 	FootIKValues.PelvisAlpha =
-		(GetCurveValue(FName(TEXT("Enable_FootIK_L"))) + GetCurveValue(FName(TEXT("Enable_FootIK_R")))) / 2.0f;
+		(GetCurveValue(NAME_Enable_FootIK_L) + GetCurveValue(NAME_Enable_FootIK_R)) / 2.0f;
 
 	if (FootIKValues.PelvisAlpha > 0.0f)
 	{
@@ -511,7 +545,7 @@ void UALSCharacterAnimInstance::DynamicTransitionCheck()
 	// Because only the IK_Foot bone can be locked, the separate virtual bone allows the system to know its desired location when locked.
 	FTransform SocketTransformA = GetOwningComponent()->GetSocketTransform(IkFootL_BoneName, RTS_Component);
 	FTransform SocketTransformB = GetOwningComponent()->GetSocketTransform(
-		FName(TEXT("VB foot_target_l")), RTS_Component);
+		NAME_VB___foot_target_l, RTS_Component);
 	float Distance = (SocketTransformB.GetLocation() - SocketTransformA.GetLocation()).Size();
 	if (Distance > Config.DynamicTransitionThreshold)
 	{
@@ -525,7 +559,7 @@ void UALSCharacterAnimInstance::DynamicTransitionCheck()
 	}
 
 	SocketTransformA = GetOwningComponent()->GetSocketTransform(IkFootR_BoneName, RTS_Component);
-	SocketTransformB = GetOwningComponent()->GetSocketTransform(FName(TEXT("VB foot_target_r")), RTS_Component);
+	SocketTransformB = GetOwningComponent()->GetSocketTransform(NAME_VB___foot_target_r, RTS_Component);
 	Distance = (SocketTransformB.GetLocation() - SocketTransformA.GetLocation()).Size();
 	if (Distance > Config.DynamicTransitionThreshold)
 	{
@@ -605,7 +639,7 @@ void UALSCharacterAnimInstance::UpdateInAirValues(float DeltaSeconds)
 void UALSCharacterAnimInstance::UpdateRagdollValues()
 {
 	// Scale the Flail Rate by the velocity length. The faster the ragdoll moves, the faster the character will flail.
-	const float VelocityLength = GetOwningComponent()->GetPhysicsLinearVelocity(FName(TEXT("root"))).Size();
+	const float VelocityLength = GetOwningComponent()->GetPhysicsLinearVelocity(NAME__ALSCharacterAnimInstance__root).Size();
 	FlailRate = FMath::GetMappedRangeValueClamped({0.0f, 1000.0f}, {0.0f, 1.0f}, VelocityLength);
 }
 
@@ -659,12 +693,12 @@ float UALSCharacterAnimInstance::CalculateStrideBlend() const
 	// the movement speed, preventing the character from needing to play a half walk+half run blend.
 	// The curves are used to map the stride amount to the speed for maximum control.
 	const float CurveTime = CharacterInformation.Speed / GetOwningComponent()->GetComponentScale().Z;
-	const float ClampedGait = GetAnimCurveClamped(FName(TEXT("W_Gait")), -1.0, 0.0f, 1.0f);
+	const float ClampedGait = GetAnimCurveClamped(NAME_W_Gait, -1.0, 0.0f, 1.0f);
 	const float LerpedStrideBlend =
 		FMath::Lerp(StrideBlend_N_Walk->GetFloatValue(CurveTime), StrideBlend_N_Run->GetFloatValue(CurveTime),
 		            ClampedGait);
 	return FMath::Lerp(LerpedStrideBlend, StrideBlend_C_Walk->GetFloatValue(CharacterInformation.Speed),
-	                   GetCurveValue(FName(TEXT("BasePose_CLF"))));
+	                   GetCurveValue(NAME_BasePose_CLF));
 }
 
 float UALSCharacterAnimInstance::CalculateWalkRunBlend() const
@@ -681,10 +715,10 @@ float UALSCharacterAnimInstance::CalculateStandingPlayRate() const
 	// The value is also divided by the Stride Blend and the mesh scale so that the play rate increases as the stride or scale gets smaller
 	const float LerpedSpeed = FMath::Lerp(CharacterInformation.Speed / Config.AnimatedWalkSpeed,
 	                                      CharacterInformation.Speed / Config.AnimatedRunSpeed,
-	                                      GetAnimCurveClamped(FName(TEXT("W_Gait")), -1.0f, 0.0f, 1.0f));
+	                                      GetAnimCurveClamped(NAME_W_Gait, -1.0f, 0.0f, 1.0f));
 
 	const float SprintAffectedSpeed = FMath::Lerp(LerpedSpeed, CharacterInformation.Speed / Config.AnimatedSprintSpeed,
-	                                              GetAnimCurveClamped(FName(TEXT("W_Gait")), -2.0f, 0.0f, 1.0f));
+	                                              GetAnimCurveClamped(NAME_W_Gait, -2.0f, 0.0f, 1.0f));
 
 	return FMath::Clamp((SprintAffectedSpeed / Grounded.StrideBlend) / GetOwningComponent()->GetComponentScale().Z,
 	                    0.0f, 3.0f);
@@ -744,7 +778,7 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 	if (Character->GetCharacterMovement()->IsWalkable(HitResult))
 	{
 		return FMath::Lerp(LandPredictionCurve->GetFloatValue(HitResult.Time), 0.0f,
-		                   GetCurveValue(FName(TEXT("Mask_LandPrediction"))));
+		                   GetCurveValue(NAME_Mask_LandPrediction));
 	}
 
 	return 0.0f;

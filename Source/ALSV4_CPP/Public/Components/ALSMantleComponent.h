@@ -79,9 +79,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
 	UCurveFloat* MantleTimelineCurve;
 
+	static FName NAME_IgnoreOnlyPawn;
 	/** Profile to use to detect objects we allow mantling */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
-	FName MantleObjectDetectionProfile = FName(TEXT("IgnoreOnlyPawn"));
+	FName MantleObjectDetectionProfile = NAME_IgnoreOnlyPawn;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
 	TEnumAsByte<ECollisionChannel> WalkableSurfaceDetectionChannel = ECC_Visibility;
