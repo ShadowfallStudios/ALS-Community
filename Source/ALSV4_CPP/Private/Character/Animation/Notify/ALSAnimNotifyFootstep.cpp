@@ -16,6 +16,12 @@
 #include "NiagaraFunctionLibrary.h"
 
 
+const FName NAME_Mask_FootstepSound(TEXT("Mask_FootstepSound"));
+
+FName UALSAnimNotifyFootstep::NAME_FootstepType(TEXT("FootstepType"));
+FName UALSAnimNotifyFootstep::NAME_Foot_R(TEXT("Foot_R"));
+
+
 void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
 	if (!MeshComp)
@@ -80,7 +86,7 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 				UAudioComponent* SpawnedSound = nullptr;
 
 				const float MaskCurveValue = MeshComp->GetAnimInstance()->GetCurveValue(
-					FName(TEXT("Mask_FootstepSound")));
+					NAME_Mask_FootstepSound);
 				const float FinalVolMult = bOverrideMaskCurve
 					                           ? VolumeMultiplier
 					                           : VolumeMultiplier * (1.0f - MaskCurveValue);
