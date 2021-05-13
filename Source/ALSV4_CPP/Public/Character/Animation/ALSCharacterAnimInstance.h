@@ -15,6 +15,8 @@
 
 #include "ALSCharacterAnimInstance.generated.h"
 
+// forward declarations
+class UALSDebugComponent;
 class AALSBaseCharacter;
 class UCurveFloat;
 class UAnimSequence;
@@ -30,6 +32,8 @@ class ALSV4_CPP_API UALSCharacterAnimInstance : public UAnimInstance
 
 public:
 	virtual void NativeInitializeAnimation() override;
+
+	virtual void NativeBeginPlay() override;
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
@@ -298,12 +302,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Dynamic Transition")
 	UAnimSequenceBase* TransitionAnim_L = nullptr;
 
+	static FName NAME_ik_foot_l;
+	static FName NAME_ik_foot_r;
 	/** IK Bone Names */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Anim Graph - Foot IK")
-	FName IkFootL_BoneName = FName(TEXT("ik_foot_l"));
+	FName IkFootL_BoneName = NAME_ik_foot_l;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Anim Graph - Foot IK")
-	FName IkFootR_BoneName = FName(TEXT("ik_foot_r"));
+	FName IkFootR_BoneName = NAME_ik_foot_r;
 
 private:
 	FTimerHandle OnPivotTimer;
@@ -313,4 +319,6 @@ private:
 	FTimerHandle OnJumpedTimer;
 
 	bool bCanPlayDynamicTransition = true;
+
+	UALSDebugComponent* DebugComponent = nullptr;
 };

@@ -29,8 +29,11 @@ void UALSCharacterMovementComponent::OnMovementUpdated(float DeltaTime, const FV
 	// Set Movement Settings
 	if (bRequestMovementSettingsChange)
 	{
-		MaxWalkSpeed = NewMaxWalkSpeed;
-		MaxWalkSpeedCrouched = NewMaxWalkSpeed;
+		const float UpdateMaxWalkSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
+		MaxWalkSpeed = UpdateMaxWalkSpeed;
+		MaxWalkSpeedCrouched = UpdateMaxWalkSpeed;
+
+		bRequestMovementSettingsChange = false;
 	}
 }
 
@@ -95,6 +98,7 @@ void UALSCharacterMovementComponent::FSavedMove_My::Clear()
 	Super::Clear();
 
 	bSavedRequestMovementSettingsChange = false;
+	SavedAllowedGait = EALSGait::Walking;
 }
 
 uint8 UALSCharacterMovementComponent::FSavedMove_My::GetCompressedFlags() const
@@ -116,12 +120,22 @@ void UALSCharacterMovementComponent::FSavedMove_My::SetMoveFor(ACharacter* Chara
 {
 	Super::SetMoveFor(Character, InDeltaTime, NewAccel, ClientData);
 
-	UALSCharacterMovementComponent* CharacterMovement = Cast<UALSCharacterMovementComponent>(
-		Character->GetCharacterMovement());
+	UALSCharacterMovementComponent* CharacterMovement = Cast<UALSCharacterMovementComponent>(Character->GetCharacterMovement());
 	if (CharacterMovement)
 	{
 		bSavedRequestMovementSettingsChange = CharacterMovement->bRequestMovementSettingsChange;
-		MaxSpeed = CharacterMovement->NewMaxWalkSpeed;
+		SavedAllowedGait = CharacterMovement->AllowedGait;
+	}
+}
+
+void UALSCharacterMovementComponent::FSavedMove_My::PrepMoveFor(ACharacter* Character)
+{
+	Super::PrepMoveFor(Character);
+
+	UALSCharacterMovementComponent* CharacterMovement = Cast<UALSCharacterMovementComponent>(Character->GetCharacterMovement());
+	if (CharacterMovement)
+	{
+		CharacterMovement->AllowedGait = SavedAllowedGait;
 	}
 }
 
@@ -136,9 +150,9 @@ FSavedMovePtr UALSCharacterMovementComponent::FNetworkPredictionData_Client_My::
 	return MakeShared<FSavedMove_My>();
 }
 
-void UALSCharacterMovementComponent::Server_SetMaxWalkingSpeed_Implementation(const float UpdateMaxWalkSpeed)
+void UALSCharacterMovementComponent::Server_SetAllowedGait_Implementation(const EALSGait NewAllowedGait)
 {
-	NewMaxWalkSpeed = UpdateMaxWalkSpeed;
+	AllowedGait = NewAllowedGait;
 }
 
 float UALSCharacterMovementComponent::GetMappedSpeed() const
@@ -171,19 +185,23 @@ void UALSCharacterMovementComponent::SetMovementSettings(FALSMovementSettings Ne
 	CurrentMovementSettings = NewMovementSettings;
 }
 
-void UALSCharacterMovementComponent::SetMaxWalkingSpeed(float UpdateMaxWalkSpeed)
+void UALSCharacterMovementComponent::SetAllowedGait(EALSGait NewAllowedGait)
 {
-	if (UpdateMaxWalkSpeed != NewMaxWalkSpeed)
+	if (AllowedGait != NewAllowedGait)
 	{
 		if (PawnOwner->IsLocallyControlled())
 		{
-			NewMaxWalkSpeed = UpdateMaxWalkSpeed;
-			Server_SetMaxWalkingSpeed(UpdateMaxWalkSpeed);
+			AllowedGait = NewAllowedGait;
+			if (GetCharacterOwner()->GetLocalRole() == ROLE_AutonomousProxy)
+			{
+				Server_SetAllowedGait(NewAllowedGait);
+			}
 			bRequestMovementSettingsChange = true;
 			return;
 		}
 		if (!PawnOwner->HasAuthority())
 		{
+			const float UpdateMaxWalkSpeed = CurrentMovementSettings.GetSpeedForGait(AllowedGait);
 			MaxWalkSpeed = UpdateMaxWalkSpeed;
 			MaxWalkSpeedCrouched = UpdateMaxWalkSpeed;
 		}

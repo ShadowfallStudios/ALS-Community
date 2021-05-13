@@ -29,4 +29,6 @@ public:
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
+
+	virtual FVector GetFocalPointOnActor(const AActor *Actor) const override;
 };

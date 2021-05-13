@@ -10,10 +10,18 @@
 
 #include "Character/ALSCharacter.h"
 #include "Character/Animation/ALSCharacterAnimInstance.h"
+#include "Components/ALSDebugComponent.h"
 #include "Curves/CurveVector.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Library/ALSMathLibrary.h"
+
+
+const FName NAME_MantleEnd(TEXT("MantleEnd"));
+const FName NAME_MantleUpdate(TEXT("MantleUpdate"));
+const FName NAME_MantleTimeline(TEXT("MantleTimeline"));
+
+FName UALSMantleComponent::NAME_IgnoreOnlyPawn(TEXT("IgnoreOnlyPawn"));
 
 
 UALSMantleComponent::UALSMantleComponent()
@@ -21,7 +29,7 @@ UALSMantleComponent::UALSMantleComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = true;
 
-	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(FName(TEXT("MantleTimeline")));
+	MantleTimeline = CreateDefaultSubobject<UTimelineComponent>(NAME_MantleTimeline);
 }
 
 void UALSMantleComponent::BeginPlay()
@@ -38,8 +46,8 @@ void UALSMantleComponent::BeginPlay()
 			// Bindings
 			FOnTimelineFloat TimelineUpdated;
 			FOnTimelineEvent TimelineFinished;
-			TimelineUpdated.BindUFunction(this, FName(TEXT("MantleUpdate")));
-			TimelineFinished.BindUFunction(this, FName(TEXT("MantleEnd")));
+			TimelineUpdated.BindUFunction(this, NAME_MantleUpdate);
+			TimelineFinished.BindUFunction(this, NAME_MantleEnd);
 			MantleTimeline->SetTimelineFinishedFunc(TimelineFinished);
 			MantleTimeline->SetLooping(false);
 			MantleTimeline->SetTimelineLengthMode(TL_TimelineLength);
@@ -48,6 +56,8 @@ void UALSMantleComponent::BeginPlay()
 			OwnerCharacter->JumpPressedDelegate.AddUniqueDynamic(this, &UALSMantleComponent::OnOwnerJumpInput);
 			OwnerCharacter->RagdollStateChangedDelegate.AddUniqueDynamic(
 				this, &UALSMantleComponent::OnOwnerRagdollStateChanged);
+
+			DebugComponent = OwnerCharacter->FindComponentByClass<UALSDebugComponent>();
 		}
 	}
 }
@@ -58,12 +68,12 @@ void UALSMantleComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (OwnerCharacter->GetMovementState() == EALSMovementState::InAir)
+	if (OwnerCharacter && OwnerCharacter->GetMovementState() == EALSMovementState::InAir)
 	{
 		// Perform a mantle check if falling while movement input is pressed.
 		if (OwnerCharacter->HasMovementInput())
 		{
-			MantleCheck(FallingTraceSettings);
+			MantleCheck(FallingTraceSettings, EDrawDebugTrace::Type::ForOneFrame);
 		}
 	}
 }
@@ -166,8 +176,25 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 	Params.AddIgnoredActor(OwnerCharacter);
 
 	FHitResult HitResult;
-	World->SweepSingleByProfile(HitResult, TraceStart, TraceEnd, FQuat::Identity, MantleObjectDetectionProfile,
-	                            FCollisionShape::MakeCapsule(TraceSettings.ForwardTraceRadius, HalfHeight), Params);
+	{
+		const FCollisionShape CapsuleCollisionShape = FCollisionShape::MakeCapsule(TraceSettings.ForwardTraceRadius, HalfHeight);
+		const bool bHit = World->SweepSingleByProfile(HitResult, TraceStart, TraceEnd, FQuat::Identity, MantleObjectDetectionProfile,
+	                                                  CapsuleCollisionShape, Params);
+
+		if (DebugComponent && DebugComponent->GetShowTraces())
+		{
+			UALSDebugComponent::DrawDebugCapsuleTraceSingle(World,
+			                                                TraceStart,
+			                                                TraceEnd,
+			                                                CapsuleCollisionShape,
+			                                                DebugType,
+			                                                bHit,
+			                                                HitResult,
+			                                                FLinearColor::Black,
+			                                                FLinearColor::Black,
+			                                                1.0f);
+		}
+	}
 
 	if (!HitResult.IsValidBlockingHit() || OwnerCharacter->GetCharacterMovement()->IsWalkable(HitResult))
 	{
@@ -195,9 +222,26 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 	FVector DownwardTraceStart = DownwardTraceEnd;
 	DownwardTraceStart.Z += TraceSettings.MaxLedgeHeight + TraceSettings.DownwardTraceRadius + 1.0f;
 
-	World->SweepSingleByChannel(HitResult, DownwardTraceStart, DownwardTraceEnd, FQuat::Identity,
-	                            WalkableSurfaceDetectionChannel, FCollisionShape::MakeSphere(TraceSettings.DownwardTraceRadius),
-	                            Params);
+	{
+		const FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(TraceSettings.DownwardTraceRadius);
+		const bool bHit = World->SweepSingleByChannel(HitResult, DownwardTraceStart, DownwardTraceEnd, FQuat::Identity,
+	                                                  WalkableSurfaceDetectionChannel, SphereCollisionShape,
+	                                                  Params);
+
+		if (DebugComponent && DebugComponent->GetShowTraces())
+		{
+			UALSDebugComponent::DrawDebugSphereTraceSingle(World,
+			                                               TraceStart,
+			                                               TraceEnd,
+			                                               SphereCollisionShape,
+			                                               DebugType,
+			                                               bHit,
+			                                               HitResult,
+			                                               FLinearColor::Black,
+			                                               FLinearColor::Black,
+			                                               1.0f);
+		}
+	}
 
 
 	if (!OwnerCharacter->GetCharacterMovement()->IsWalkable(HitResult))
@@ -215,7 +259,7 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 		DownTraceLocation, 2.0f, OwnerCharacter->GetCapsuleComponent());
 	const bool bCapsuleHasRoom = UALSMathLibrary::CapsuleHasRoomCheck(OwnerCharacter->GetCapsuleComponent(),
 	                                                                  CapsuleLocationFBase, 0.0f,
-	                                                                  0.0f);
+	                                                                  0.0f, DebugType, DebugComponent && DebugComponent->GetShowTraces());
 
 	if (!bCapsuleHasRoom)
 	{
@@ -362,12 +406,12 @@ void UALSMantleComponent::OnOwnerJumpInput()
 		{
 			if (OwnerCharacter->HasMovementInput())
 			{
-				MantleCheck(GroundedTraceSettings);
+				MantleCheck(GroundedTraceSettings, EDrawDebugTrace::Type::ForDuration);
 			}
 		}
 		else if (OwnerCharacter->GetMovementState() == EALSMovementState::InAir)
 		{
-			MantleCheck(FallingTraceSettings);
+			MantleCheck(FallingTraceSettings, EDrawDebugTrace::Type::ForDuration);
 		}
 	}
 }

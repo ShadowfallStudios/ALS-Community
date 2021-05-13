@@ -12,6 +12,8 @@
 #include "Camera/PlayerCameraManager.h"
 #include "ALSPlayerCameraManager.generated.h"
 
+// forward declarations
+class UALSDebugComponent;
 class AALSBaseCharacter;
 
 /**
@@ -73,4 +75,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Camera")
 	FVector DebugViewOffset;
+
+private:
+	UALSDebugComponent* DebugComponent = nullptr;
 };

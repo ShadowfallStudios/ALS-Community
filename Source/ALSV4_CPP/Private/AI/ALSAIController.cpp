@@ -7,6 +7,8 @@
 
 #include "AI/ALSAIController.h"
 
+#include "Character/ALSBaseCharacter.h"
+
 AALSAIController::AALSAIController()
 {
 }
@@ -19,4 +21,19 @@ void AALSAIController::OnPossess(APawn* InPawn)
 	{
 		RunBehaviorTree(Behaviour);
 	}
+}
+
+FVector AALSAIController::GetFocalPointOnActor(const AActor* Actor) const
+{
+	if (Actor == nullptr)
+	{
+		return FAISystem::InvalidLocation;
+	}
+	const APawn* FocusPawn = Cast<APawn>(Actor);
+	if (FocusPawn)
+	{
+		// Focus on pawn's eye view point
+		return FocusPawn->GetPawnViewLocation();
+	}
+	return Actor->GetActorLocation();
 }

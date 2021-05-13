@@ -3,12 +3,14 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
 // Original Author: Doğa Can Yanıkoğlu
-// Contributors:    
+// Contributors:    Achim Turan
 
 
 #pragma once
 
 #include "ALSCharacterEnumLibrary.h"
+
+#include "Kismet/KismetSystemLibrary.h"
 #include "CoreMinimal.h"
 #include "Library/ALSCharacterStructLibrary.h"
 #include "ALSMathLibrary.generated.h"
@@ -51,7 +53,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Math Utils")
 	static bool CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector TargetLocation, float HeightOffset,
-	                                float RadiusOffset);
+	                                float RadiusOffset, EDrawDebugTrace::Type DebugType = EDrawDebugTrace::Type::None, bool DrawDebugTrace = false);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Math Utils")
 	static bool AngleInRange(float Angle, float MinAngle, float MaxAngle, float Buffer, bool IncreaseBuffer);

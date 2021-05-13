@@ -31,9 +31,11 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 		virtual uint8 GetCompressedFlags() const override;
 		virtual void SetMoveFor(ACharacter* Character, float InDeltaTime, FVector const& NewAccel,
 		                        class FNetworkPredictionData_Client_Character& ClientData) override;
+		virtual void PrepMoveFor(class ACharacter* Character) override;
 
 		// Walk Speed Update
 		uint8 bSavedRequestMovementSettingsChange : 1;
+		EALSGait SavedAllowedGait = EALSGait::Walking;
 	};
 
 	class FNetworkPredictionData_Client_My : public FNetworkPredictionData_Client_Character
@@ -60,7 +62,7 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 	uint8 bRequestMovementSettingsChange = 1;
 
 	UPROPERTY()
-	float NewMaxWalkSpeed = 0;
+	EALSGait AllowedGait = EALSGait::Walking;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Movement System")
 	FALSMovementSettings CurrentMovementSettings;
@@ -73,8 +75,8 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 
 	// Set Max Walking Speed (Called from the owning client)
 	UFUNCTION(BlueprintCallable, Category = "Movement Settings")
-	void SetMaxWalkingSpeed(float UpdateMaxWalkSpeed);
+	void SetAllowedGait(EALSGait NewAllowedGait);
 
 	UFUNCTION(Reliable, Server, Category = "Movement Settings")
-	void Server_SetMaxWalkingSpeed(float UpdateMaxWalkSpeed);
+	void Server_SetAllowedGait(EALSGait NewAllowedGait);
 };
