@@ -183,6 +183,7 @@ void UALSCharacterMovementComponent::SetMovementSettings(FALSMovementSettings Ne
 {
 	// Set the current movement settings from the owner
 	CurrentMovementSettings = NewMovementSettings;
+	bRequestMovementSettingsChange = true;
 }
 
 void UALSCharacterMovementComponent::SetAllowedGait(EALSGait NewAllowedGait)
