@@ -10,6 +10,7 @@
 
 #include "Components/AudioComponent.h"
 #include "Engine/DataTable.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Library/ALSCharacterStructLibrary.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "NiagaraSystem.h"
@@ -46,25 +47,8 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 
 		FHitResult Hit;
 
-		ECollisionChannel CollisionChannel = UEngineTypes::ConvertToCollisionChannel(TraceChannel);
-
-		FCollisionQueryParams Params(SCENE_QUERY_STAT(ALSFootstep), true /*bTraceComplex*/, MeshOwner);
-		Params.bReturnPhysicalMaterial = true;
-		for (auto& Child : MeshOwner->Children)
-		{
-			Params.AddIgnoredActor(Child);
-		}
-
-		bool const bHit = MeshComp->GetWorld() ? World->LineTraceSingleByChannel(Hit, FootLocation, TraceEnd, CollisionChannel, Params) : false;
-
-#if ENABLE_DRAW_DEBUG
-		if (MeshComp->GetWorld())
-		{
-			DrawDebugLineTraceSingle(MeshComp->GetWorld(), FootLocation, TraceEnd, DrawDebugType, bHit, Hit, TraceColor, TraceHitColor, DrawTime);
-		}
-#endif
-
-		if (bHit)
+		if (UKismetSystemLibrary::LineTraceSingle(MeshOwner /*used by bIgnoreSelf*/, FootLocation, TraceEnd, TraceChannel, true /*bTraceComplex*/, MeshOwner->Children,
+		                                          DrawDebugType, Hit, true /*bIgnoreSelf*/))
 		{
 			if (!Hit.PhysMaterial.Get())
 			{
