@@ -154,6 +154,8 @@ void AALSBaseCharacter::BeginPlay()
 		MainAnimInstance->SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);
 	}
 
+	MyCharacterMovementComponent->SetMovementSettings(GetTargetMovementSettings());
+
 	DebugComponent = FindComponentByClass<UALSDebugComponent>();
 }
 
@@ -877,6 +879,8 @@ void AALSBaseCharacter::OnStanceChanged(const EALSStance PreviousStance)
 	{
 		CameraBehavior->Stance = Stance;
 	}
+
+	MyCharacterMovementComponent->SetMovementSettings(GetTargetMovementSettings());
 }
 
 void AALSBaseCharacter::OnRotationModeChanged(EALSRotationMode PreviousRotationMode)
@@ -893,6 +897,8 @@ void AALSBaseCharacter::OnRotationModeChanged(EALSRotationMode PreviousRotationM
 	{
 		CameraBehavior->SetRotationMode(RotationMode);
 	}
+
+	MyCharacterMovementComponent->SetMovementSettings(GetTargetMovementSettings());
 }
 
 void AALSBaseCharacter::OnGaitChanged(const EALSGait PreviousGait)
@@ -1073,9 +1079,6 @@ void AALSBaseCharacter::UpdateCharacterMovement()
 	{
 		SetGait(ActualGait);
 	}
-
-	// Get the Current Movement Settings and pass it through to the movement component.
-	MyCharacterMovementComponent->SetMovementSettings(GetTargetMovementSettings());
 
 	// Update the Character Max Walk Speed to the configured speeds based on the currently Allowed Gait.
 	MyCharacterMovementComponent->SetAllowedGait(AllowedGait);
