@@ -153,6 +153,27 @@ void UALSDebugComponent::BeginPlay()
 	}
 }
 
+void UALSDebugComponent::SetDynamicMaterials_Implementation()
+{
+	if (OwnerCharacter)
+	{
+		Head = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Head_MAT")));
+		Torso = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Torso_MAT")));
+		Shoulder_L = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Shoulder_L_MAT")));
+		UpperArm_L = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("UpperArm_L_MAT")));
+		LowerArm_L = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("LowerArm_L_MAT")));
+		Hand_L = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Hand_L_MAT")));
+		Shoulder_R = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Shoulder_R_MAT")));
+		UpperArm_R = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("UpperArm_R_MAT")));
+		LowerArm_R = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("LowerArm_R_MAT")));
+		Hand_R = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Hand_R_MAT")));
+		Pelvis = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Pelvis_MAT")));
+		UpperLegs = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("UpperLeg_MAT")));
+		LowerLegs = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("LowerLeg_MAT")));
+		Feet = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Feet_MAT")));
+	}
+}
+
 void UALSDebugComponent::ToggleGlobalTimeDilationLocal(float TimeDilation)
 {
 	if (UKismetSystemLibrary::IsStandalone(this))

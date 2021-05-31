@@ -10,6 +10,7 @@
 #include "CoreMinimal.h"
 
 #include "Kismet/KismetSystemLibrary.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Components/ActorComponent.h"
 #include "ALSDebugComponent.generated.h"
 
@@ -40,9 +41,10 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
 	void SetResetColors();
 
-	/** Implemented on BP to set dynamic color materials for debugging */
-	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
+	/** BP implementable function to set dynamic color materials for debugging */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Debug")
 	void SetDynamicMaterials();
+	virtual void SetDynamicMaterials_Implementation();
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void ToggleGlobalTimeDilationLocal(float TimeDilation);
@@ -149,6 +151,48 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
 	AALSBaseCharacter* DebugFocusCharacter = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Head = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Torso = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Shoulder_L = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* UpperArm_L = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+   	UMaterialInstanceDynamic* LowerArm_L = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+   	UMaterialInstanceDynamic* Hand_L = nullptr;
+   	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Shoulder_R = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* UpperArm_R = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+   	UMaterialInstanceDynamic* LowerArm_R = nullptr;
+   	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+   	UMaterialInstanceDynamic* Hand_R = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Pelvis = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* UpperLegs = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* LowerLegs = nullptr;
+		
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Debug")
+   	UMaterialInstanceDynamic* Feet = nullptr;  	   		
 private:
 	static bool bDebugView;
 
