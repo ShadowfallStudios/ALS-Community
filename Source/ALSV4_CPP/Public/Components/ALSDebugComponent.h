@@ -229,22 +229,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
 	int32 ShirtType = 2;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
 	FLinearColor SkinColor = FLinearColor(0.760525,0.376263,0.250159,1);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
 	FLinearColor DefaultColor = FLinearColor(0.259171,0.658651,1,1);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
 	FLinearColor GlovesColor = FLinearColor(0.026042,0.026042,0.026042,1);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
 	FLinearColor ShoeColor = FLinearColor(0.75,0.75,0.75,1);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
 	FLinearColor PantsColor = FLinearColor(0.5,0.2,0.05,1);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
 	FLinearColor ShirtColor = FLinearColor(0,0,0,0);
 private:
 	static bool bDebugView;

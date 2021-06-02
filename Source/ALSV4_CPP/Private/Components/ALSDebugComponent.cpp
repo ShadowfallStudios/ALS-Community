@@ -291,7 +291,7 @@ void UALSDebugComponent::SetResetColors_Implementation()
 	if (bGloves)
 	{
 		SetMaterialInstanceColor(Hand_L, FName("BaseColor"), GlovesColor);
-		SetMaterialInstanceColor(Hand_R, FName("BaseColor"), ShoeColor);
+		SetMaterialInstanceColor(Hand_R, FName("BaseColor"), GlovesColor);
 	}
 	else
 	{
