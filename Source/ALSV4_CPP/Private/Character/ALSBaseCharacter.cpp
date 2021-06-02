@@ -951,6 +951,11 @@ void AALSBaseCharacter::OnVisibleMeshChanged(const USkeletalMesh* PrevVisibleMes
 		{
 			GetMesh()->SetMaterial(MaterialIndex, nullptr);
 		}
+
+		if (DebugComponent)
+		{
+			DebugComponent->SetDynamicMaterials();
+		}
 	}
 
 	// Force set variables in anim bp. This ensures anim instance & character stay synchronized on mesh changes

@@ -13,6 +13,7 @@
 #include "Character/Animation/ALSPlayerCameraBehavior.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/KismetMathLibrary.h"
 
 bool UALSDebugComponent::bDebugView = false;
 bool UALSDebugComponent::bShowTraces = false;
@@ -150,6 +151,173 @@ void UALSDebugComponent::BeginPlay()
 			// therefore the index will be set to the first element in the array.
 			FocusedDebugCharacterIndex = 0;
 		}
+	}
+}
+
+void UALSDebugComponent::UpdateColoringSystem_Implementation()
+{
+	FLinearColor NewColor;
+
+	NewColor = UKismetMathLibrary::LinearColorLerp(OverlayLayerColor,AdditiveAmountColor,OwnerCharacter->GetAnimCurveValue(FName("Layering_Head_Add")));
+	NewColor = UKismetMathLibrary::LinearColorLerp(BaseLayerColor,NewColor,OwnerCharacter->GetAnimCurveValue(FName("Layering_Head")));
+	SetMaterialInstanceColor(Head, FName("BaseColor"), NewColor);
+
+	NewColor = UKismetMathLibrary::LinearColorLerp(OverlayLayerColor,AdditiveAmountColor,OwnerCharacter->GetAnimCurveValue(FName("Layering_Spine_Add")));
+	NewColor = UKismetMathLibrary::LinearColorLerp(BaseLayerColor,NewColor,OwnerCharacter->GetAnimCurveValue(FName("Layering_Spine")));
+	SetMaterialInstanceColor(Torso, FName("BaseColor"), NewColor);
+
+	NewColor = UKismetMathLibrary::LinearColorLerp(BaseLayerColor,AdditiveAmountColor,OwnerCharacter->GetAnimCurveValue(FName("Layering_Pelvis")));
+	SetMaterialInstanceColor(Pelvis, FName("BaseColor"), NewColor);
+
+	NewColor = UKismetMathLibrary::LinearColorLerp(BaseLayerColor,AdditiveAmountColor,OwnerCharacter->GetAnimCurveValue(FName("Layering_Legs")));
+	SetMaterialInstanceColor(UpperLegs, FName("BaseColor"), NewColor);
+	SetMaterialInstanceColor(LowerLegs, FName("BaseColor"), NewColor);
+	SetMaterialInstanceColor(Feet, FName("BaseColor"), NewColor);
+
+	NewColor = UKismetMathLibrary::LinearColorLerp(OverlayLayerColor,AdditiveAmountColor,OwnerCharacter->GetAnimCurveValue(FName("Layering_Arm_L_Add")));
+	NewColor = UKismetMathLibrary::LinearColorLerp(BaseLayerColor,NewColor,OwnerCharacter->GetAnimCurveValue(FName("Layering_Arm_L")));
+	SetMaterialInstanceColor(Shoulder_L, FName("BaseColor"), NewColor);
+	SetMaterialInstanceColor(UpperArm_L, FName("BaseColor"), NewColor);
+	SetMaterialInstanceColor(LowerArm_L, FName("BaseColor"), NewColor);
+
+	NewColor = UKismetMathLibrary::LinearColorLerp(NewColor,FLinearColor::Black,OwnerCharacter->GetAnimCurveValue(FName("Layering_Hand_L")));
+	NewColor = UKismetMathLibrary::LinearColorLerp(NewColor,HandIKColor,OwnerCharacter->GetAnimCurveValue(FName("Enable_HandIK_L")));
+	SetMaterialInstanceColor(Hand_L, FName("BaseColor"), NewColor);
+
+	NewColor = UKismetMathLibrary::LinearColorLerp(OverlayLayerColor,AdditiveAmountColor,OwnerCharacter->GetAnimCurveValue(FName("Layering_Arm_R_Add")));
+	NewColor = UKismetMathLibrary::LinearColorLerp(BaseLayerColor,NewColor,OwnerCharacter->GetAnimCurveValue(FName("Layering_Arm_R")));
+	SetMaterialInstanceColor(Shoulder_R, FName("BaseColor"), NewColor);
+	SetMaterialInstanceColor(UpperArm_R, FName("BaseColor"), NewColor);
+	SetMaterialInstanceColor(LowerArm_R, FName("BaseColor"), NewColor);
+
+	NewColor = UKismetMathLibrary::LinearColorLerp(NewColor,FLinearColor::Black,OwnerCharacter->GetAnimCurveValue(FName("Layering_Hand_R")));
+	NewColor = UKismetMathLibrary::LinearColorLerp(NewColor,HandIKColor,OwnerCharacter->GetAnimCurveValue(FName("Enable_HandIK_R")));
+	SetMaterialInstanceColor(Hand_R, FName("BaseColor"), NewColor);
+}
+
+void UALSDebugComponent::SetResetColors_Implementation()
+{
+	if (bSolidColor)
+	{
+		SetMaterialInstanceColor(Head, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(Torso, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(Shoulder_L, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(UpperArm_L, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(LowerArm_L, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(Hand_L, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(Shoulder_R, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(UpperArm_R, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(LowerArm_R, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(Hand_R, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(Pelvis, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(UpperLegs, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(LowerLegs, FName("BaseColor"), DefaultColor);
+		SetMaterialInstanceColor(Feet, FName("BaseColor"), DefaultColor);
+		return;
+	}
+
+	SetMaterialInstanceColor(Head, FName("BaseColor"), SkinColor);
+
+	switch (ShirtType)
+	{
+		case 0:
+			SetMaterialInstanceColor(Torso, FName("BaseColor"), SkinColor);
+			SetMaterialInstanceColor(Shoulder_L, FName("BaseColor"), SkinColor);
+			SetMaterialInstanceColor(UpperArm_L, FName("BaseColor"), SkinColor);
+			SetMaterialInstanceColor(LowerArm_L, FName("BaseColor"), SkinColor);
+			SetMaterialInstanceColor(Shoulder_R, FName("BaseColor"), SkinColor);
+			SetMaterialInstanceColor(UpperArm_R, FName("BaseColor"), SkinColor);
+			SetMaterialInstanceColor(LowerArm_R, FName("BaseColor"), SkinColor);
+			break;
+		case 1:
+			SetMaterialInstanceColor(Torso, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(Shoulder_L, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(UpperArm_L, FName("BaseColor"), SkinColor);
+			SetMaterialInstanceColor(LowerArm_L, FName("BaseColor"), SkinColor);
+			SetMaterialInstanceColor(Shoulder_R, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(UpperArm_R, FName("BaseColor"), SkinColor);
+			SetMaterialInstanceColor(LowerArm_R, FName("BaseColor"), SkinColor);
+			break;
+		case 2:
+		default:
+			SetMaterialInstanceColor(Torso, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(Shoulder_L, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(UpperArm_L, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(LowerArm_L, FName("BaseColor"), SkinColor);
+			SetMaterialInstanceColor(Shoulder_R, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(UpperArm_R, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(LowerArm_R, FName("BaseColor"), SkinColor);
+			break;
+		case 3:
+			SetMaterialInstanceColor(Torso, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(Shoulder_L, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(UpperArm_L, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(LowerArm_L, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(Shoulder_R, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(UpperArm_R, FName("BaseColor"), ShirtColor);
+			SetMaterialInstanceColor(LowerArm_R, FName("BaseColor"), ShirtColor);
+			break;
+	}
+
+	switch (PantsType)
+	{
+		case 0:
+			SetMaterialInstanceColor(Pelvis, FName("BaseColor"), PantsColor);
+			SetMaterialInstanceColor(UpperLegs, FName("BaseColor"), SkinColor);
+			SetMaterialInstanceColor(LowerLegs, FName("BaseColor"), SkinColor);
+			break;
+		case 1:
+			SetMaterialInstanceColor(Pelvis, FName("BaseColor"), PantsColor);
+			SetMaterialInstanceColor(UpperLegs, FName("BaseColor"), PantsColor);
+			SetMaterialInstanceColor(LowerLegs, FName("BaseColor"), SkinColor);
+			break;
+		case 2:
+		default:
+			SetMaterialInstanceColor(Pelvis, FName("BaseColor"), PantsColor);
+			SetMaterialInstanceColor(UpperLegs, FName("BaseColor"), PantsColor);
+			SetMaterialInstanceColor(LowerLegs, FName("BaseColor"), PantsColor);
+			break;
+	}
+
+	if (bShoes)
+	{
+		SetMaterialInstanceColor(Feet, FName("BaseColor"), ShoeColor);
+	}
+	else
+	{
+		SetMaterialInstanceColor(Feet, FName("BaseColor"), SkinColor);
+	}
+
+	if (bGloves)
+	{
+		SetMaterialInstanceColor(Hand_L, FName("BaseColor"), GlovesColor);
+		SetMaterialInstanceColor(Hand_R, FName("BaseColor"), ShoeColor);
+	}
+	else
+	{
+		SetMaterialInstanceColor(Hand_L, FName("BaseColor"), SkinColor);
+		SetMaterialInstanceColor(Hand_R, FName("BaseColor"), SkinColor);
+	}
+}
+
+void UALSDebugComponent::SetDynamicMaterials_Implementation()
+{
+	if (OwnerCharacter)
+	{
+		Head = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Head_MAT")));
+		Torso = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Torso_MAT")));
+		Shoulder_L = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Shoulder_L_MAT")));
+		UpperArm_L = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("UpperArm_L_MAT")));
+		LowerArm_L = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("LowerArm_L_MAT")));
+		Hand_L = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Hand_L_MAT")));
+		Shoulder_R = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Shoulder_R_MAT")));
+		UpperArm_R = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("UpperArm_R_MAT")));
+		LowerArm_R = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("LowerArm_R_MAT")));
+		Hand_R = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Hand_R_MAT")));
+		Pelvis = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Pelvis_MAT")));
+		UpperLegs = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("UpperLeg_MAT")));
+		LowerLegs = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("LowerLeg_MAT")));
+		Feet = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Feet_MAT")));
 	}
 }
 
@@ -318,3 +486,11 @@ void UALSDebugComponent::DrawDebugSphereTraceSingle(const UWorld* World,
 	}
 }
 
+void UALSDebugComponent::SetMaterialInstanceColor(UMaterialInstanceDynamic* MaterialInstance,
+	const FName ParameterName, FLinearColor Value)
+{
+	if (MaterialInstance != nullptr)
+	{
+		MaterialInstance->SetVectorParameterValue(ParameterName, Value);
+	}
+}

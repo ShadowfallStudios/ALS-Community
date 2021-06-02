@@ -10,6 +10,7 @@
 #include "CoreMinimal.h"
 
 #include "Kismet/KismetSystemLibrary.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Components/ActorComponent.h"
 #include "ALSDebugComponent.generated.h"
 
@@ -28,21 +29,24 @@ public:
 
 	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
 
-	/** Implemented on BP to update layering colors */
-	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
-	void UpdateColoringSystem();
-
 	/** Implement on BP to draw debug spheres */
 	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
 	void DrawDebugSpheres();
 
-	/** Implemented on BP to set/reset layering colors */
-	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
-	void SetResetColors();
+	/** BP implementable function to update layering colors */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Debug")
+	void UpdateColoringSystem();
+	virtual void UpdateColoringSystem_Implementation();
 
-	/** Implemented on BP to set dynamic color materials for debugging */
-	UFUNCTION(BlueprintImplementableEvent, Category = "ALS|Debug")
+	/** BP implementable function to set/reset layering colors */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Debug")
+	void SetResetColors();
+	virtual void SetResetColors_Implementation();
+
+	/** BP implementable function to set dynamic color materials for debugging */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Debug")
 	void SetDynamicMaterials();
+	virtual void SetDynamicMaterials_Implementation();
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void ToggleGlobalTimeDilationLocal(float TimeDilation);
@@ -125,6 +129,9 @@ public:
 	                                       FLinearColor TraceHitColor,
 	                                       float DrawTime);
 
+	static void SetMaterialInstanceColor(UMaterialInstanceDynamic* MaterialInstance,
+									const FName ParameterName,
+									FLinearColor Value);
 protected:
 	virtual void BeginPlay() override;
 
@@ -143,12 +150,102 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
 	USkeletalMesh* DebugSkeletalMesh = nullptr;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
 	TArray<AALSBaseCharacter*> AvailableDebugCharacters;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
 	AALSBaseCharacter* DebugFocusCharacter = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Head = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Torso = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Shoulder_L = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* UpperArm_L = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* LowerArm_L = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Hand_L = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Shoulder_R = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* UpperArm_R = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* LowerArm_R = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Hand_R = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Pelvis = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* UpperLegs = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* LowerLegs = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
+	UMaterialInstanceDynamic* Feet = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Colors")
+	FLinearColor AdditiveAmountColor = FLinearColor(1,0,0,1);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Colors")
+	FLinearColor OverlayLayerColor = FLinearColor(1,1,1,1);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Colors")
+	FLinearColor BaseLayerColor = FLinearColor(0,0,0,1);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Colors")
+	FLinearColor HandIKColor = FLinearColor(0,1,0,1);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Colors")
+	FLinearColor HandColor = FLinearColor(0,0.66,1,1);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
+	bool bSolidColor = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
+	bool bShoes = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
+	bool bGloves = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
+	int32 PantsType = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
+	int32 ShirtType = 2;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	FLinearColor SkinColor = FLinearColor(0.760525,0.376263,0.250159,1);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	FLinearColor DefaultColor = FLinearColor(0.259171,0.658651,1,1);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	FLinearColor GlovesColor = FLinearColor(0.026042,0.026042,0.026042,1);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	FLinearColor ShoeColor = FLinearColor(0.75,0.75,0.75,1);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	FLinearColor PantsColor = FLinearColor(0.5,0.2,0.05,1);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	FLinearColor ShirtColor = FLinearColor(0,0,0,0);
 private:
 	static bool bDebugView;
 
@@ -163,7 +260,7 @@ private:
 	bool bDebugMeshVisible = false;
 
 	USkeletalMesh* DefaultSkeletalMesh = nullptr;
-	
+
 	/// Stores the index, which is used to select the next focused debug ALSBaseCharacter.
 	/// If no characters where found during BeginPlay the value should be set to INDEX_NONE.
 	int32 FocusedDebugCharacterIndex = INDEX_NONE;
