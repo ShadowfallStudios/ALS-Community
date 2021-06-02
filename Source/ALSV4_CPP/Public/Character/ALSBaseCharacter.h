@@ -386,40 +386,58 @@ protected:
 
 	/** Input */
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void PlayerForwardMovementInput(float Value);
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void PlayerRightMovementInput(float Value);
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void PlayerCameraUpInput(float Value);
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void PlayerCameraRightInput(float Value);
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void JumpPressedAction();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void JumpReleasedAction();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void SprintPressedAction();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void SprintReleasedAction();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void AimPressedAction();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void AimReleasedAction();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void CameraPressedAction();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void CameraReleasedAction();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void OnSwitchCameraMode();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void StancePressedAction();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void WalkPressedAction();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void RagdollPressedAction();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void VelocityDirectionPressedAction();
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
 	void LookingDirectionPressedAction();
 
 	/** Replication */
