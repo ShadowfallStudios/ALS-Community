@@ -41,8 +41,7 @@ protected:
 	virtual void UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera")
-	static FVector CalculateAxisIndependentLag(
-		FVector CurrentLocation, FVector TargetLocation, FRotator CameraRotation, FVector LagSpeeds, float DeltaTime);
+	FVector CalculateAxisIndependentLag(FVector CurrentLocation, FVector TargetLocation, FRotator CameraRotation, FVector LagSpeeds, float DeltaTime);
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Camera")
 	bool CustomCameraBehavior(float DeltaTime, FVector& Location, FRotator& Rotation, float& FOV);
@@ -78,4 +77,6 @@ protected:
 
 private:
 	UALSDebugComponent* DebugComponent = nullptr;
+
+	FVector lastPivotVelocity = FVector(0,0,0);
 };
