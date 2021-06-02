@@ -35,5 +35,10 @@ Replicated and optimized community version of [Advanced Locomotion System V4](ht
 - Launch the project, and enable plugin content viewer as seen below. This will show contents of the plugin in your content browser:
 ![image](https://github.com/dyanikoglu/ALS-Community/raw/main/Resources/Readme_Content_1.png)
 
+## Functions To Override In Blueprints
+- There are a few functions you will need to override in blueprints. You will also need to update these functions for every new overlay state you add. These are commented in the C++ code, but are listed here for quick reference as well.
+- In your player character blueprint: **GetGetUpAnimation** & **GetRollAnimation**
+- In the MantleComponent: **GetMantleAsset**
+
 ## License & Contribution
 **Source code** of the plugin is licensed under MIT license, and other developers are encouraged to fork the repository, open issues & pull requests to help the development.
