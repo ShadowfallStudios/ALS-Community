@@ -132,6 +132,9 @@ public:
 	static void SetMaterialInstanceColor(UMaterialInstanceDynamic* MaterialInstance,
 									const FName ParameterName,
 									FLinearColor Value);
+
+	static UMaterialInstanceDynamic* CreateMaterialInstance(AALSBaseCharacter* OwnerCharacter,
+									const FName MaterialName);
 protected:
 	virtual void BeginPlay() override;
 

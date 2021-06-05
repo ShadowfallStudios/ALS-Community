@@ -304,20 +304,20 @@ void UALSDebugComponent::SetDynamicMaterials_Implementation()
 {
 	if (OwnerCharacter)
 	{
-		Head = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Head_MAT")));
-		Torso = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Torso_MAT")));
-		Shoulder_L = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Shoulder_L_MAT")));
-		UpperArm_L = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("UpperArm_L_MAT")));
-		LowerArm_L = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("LowerArm_L_MAT")));
-		Hand_L = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Hand_L_MAT")));
-		Shoulder_R = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Shoulder_R_MAT")));
-		UpperArm_R = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("UpperArm_R_MAT")));
-		LowerArm_R = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("LowerArm_R_MAT")));
-		Hand_R = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Hand_R_MAT")));
-		Pelvis = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Pelvis_MAT")));
-		UpperLegs = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("UpperLeg_MAT")));
-		LowerLegs = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("LowerLeg_MAT")));
-		Feet = OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(OwnerCharacter->GetMesh()->GetMaterialIndex(FName("Feet_MAT")));
+		Head = CreateMaterialInstance(OwnerCharacter, FName("Head_MAT"));
+		Torso = CreateMaterialInstance(OwnerCharacter, FName("Torso_MAT"));
+		Shoulder_L = CreateMaterialInstance(OwnerCharacter, FName("Shoulder_L_MAT"));
+		UpperArm_L = CreateMaterialInstance(OwnerCharacter, FName("UpperArm_L_MAT"));
+		LowerArm_L = CreateMaterialInstance(OwnerCharacter, FName("LowerArm_L_MAT"));
+		Hand_L = CreateMaterialInstance(OwnerCharacter, FName("Hand_L_MAT"));
+		Shoulder_R = CreateMaterialInstance(OwnerCharacter, FName("Shoulder_R_MAT"));
+		UpperArm_R = CreateMaterialInstance(OwnerCharacter, FName("UpperArm_R_MAT"));
+		LowerArm_R = CreateMaterialInstance(OwnerCharacter, FName("LowerArm_R_MAT"));
+		Hand_R = CreateMaterialInstance(OwnerCharacter, FName("Hand_R_MAT"));
+		Pelvis = CreateMaterialInstance(OwnerCharacter, FName("Pelvis_MAT"));
+		UpperLegs = CreateMaterialInstance(OwnerCharacter, FName("UpperLeg_MAT"));
+		LowerLegs = CreateMaterialInstance(OwnerCharacter, FName("LowerLeg_MAT"));
+		Feet = CreateMaterialInstance(OwnerCharacter, FName("Feet_MAT"));
 	}
 }
 
@@ -493,4 +493,16 @@ void UALSDebugComponent::SetMaterialInstanceColor(UMaterialInstanceDynamic* Mate
 	{
 		MaterialInstance->SetVectorParameterValue(ParameterName, Value);
 	}
+}
+
+UMaterialInstanceDynamic* UALSDebugComponent::CreateMaterialInstance(AALSBaseCharacter* OwnerCharacter,	const FName MaterialName)
+{
+	const int32 MaterialIndex = OwnerCharacter->GetMesh()->GetMaterialIndex(MaterialName);
+	if (MaterialIndex != -1)
+	{
+		return OwnerCharacter->GetMesh()->CreateDynamicMaterialInstance(MaterialIndex);
+	}
+
+	return nullptr;
+
 }
