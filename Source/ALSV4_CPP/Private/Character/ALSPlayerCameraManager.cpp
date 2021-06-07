@@ -95,11 +95,13 @@ void AALSPlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, floa
 				OutVT.POV.Rotation = OutRotation;
 				OutVT.POV.FOV = OutFOV;
 			}
-			else {
+			else
+            {
 				OutVT.Target->CalcCamera(DeltaTime, OutVT.POV);
 			}
 		}
-		else {
+		else
+        {
 			OutVT.Target->CalcCamera(DeltaTime, OutVT.POV);
 		}
 	}
