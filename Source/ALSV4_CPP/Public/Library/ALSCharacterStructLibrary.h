@@ -10,6 +10,8 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Materials/MaterialInterface.h"
 #include "Library/ALSCharacterEnumLibrary.h"
 
 #include "ALSCharacterStructLibrary.generated.h"

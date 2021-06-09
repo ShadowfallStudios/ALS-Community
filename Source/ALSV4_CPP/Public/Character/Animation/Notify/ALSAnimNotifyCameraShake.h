@@ -9,6 +9,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Camera/CameraShakeBase.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "ALSAnimNotifyCameraShake.generated.h"
 
