@@ -1341,6 +1341,10 @@ void AALSBaseCharacter::JumpPressedAction()
 				UnCrouch();
 			}
 		}
+		else if (MovementState == EALSMovementState::InAir)
+		{
+			Jump();
+		}
 		else if (MovementState == EALSMovementState::Ragdoll)
 		{
 			ReplicatedRagdollEnd();
