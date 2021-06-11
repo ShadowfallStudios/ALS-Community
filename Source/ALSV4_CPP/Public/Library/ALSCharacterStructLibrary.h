@@ -225,6 +225,46 @@ struct FALSMovementStateSettings : public FTableRowBase
 };
 
 USTRUCT(BlueprintType)
+struct FALSInputSettings
+{
+	GENERATED_BODY()
+
+	/*Note: Setting this to false, doesnt mean the character cannot aim. It means it cannot switch from aim to no-aim. 
+	The aim mode can still be set via corresponding functions so the character aims all the time.*/
+	UPROPERTY(EditAnywhere, Category = "Input Settings")
+		bool bCanAim = true;
+
+	UPROPERTY(EditAnywhere, Category = "Input Settings")
+		bool bCanChangeCameraPerspective = true;
+
+	UPROPERTY(EditAnywhere, Category = "Input Settings")
+		bool bCanSwitchShoulders = true;
+
+	UPROPERTY(EditAnywhere, Category = "Input Settings")
+		bool bCanChangeRotationMode = true;
+
+	UPROPERTY(EditAnywhere, Category = "Input Settings")
+		bool bCanRoll = true;
+
+	UPROPERTY(EditAnywhere, Category = "Input Settings")
+		bool bCanSprint = true;
+
+	UPROPERTY(EditAnywhere, Category = "Input Settings")
+		bool bCanWalk = true;
+
+	//Change this on Character Movement Component. This variable doesn't do anything. Left here just to direct users to the correct place.
+	UPROPERTY(BlueprintReadOnly, Category = "Input Settings")
+		bool bCanCrouch = true;
+
+	UPROPERTY(EditAnywhere, Category = "Input Settings")
+		bool bCanTriggerRagdoll = true;
+
+	//Change this on Character. This variable doesn't do anything. Left here just to direct users to the correct place.
+	UPROPERTY(BlueprintReadOnly, Category = "Input Settings")
+		bool bCanJump = true;
+};
+
+USTRUCT(BlueprintType)
 struct FALSRotateInPlaceAsset
 {
 	GENERATED_BODY()
