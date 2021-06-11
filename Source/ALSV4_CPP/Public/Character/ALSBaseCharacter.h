@@ -398,11 +398,9 @@ protected:
 
 	void JumpReleasedAction();
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Input")
-		void SprintPressedAction();
+	void SprintPressedAction();
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Input")
-		void SprintReleasedAction();
+	void SprintReleasedAction();
 
 	void AimPressedAction();
 
@@ -494,10 +492,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ALS|Movement System")
 	FDataTableRowHandle MovementModel;
-
-	/** Input Settings*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ALS|Input Settings")
-	FALSInputSettings InputSettings;
 
 	/** Essential Information */
 
