@@ -791,7 +791,7 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 	}
 	if (!IsLocallyControlled())
 	{
-		ServerRagdollPull = FMath::FInterpTo(ServerRagdollPull, 750, DeltaTime, 0.6);
+		ServerRagdollPull = FMath::FInterpTo(ServerRagdollPull, 750.0f, DeltaTime, 0.6f);
 		float RagdollSpeed = FVector(LastRagdollVelocity.X, LastRagdollVelocity.Y, 0).Size();
 		FName RagdollSocketPullName = RagdollSpeed > 300 ? NAME_spine_03 : NAME_pelvis;
 		GetMesh()->AddForce(
