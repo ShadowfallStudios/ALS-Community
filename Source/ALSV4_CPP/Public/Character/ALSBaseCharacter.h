@@ -133,9 +133,6 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "ALS|Character States")
 	EALSOverlayState GetOverlayState() const { return OverlayState; }
 
-	UFUNCTION(BlueprintGetter, Category = "ALS|Character States")
-	EALSOverlayState SwitchRight() const { return OverlayState; }
-
 	/** Landed, Jumped, Rolling, Mantling and Ragdoll*/
 	/** On Landed*/
 	UFUNCTION(BlueprintCallable, Category = "ALS|Character States")
