@@ -117,9 +117,9 @@ FVector AALSPlayerCameraManager::CalculateAxisIndependentLag(FVector CurrentLoca
 	const FVector UnrotatedTargetLoc = CameraRotation.UnrotateVector(TargetLocation);
 
 	const FVector ResultVector(
-		FMath::FInterpTo(UnrotatedCurLoc.X, UnrotatedTargetLoc.X, DeltaTime, LagSpeeds.X),
-		FMath::FInterpTo(UnrotatedCurLoc.Y, UnrotatedTargetLoc.Y, DeltaTime, LagSpeeds.Y),
-		FMath::FInterpTo(UnrotatedCurLoc.Z, UnrotatedTargetLoc.Z, DeltaTime, LagSpeeds.Z));
+		FMath::FInterpConstantTo(UnrotatedCurLoc.X, UnrotatedTargetLoc.X, DeltaTime, LagSpeeds.X),
+		FMath::FInterpConstantTo(UnrotatedCurLoc.Y, UnrotatedTargetLoc.Y, DeltaTime, LagSpeeds.Y),
+		FMath::FInterpConstantTo(UnrotatedCurLoc.Z, UnrotatedTargetLoc.Z, DeltaTime, LagSpeeds.Z));
 
 	return CameraRotation.RotateVector(ResultVector);
 }
