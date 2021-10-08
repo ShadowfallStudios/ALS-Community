@@ -16,7 +16,7 @@ Replicated and optimized community version of [Advanced Locomotion System V4](ht
 ## Features
 - Based on latest marketplace release (V4) of Advanced Locomotion System
 - Fully implemented in C++
-- Full replication support with low bandwidth usage
+- Full replication support with low bandwidth usage (Ragdoll replication is in experimental state)
 - Plugin structure
 - Highly optimized for production
 - Mantling and debugging features are implemented as a separate plug-in/plug-out type actor component to reduce total overhead on base character class
