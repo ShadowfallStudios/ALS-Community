@@ -34,7 +34,7 @@ void UALSDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 #if !UE_BUILD_SHIPPING
-	if (!OwnerCharacter)
+	if (!OwnerCharacter || OwnerCharacter->GetLocalRole() != ROLE_Authority)
 	{
 		return;
 	}
