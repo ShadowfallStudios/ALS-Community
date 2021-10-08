@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "4.20.1",
+	"VersionName": "4.21",
 	"FriendlyName": "Advanced Locomotion System Community",
 	"Description": "Performance optimized community version of LongmireLocomotion's Advanced Locomotion System V4",
 	"Category": "Animation",
@@ -10,7 +10,7 @@
 	"DocsURL": "https://github.com/dyanikoglu/ALS-Community",
 	"MarketplaceURL": "https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1",
 	"SupportURL": "https://github.com/dyanikoglu/ALS-Community/issues",
-	"EngineVersion": "4.26.0",
+	"EngineVersion": "4.27.0",
 	"EnabledByDefault": true,
 	"CanContainContent": true,
 	"IsBetaVersion": false,
