@@ -237,6 +237,9 @@ void AALSBaseCharacter::RagdollStart()
 	// Step 3: Stop any active montages.
 	MainAnimInstance->Montage_Stop(0.2f);
 
+	// Fixes character mesh is showing default A pose for a split-second just before ragdoll ends in listen server games
+	GetMesh()->bOnlyAllowAutonomousTickPose = true;
+	
 	SetReplicateMovement(false);
 }
 
@@ -250,7 +253,9 @@ void AALSBaseCharacter::RagdollEnd()
 		GetMesh()->VisibilityBasedAnimTickOption = DefVisBasedTickOp;
 	}
 
+	// Revert back to default settings
 	MyCharacterMovementComponent->bIgnoreClientMovementErrorChecksAndCorrection = 0;
+	GetMesh()->bOnlyAllowAutonomousTickPose = false;
 	SetReplicateMovement(true);
 
 	if (!MainAnimInstance)
@@ -791,7 +796,7 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 	}
 	if (!IsLocallyControlled())
 	{
-		ServerRagdollPull = FMath::FInterpTo(ServerRagdollPull, 750, DeltaTime, 0.6);
+		ServerRagdollPull = FMath::FInterpTo(ServerRagdollPull, 750.0f, DeltaTime, 0.6f);
 		float RagdollSpeed = FVector(LastRagdollVelocity.X, LastRagdollVelocity.Y, 0).Size();
 		FName RagdollSocketPullName = RagdollSpeed > 300 ? NAME_spine_03 : NAME_pelvis;
 		GetMesh()->AddForce(
