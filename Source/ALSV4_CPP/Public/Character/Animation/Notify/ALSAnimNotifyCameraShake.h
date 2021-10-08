@@ -13,7 +13,7 @@
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "ALSAnimNotifyCameraShake.generated.h"
 
-class UMatineeCameraShake;
+class UCameraShakeBase;
 
 /**
  * Generic camera shake animation notify for pawns with controller enabled

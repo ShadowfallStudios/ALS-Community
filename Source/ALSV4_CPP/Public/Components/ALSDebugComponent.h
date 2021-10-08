@@ -11,9 +11,11 @@
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/ActorComponent.h"
+#include "CollisionShape.h"
 #include "ALSDebugComponent.generated.h"
 
 class AALSBaseCharacter;
+class USkeletalMesh;
 
 UCLASS(Blueprintable, BlueprintType)
 class ALSV4_CPP_API UALSDebugComponent : public UActorComponent
@@ -162,6 +164,7 @@ private:
 
 	bool bDebugMeshVisible = false;
 
+	UPROPERTY()
 	USkeletalMesh* DefaultSkeletalMesh = nullptr;
 	
 	/// Stores the index, which is used to select the next focused debug ALSBaseCharacter.
