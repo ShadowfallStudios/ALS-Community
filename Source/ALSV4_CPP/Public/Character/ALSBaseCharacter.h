@@ -645,5 +645,6 @@ protected:
 	bool bEnableNetworkOptimizations = false;
 
 private:
+	UPROPERTY()
 	UALSDebugComponent* DebugComponent = nullptr;
 };
