@@ -90,7 +90,7 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 
 				const float MaskCurveValue = MeshComp->GetAnimInstance()->GetCurveValue(
 					NAME_Mask_FootstepSound);
-				const float FinalVolMult = bOverrideMaskCurve
+				const float FinalVolMultiplier = bOverrideMaskCurve
 					                           ? VolumeMultiplier
 					                           : VolumeMultiplier * (1.0f - MaskCurveValue);
 
@@ -99,14 +99,16 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 				case EALSSpawnType::Location:
 					SpawnedSound = UGameplayStatics::SpawnSoundAtLocation(
 						World, HitFX->Sound.Get(), Hit.Location + HitFX->SoundLocationOffset,
-						HitFX->SoundRotationOffset, FinalVolMult, PitchMultiplier);
+						HitFX->SoundRotationOffset, FinalVolMultiplier, PitchMultiplier);
 					break;
 
 				case EALSSpawnType::Attached:
 					SpawnedSound = UGameplayStatics::SpawnSoundAttached(HitFX->Sound.Get(), MeshComp, FootSocketName,
 					                                                    HitFX->SoundLocationOffset,
 					                                                    HitFX->SoundRotationOffset,
-					                                                    HitFX->SoundAttachmentType, true, FinalVolMult,
+					                                                    HitFX->SoundAttachmentType,
+					                                                    true,
+					                                                    FinalVolMultiplier,
 					                                                    PitchMultiplier);
 
 					break;
@@ -119,19 +121,18 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 
 			if (bSpawnNiagara && HitFX->NiagaraSystem.LoadSynchronous())
 			{
-				UNiagaraComponent* SpawnedParticle = nullptr;
 				const FVector Location = Hit.Location + MeshOwner->GetTransform().TransformVector(
 					HitFX->DecalLocationOffset);
 
 				switch (HitFX->NiagaraSpawnType)
 				{
 				case EALSSpawnType::Location:
-					SpawnedParticle = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+					UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 						World, HitFX->NiagaraSystem.Get(), Location, FootRotation + HitFX->NiagaraRotationOffset);
 					break;
 
 				case EALSSpawnType::Attached:
-					SpawnedParticle = UNiagaraFunctionLibrary::SpawnSystemAttached(
+					UNiagaraFunctionLibrary::SpawnSystemAttached(
 						HitFX->NiagaraSystem.Get(), MeshComp, FootSocketName, HitFX->NiagaraLocationOffset,
 						HitFX->NiagaraRotationOffset, HitFX->NiagaraAttachmentType, true);
 					break;
@@ -147,17 +148,16 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 				                                  bMirrorDecalY ? -HitFX->DecalSize.Y : HitFX->DecalSize.Y,
 				                                  bMirrorDecalZ ? -HitFX->DecalSize.Z : HitFX->DecalSize.Z);
 
-				UDecalComponent* SpawnedDecal = nullptr;
 				switch (HitFX->DecalSpawnType)
 				{
 				case EALSSpawnType::Location:
-					SpawnedDecal = UGameplayStatics::SpawnDecalAtLocation(
+					UGameplayStatics::SpawnDecalAtLocation(
 						World, HitFX->DecalMaterial.Get(), DecalSize, Location,
 						FootRotation + HitFX->DecalRotationOffset, HitFX->DecalLifeSpan);
 					break;
 
 				case EALSSpawnType::Attached:
-					SpawnedDecal = UGameplayStatics::SpawnDecalAttached(HitFX->DecalMaterial.Get(), DecalSize,
+					UGameplayStatics::SpawnDecalAttached(HitFX->DecalMaterial.Get(), DecalSize,
 					                                                    Hit.Component.Get(), NAME_None, Location,
 					                                                    FootRotation + HitFX->DecalRotationOffset,
 					                                                    HitFX->DecalAttachmentType,

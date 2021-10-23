@@ -86,7 +86,7 @@ void UALSDebugComponent::PreviousFocusedDebugCharacter()
 {
 	if (FocusedDebugCharacterIndex == INDEX_NONE)
 	{ // Return here as no AALSBaseCharacter where found during call of BeginPlay.
-		// Moreover, for savety set also no focused debug character.
+		// Moreover, for safety set also no focused debug character.
 		DebugFocusCharacter = nullptr;
 		return;
 	}
@@ -103,7 +103,7 @@ void UALSDebugComponent::NextFocusedDebugCharacter()
 {
 	if (FocusedDebugCharacterIndex == INDEX_NONE)
 	{ // Return here as no AALSBaseCharacter where found during call of BeginPlay.
-		// Moreover, for savety set also no focused debug character.
+		// Moreover, for safety set also no focused debug character.
 		DebugFocusCharacter = nullptr;
 		return;
 	}
@@ -213,8 +213,8 @@ void UALSDebugComponent::DrawDebugLineTraceSingle(const UWorld* World,
 {
 	if (DrawDebugType != EDrawDebugTrace::None)
 	{
-		bool bPersistent = DrawDebugType == EDrawDebugTrace::Persistent;
-		float LifeTime = (DrawDebugType == EDrawDebugTrace::ForDuration) ? DrawTime : 0.f;
+		const bool bPersistent = DrawDebugType == EDrawDebugTrace::Persistent;
+		const float LifeTime = (DrawDebugType == EDrawDebugTrace::ForDuration) ? DrawTime : 0.f;
 
 		if (bHit && OutHit.bBlockingHit)
 		{
@@ -244,8 +244,8 @@ void UALSDebugComponent::DrawDebugCapsuleTraceSingle(const UWorld* World,
 {
 	if (DrawDebugType != EDrawDebugTrace::None)
 	{
-		bool bPersistent = DrawDebugType == EDrawDebugTrace::Persistent;
-		float LifeTime = (DrawDebugType == EDrawDebugTrace::ForDuration) ? DrawTime : 0.f;
+		const bool bPersistent = DrawDebugType == EDrawDebugTrace::Persistent;
+		const float LifeTime = (DrawDebugType == EDrawDebugTrace::ForDuration) ? DrawTime : 0.f;
 
 		if (bHit && OutHit.bBlockingHit)
 		{
@@ -300,8 +300,8 @@ void UALSDebugComponent::DrawDebugSphereTraceSingle(const UWorld* World,
 {
 	if (DrawDebugType != EDrawDebugTrace::None)
 	{
-		bool bPersistent = DrawDebugType == EDrawDebugTrace::Persistent;
-		float LifeTime = (DrawDebugType == EDrawDebugTrace::ForDuration) ? DrawTime : 0.f;
+		const bool bPersistent = DrawDebugType == EDrawDebugTrace::Persistent;
+		const float LifeTime = (DrawDebugType == EDrawDebugTrace::ForDuration) ? DrawTime : 0.f;
 
 		if (bHit && OutHit.bBlockingHit)
 		{

@@ -142,7 +142,7 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 	MantleTimeline->SetPlayRate(MantleParams.PlayRate);
 	MantleTimeline->PlayFromStart();
 
-	// Step 7: Play the Anim Montaget if valid.
+	// Step 7: Play the Anim Montage if valid.
 	if (IsValid(MantleParams.AnimMontage))
 	{
 		OwnerCharacter->GetMainAnimInstance()->Montage_Play(MantleParams.AnimMontage, MantleParams.PlayRate,
@@ -312,7 +312,7 @@ void UALSMantleComponent::Multicast_MantleStart_Implementation(float MantleHeigh
 	}
 }
 
-// This function is called by "MantleTimeline" using BindUFunction in the AALSBaseCharacter::BeginPlay during the default settings initalization.
+// This function is called by "MantleTimeline" using BindUFunction in the AALSBaseCharacter::BeginPlay during the default settings initialization.
 void UALSMantleComponent::MantleUpdate(float BlendIn)
 {
 	if (!OwnerCharacter)
@@ -370,7 +370,7 @@ void UALSMantleComponent::MantleUpdate(float BlendIn)
 		PositionAlpha);
 
 	// Initial Blend In (controlled in the timeline curve) to allow the actor to blend into the Position/Correction
-	// curve at the midoint. This prevents pops when mantling an object lower than the animated mantle.
+	// curve at the mid point. This prevents pops when mantling an object lower than the animated mantle.
 	const FTransform& LerpedTarget =
 		UKismetMathLibrary::TLerp(UALSMathLibrary::TransfromAdd(MantleTarget, MantleActualStartOffset), ResultLerp,
 		                          BlendIn);

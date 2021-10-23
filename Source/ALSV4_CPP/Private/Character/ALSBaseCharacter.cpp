@@ -15,7 +15,6 @@
 #include "Components/ALSDebugComponent.h"
 
 #include "Components/CapsuleComponent.h"
-#include "Components/TimelineComponent.h"
 #include "Curves/CurveFloat.h"
 #include "Character/ALSCharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -156,7 +155,9 @@ void AALSBaseCharacter::BeginPlay()
 
 	MyCharacterMovementComponent->SetMovementSettings(GetTargetMovementSettings());
 
+#if !UE_BUILD_SHIPPING
 	DebugComponent = FindComponentByClass<UALSDebugComponent>();
+#endif
 }
 
 void AALSBaseCharacter::PreInitializeComponents()
@@ -720,7 +721,7 @@ void AALSBaseCharacter::RagdollUpdate(float DeltaTime)
 		                      : LastRagdollVelocity / 2;
 
 	// Use the Ragdoll Velocity to scale the ragdoll's joint strength for physical animation.
-	const float SpringValue = FMath::GetMappedRangeValueClamped({0.0f, 1000.0f}, {0.0f, 25000.0f},
+	const float SpringValue = FMath::GetMappedRangeValueClamped(FVector2D{0.0f, 1000.0f}, FVector2D{0.0f, 25000.0f},
 	                                                            LastRagdollVelocity.Size());
 	GetMesh()->SetAllMotorsAngularDriveParams(SpringValue, 0.0f, 0.0f, false);
 
@@ -772,8 +773,8 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 	FHitResult HitResult;
 	const bool bHit = World->LineTraceSingleByChannel(HitResult, TargetRagdollLocation, TraceVect,
 	                                                  ECC_Visibility, Params);
-
-	if (DebugComponent && DebugComponent->GetShowTraces())
+#if !UE_BUILD_SHIPPING
+	if (DebugComponent.IsValid() && DebugComponent->GetShowTraces())
 	{
 		UALSDebugComponent::DrawDebugLineTraceSingle(World,
 		                                             TargetRagdollLocation,
@@ -785,6 +786,7 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 		                                             FLinearColor::Green,
 		                                             1.0f);
 	}
+#endif
 
 	bRagdollOnGround = HitResult.IsValidBlockingHit();
 	FVector NewRagdollLoc = TargetRagdollLocation;

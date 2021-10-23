@@ -645,6 +645,5 @@ protected:
 	bool bEnableNetworkOptimizations = false;
 
 private:
-	UPROPERTY()
-	UALSDebugComponent* DebugComponent = nullptr;
+	TWeakObjectPtr<UALSDebugComponent> DebugComponent = nullptr;
 };

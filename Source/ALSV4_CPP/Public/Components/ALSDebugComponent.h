@@ -11,7 +11,6 @@
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/ActorComponent.h"
-#include "CollisionShape.h"
 #include "ALSDebugComponent.generated.h"
 
 class AALSBaseCharacter;
