@@ -155,9 +155,10 @@ void UALSDebugComponent::BeginPlay()
 
 void UALSDebugComponent::ToggleGlobalTimeDilationLocal(float TimeDilation)
 {
-	if (UKismetSystemLibrary::IsStandalone(this))
+	if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0))
 	{
-		UGameplayStatics::SetGlobalTimeDilation(this, TimeDilation);
+		// This will call UCheatManager::ProcessConsoleExec and eventually UCheatManager::Slomo
+		PlayerController->ServerExec(FString::Format(TEXT("Slomo {0}"), {TimeDilation}));
 	}
 }
 
