@@ -16,37 +16,33 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 
-const FName NAME_BasePose_CLF(TEXT("BasePose_CLF"));
-const FName NAME_BasePose_N(TEXT("BasePose_N"));
-const FName NAME_Enable_FootIK_R(TEXT("Enable_FootIK_R"));
-const FName NAME_Enable_FootIK_L(TEXT("Enable_FootIK_L"));
-const FName NAME_Enable_HandIK_L(TEXT("Enable_HandIK_L"));
-const FName NAME_Enable_HandIK_R(TEXT("Enable_HandIK_R"));
-const FName NAME_Enable_Transition(TEXT("Enable_Transition"));
-const FName NAME_FootLock_L(TEXT("FootLock_L"));
-const FName NAME_FootLock_R(TEXT("FootLock_R"));
-const FName NAME_Grounded___Slot(TEXT("Grounded Slot"));
-const FName NAME_Layering_Arm_L(TEXT("Layering_Arm_L"));
-const FName NAME_Layering_Arm_L_Add(TEXT("Layering_Arm_L_Add"));
-const FName NAME_Layering_Arm_L_LS(TEXT("Layering_Arm_L_LS"));
-const FName NAME_Layering_Arm_R(TEXT("Layering_Arm_R"));
-const FName NAME_Layering_Arm_R_Add(TEXT("Layering_Arm_R_Add"));
-const FName NAME_Layering_Arm_R_LS(TEXT("Layering_Arm_R_LS"));
-const FName NAME_Layering_Hand_L(TEXT("Layering_Hand_L"));
-const FName NAME_Layering_Hand_R(TEXT("Layering_Hand_R"));
-const FName NAME_Layering_Head_Add(TEXT("Layering_Head_Add"));
-const FName NAME_Layering_Spine_Add(TEXT("Layering_Spine_Add"));
-const FName NAME_Mask_AimOffset(TEXT("Mask_AimOffset"));
-const FName NAME_Mask_LandPrediction(TEXT("Mask_LandPrediction"));
-const FName NAME__ALSCharacterAnimInstance__RotationAmount(TEXT("RotationAmount"));
-const FName NAME_VB___foot_target_l(TEXT("VB foot_target_l"));
-const FName NAME_VB___foot_target_r(TEXT("VB foot_target_r"));
-const FName NAME_W_Gait(TEXT("W_Gait"));
-const FName NAME__ALSCharacterAnimInstance__root(TEXT("root"));
-
-
-FName UALSCharacterAnimInstance::NAME_ik_foot_l(TEXT("ik_foot_l"));
-FName UALSCharacterAnimInstance::NAME_ik_foot_r(TEXT("ik_foot_r"));
+static const FName NAME_BasePose_CLF(TEXT("BasePose_CLF"));
+static const FName NAME_BasePose_N(TEXT("BasePose_N"));
+static const FName NAME_Enable_FootIK_R(TEXT("Enable_FootIK_R"));
+static const FName NAME_Enable_FootIK_L(TEXT("Enable_FootIK_L"));
+static const FName NAME_Enable_HandIK_L(TEXT("Enable_HandIK_L"));
+static const FName NAME_Enable_HandIK_R(TEXT("Enable_HandIK_R"));
+static const FName NAME_Enable_Transition(TEXT("Enable_Transition"));
+static const FName NAME_FootLock_L(TEXT("FootLock_L"));
+static const FName NAME_FootLock_R(TEXT("FootLock_R"));
+static const FName NAME_Grounded___Slot(TEXT("Grounded Slot"));
+static const FName NAME_Layering_Arm_L(TEXT("Layering_Arm_L"));
+static const FName NAME_Layering_Arm_L_Add(TEXT("Layering_Arm_L_Add"));
+static const FName NAME_Layering_Arm_L_LS(TEXT("Layering_Arm_L_LS"));
+static const FName NAME_Layering_Arm_R(TEXT("Layering_Arm_R"));
+static const FName NAME_Layering_Arm_R_Add(TEXT("Layering_Arm_R_Add"));
+static const FName NAME_Layering_Arm_R_LS(TEXT("Layering_Arm_R_LS"));
+static const FName NAME_Layering_Hand_L(TEXT("Layering_Hand_L"));
+static const FName NAME_Layering_Hand_R(TEXT("Layering_Hand_R"));
+static const FName NAME_Layering_Head_Add(TEXT("Layering_Head_Add"));
+static const FName NAME_Layering_Spine_Add(TEXT("Layering_Spine_Add"));
+static const FName NAME_Mask_AimOffset(TEXT("Mask_AimOffset"));
+static const FName NAME_Mask_LandPrediction(TEXT("Mask_LandPrediction"));
+static const FName NAME__ALSCharacterAnimInstance__RotationAmount(TEXT("RotationAmount"));
+static const FName NAME_VB___foot_target_l(TEXT("VB foot_target_l"));
+static const FName NAME_VB___foot_target_r(TEXT("VB foot_target_r"));
+static const FName NAME_W_Gait(TEXT("W_Gait"));
+static const FName NAME__ALSCharacterAnimInstance__root(TEXT("root"));
 
 
 void UALSCharacterAnimInstance::NativeInitializeAnimation()
@@ -62,7 +58,7 @@ void UALSCharacterAnimInstance::NativeBeginPlay()
 	// This is the reason why it is tried here to get the ALS debug component.
 	if (APawn* Owner = TryGetPawnOwner())
 	{
-		DebugComponent = Owner->FindComponentByClass<UALSDebugComponent>();
+		ALSDebugComponent = Owner->FindComponentByClass<UALSDebugComponent>();
 	}
 }
 
@@ -486,7 +482,7 @@ void UALSCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableF
 	                                                  TraceEnd,
 	                                                  ECC_Visibility, Params);
 
-	if (DebugComponent && DebugComponent->GetShowTraces())
+	if (ALSDebugComponent && ALSDebugComponent->GetShowTraces())
 	{
 		UALSDebugComponent::DrawDebugLineTraceSingle(
 			World,
@@ -811,7 +807,7 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 	const bool bHit = World->SweepSingleByChannel(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity,
 	                                              ECC_Visibility, CapsuleCollisionShape, Params);
 
-	if (DebugComponent && DebugComponent->GetShowTraces())
+	if (ALSDebugComponent && ALSDebugComponent->GetShowTraces())
 	{
 		UALSDebugComponent::DrawDebugCapsuleTraceSingle(World,
 		                                                CapsuleWorldLoc,

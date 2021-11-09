@@ -64,7 +64,7 @@ void AALSPlayerCameraManager::OnPossess(AALSBaseCharacter* NewCharacter)
 	SetActorLocation(TPSLoc);
 	SmoothedPivotTarget.SetLocation(TPSLoc);
 
-	DebugComponent = ControlledCharacter->FindComponentByClass<UALSDebugComponent>();
+	ALSDebugComponent = ControlledCharacter->FindComponentByClass<UALSDebugComponent>();
 }
 
 float AALSPlayerCameraManager::GetCameraBehaviorParam(FName CurveName) const
@@ -202,7 +202,7 @@ bool AALSPlayerCameraManager::CustomCameraBehavior(float DeltaTime, FVector& Loc
 	const bool bHit = World->SweepSingleByChannel(HitResult, TraceOrigin, TargetCameraLocation, FQuat::Identity,
 	                                              TraceChannel, SphereCollisionShape, Params);
 
-	if (DebugComponent && DebugComponent->GetShowTraces())
+	if (ALSDebugComponent && ALSDebugComponent->GetShowTraces())
 	{
 		UALSDebugComponent::DrawDebugSphereTraceSingle(World,
 		                                               TraceOrigin,

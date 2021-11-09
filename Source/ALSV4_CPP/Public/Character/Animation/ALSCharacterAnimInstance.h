@@ -302,14 +302,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Dynamic Transition")
 	UAnimSequenceBase* TransitionAnim_L = nullptr;
 
-	static FName NAME_ik_foot_l;
-	static FName NAME_ik_foot_r;
 	/** IK Bone Names */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Anim Graph - Foot IK")
-	FName IkFootL_BoneName = NAME_ik_foot_l;
+	FName IkFootL_BoneName = FName(TEXT("ik_foot_l"));
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Anim Graph - Foot IK")
-	FName IkFootR_BoneName = NAME_ik_foot_r;
+	FName IkFootR_BoneName = FName(TEXT("ik_foot_r"));
 
 private:
 	FTimerHandle OnPivotTimer;
@@ -321,5 +319,5 @@ private:
 	bool bCanPlayDynamicTransition = true;
 
 	UPROPERTY()
-	UALSDebugComponent* DebugComponent = nullptr;
+	UALSDebugComponent* ALSDebugComponent = nullptr;
 };
