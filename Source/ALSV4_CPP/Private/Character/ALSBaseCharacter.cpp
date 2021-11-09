@@ -156,7 +156,7 @@ void AALSBaseCharacter::BeginPlay()
 
 	MyCharacterMovementComponent->SetMovementSettings(GetTargetMovementSettings());
 
-	DebugComponent = FindComponentByClass<UALSDebugComponent>();
+	ALSDebugComponent = FindComponentByClass<UALSDebugComponent>();
 }
 
 void AALSBaseCharacter::PreInitializeComponents()
@@ -773,7 +773,7 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 	const bool bHit = World->LineTraceSingleByChannel(HitResult, TargetRagdollLocation, TraceVect,
 	                                                  ECC_Visibility, Params);
 
-	if (DebugComponent && DebugComponent->GetShowTraces())
+	if (ALSDebugComponent && ALSDebugComponent->GetShowTraces())
 	{
 		UALSDebugComponent::DrawDebugLineTraceSingle(World,
 		                                             TargetRagdollLocation,
