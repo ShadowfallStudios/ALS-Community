@@ -31,6 +31,9 @@ class ALSV4_CPP_API UALSCharacterAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 
 public:
+
+	UALSCharacterAnimInstance(const FObjectInitializer& ObjectInitializer);
+
 	virtual void NativeInitializeAnimation() override;
 
 	virtual void NativeBeginPlay() override;

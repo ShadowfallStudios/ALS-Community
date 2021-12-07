@@ -45,6 +45,107 @@ static const FName NAME_W_Gait(TEXT("W_Gait"));
 static const FName NAME__ALSCharacterAnimInstance__root(TEXT("root"));
 
 
+UALSCharacterAnimInstance::UALSCharacterAnimInstance(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	//Setup Defaults so that this works right out of the gate.
+
+	//Curves
+	DiagonalScaleAmountCurve =	ConstructorHelpers::FObjectFinder<UCurveFloat>(TEXT("CurveFloat'/ALSV4_CPP/AdvancedLocomotionV4/Data/Curves/AnimationBlendCurves/DiagonalScaleAmount.DiagonalScaleAmount'")).Object;
+	StrideBlend_N_Walk =		ConstructorHelpers::FObjectFinder<UCurveFloat>(TEXT("CurveFloat'/ALSV4_CPP/AdvancedLocomotionV4/Data/Curves/AnimationBlendCurves/StrideBlend_N_Walk.StrideBlend_N_Walk'")).Object;
+	StrideBlend_N_Run =			ConstructorHelpers::FObjectFinder<UCurveFloat>(TEXT("CurveFloat'/ALSV4_CPP/AdvancedLocomotionV4/Data/Curves/AnimationBlendCurves/StrideBlend_N_Run.StrideBlend_N_Run'")).Object;
+	StrideBlend_C_Walk =		ConstructorHelpers::FObjectFinder<UCurveFloat>(TEXT("CurveFloat'/ALSV4_CPP/AdvancedLocomotionV4/Data/Curves/AnimationBlendCurves/StrideBlend_N_Walk.StrideBlend_N_Walk'")).Object;
+	LandPredictionCurve =		ConstructorHelpers::FObjectFinder<UCurveFloat>(TEXT("CurveFloat'/ALSV4_CPP/AdvancedLocomotionV4/Data/Curves/AnimationBlendCurves/LandPredictionBlend.LandPredictionBlend'")).Object;
+	LeanInAirCurve =			ConstructorHelpers::FObjectFinder<UCurveFloat>(TEXT("CurveFloat'/ALSV4_CPP/AdvancedLocomotionV4/Data/Curves/AnimationBlendCurves/LeanInAirAmount.LeanInAirAmount'")).Object;
+	YawOffset_FB =				ConstructorHelpers::FObjectFinder<UCurveVector>(TEXT("CurveVector'/ALSV4_CPP/AdvancedLocomotionV4/Data/Curves/AnimationBlendCurves/YawOffset_FB.YawOffset_FB'")).Object;
+	YawOffset_LR =				ConstructorHelpers::FObjectFinder<UCurveVector>(TEXT("CurveVector'/ALSV4_CPP/AdvancedLocomotionV4/Data/Curves/AnimationBlendCurves/YawOffset_LR.YawOffset_LR'")).Object;
+	
+	//Anims
+	TransitionAnim_L = ConstructorHelpers::FObjectFinder<UAnimSequenceBase>(TEXT("AnimSequence'/ALSV4_CPP/AdvancedLocomotionV4/CharacterAssets/MannequinSkeleton/AnimationExamples/Base/Transitions/ALS_N_Transition_L.ALS_N_Transition_L'")).Object;
+	TransitionAnim_R = ConstructorHelpers::FObjectFinder<UAnimSequenceBase>(TEXT("AnimSequence'/ALSV4_CPP/AdvancedLocomotionV4/CharacterAssets/MannequinSkeleton/AnimationExamples/Base/Transitions/ALS_N_Transition_R.ALS_N_Transition_R'")).Object;
+
+	//Turn in place
+	TurnInPlaceValues = FALSAnimTurnInPlace();
+
+	TurnInPlaceValues.TurnCheckMinAngle = 45.f;
+	TurnInPlaceValues.Turn180Threshold = 130.f;
+	TurnInPlaceValues.AimYawRateLimit = 50.f;
+	TurnInPlaceValues.MinAngleDelay = 0.f;
+	TurnInPlaceValues.MaxAngleDelay = 0.75f;
+	
+	TurnInPlaceValues.N_TurnIP_L90 = FALSTurnInPlaceAsset
+	(
+		FString(TEXT("AnimSequence'/ALSV4_CPP/AdvancedLocomotionV4/CharacterAssets/MannequinSkeleton/AnimationExamples/Base/TurnInPlace/ALS_N_TurnIP_L90.ALS_N_TurnIP_L90'")),
+		-90.f,
+		FName(TEXT("(N) Turn/Rotate")),
+		1.2f,
+		true
+	);
+
+	TurnInPlaceValues.N_TurnIP_R90 = FALSTurnInPlaceAsset
+	(
+		FString(TEXT("AnimSequence'/ALSV4_CPP/AdvancedLocomotionV4/CharacterAssets/MannequinSkeleton/AnimationExamples/Base/TurnInPlace/ALS_N_TurnIP_R90.ALS_N_TurnIP_R90'")),
+		90.f,
+		FName(TEXT("(N) Turn/Rotate")),
+		1.2f,
+		true
+	);
+
+	TurnInPlaceValues.N_TurnIP_L180 = FALSTurnInPlaceAsset
+	(
+		FString(TEXT("AnimSequence'/ALSV4_CPP/AdvancedLocomotionV4/CharacterAssets/MannequinSkeleton/AnimationExamples/Base/TurnInPlace/ALS_N_TurnIP_L180.ALS_N_TurnIP_L180'")),
+		-180.f,
+		FName(TEXT("(N) Turn/Rotate")),
+		1.2f,
+		true
+	);
+
+	TurnInPlaceValues.N_TurnIP_R180 = FALSTurnInPlaceAsset
+	(
+		FString(TEXT("AnimSequence'/ALSV4_CPP/AdvancedLocomotionV4/CharacterAssets/MannequinSkeleton/AnimationExamples/Base/TurnInPlace/ALS_N_TurnIP_R180.ALS_N_TurnIP_R180'")),
+		180.f,
+		FName(TEXT("(N) Turn/Rotate")),
+		1.2f,
+		true
+	);
+
+	TurnInPlaceValues.CLF_TurnIP_L90 = FALSTurnInPlaceAsset
+	(
+		FString(TEXT("AnimSequence'/ALSV4_CPP/AdvancedLocomotionV4/CharacterAssets/MannequinSkeleton/AnimationExamples/Base/TurnInPlace/ALS_CLF_TurnIP_L90.ALS_CLF_TurnIP_L90'")),
+		-90.f,
+		FName(TEXT("(CLF) Turn/Rotate")),
+		1.2f,
+		false
+	);
+
+	TurnInPlaceValues.CLF_TurnIP_R90 = FALSTurnInPlaceAsset
+	(
+		FString(TEXT("AnimSequence'/ALSV4_CPP/AdvancedLocomotionV4/CharacterAssets/MannequinSkeleton/AnimationExamples/Base/TurnInPlace/ALS_CLF_TurnIP_R90.ALS_CLF_TurnIP_R90'")),
+		90.f,
+		FName(TEXT("(CLF) Turn/Rotate")),
+		1.2f,
+		false
+	);
+
+	TurnInPlaceValues.CLF_TurnIP_L180 = FALSTurnInPlaceAsset
+	(
+		FString(TEXT("AnimSequence'/ALSV4_CPP/AdvancedLocomotionV4/CharacterAssets/MannequinSkeleton/AnimationExamples/Base/TurnInPlace/ALS_CLF_TurnIP_L180.ALS_CLF_TurnIP_L180'")),
+		-180.f,
+		FName(TEXT("(CLF) Turn/Rotate")),
+		1.2f,
+		false
+	);
+
+	TurnInPlaceValues.CLF_TurnIP_R180 = FALSTurnInPlaceAsset
+	(
+		FString(TEXT("AnimSequence'/ALSV4_CPP/AdvancedLocomotionV4/CharacterAssets/MannequinSkeleton/AnimationExamples/Base/TurnInPlace/ALS_CLF_TurnIP_R180.ALS_CLF_TurnIP_R180'")),
+		180.f,
+		FName(TEXT("(CLF) Turn/Rotate")),
+		1.2f,
+		false
+	);
+}
+
 void UALSCharacterAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();

@@ -72,20 +72,43 @@ struct FALSTurnInPlaceAsset
 {
 	GENERATED_BODY()
 
+	FALSTurnInPlaceAsset()
+	{
+		Animation = nullptr;
+		AnimatedAngle = 0.f;
+		SlotName = FName();
+		PlayRate = 1.f;
+		ScaleTurnAngle = false;
+	}
+	FALSTurnInPlaceAsset(
+		FString InAnimationSequencePath,
+		float InAnimatedAngle,
+		FName InSlotName,
+		float InPlayRate,
+		bool bInScaleTurningAngle
+	)
+	{
+		Animation = ConstructorHelpers::FObjectFinder<UAnimSequenceBase>(*InAnimationSequencePath).Object;
+		AnimatedAngle = InAnimatedAngle;
+		SlotName = InSlotName;
+		PlayRate = InPlayRate;
+		ScaleTurnAngle = bInScaleTurningAngle;
+	}
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Turn In Place")
 	UAnimSequenceBase* Animation = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Turn In Place")
-	float AnimatedAngle = 0.0f;
+	float AnimatedAngle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Turn In Place")
 	FName SlotName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Turn In Place")
-	float PlayRate = 1.0f;
+	float PlayRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Turn In Place")
-	bool ScaleTurnAngle = true;
+	bool ScaleTurnAngle;
 };
 
 USTRUCT(BlueprintType)
@@ -377,6 +400,8 @@ USTRUCT(BlueprintType)
 struct FALSAnimTurnInPlace
 {
 	GENERATED_BODY()
+
+	FALSAnimTurnInPlace() {};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Turn In Place")
 	float TurnCheckMinAngle = 45.0f;
