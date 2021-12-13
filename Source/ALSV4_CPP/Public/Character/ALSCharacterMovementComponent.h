@@ -21,7 +21,7 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 {
 	GENERATED_UCLASS_BODY()
 
-	class FSavedMove_My : public FSavedMove_Character
+	class ALSV4_CPP_API FSavedMove_My : public FSavedMove_Character
 	{
 	public:
 
@@ -38,7 +38,7 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 		EALSGait SavedAllowedGait = EALSGait::Walking;
 	};
 
-	class FNetworkPredictionData_Client_My : public FNetworkPredictionData_Client_Character
+	class ALSV4_CPP_API FNetworkPredictionData_Client_My : public FNetworkPredictionData_Client_Character
 	{
 	public:
 		FNetworkPredictionData_Client_My(const UCharacterMovementComponent& ClientMovement);
