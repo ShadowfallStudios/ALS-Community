@@ -385,41 +385,41 @@ protected:
 
 	/** Input */
 
-	void PlayerForwardMovementInput(float Value);
+	virtual void PlayerForwardMovementInput(float Value);
 
-	void PlayerRightMovementInput(float Value);
+	virtual void PlayerRightMovementInput(float Value);
 
-	void PlayerCameraUpInput(float Value);
+	virtual void PlayerCameraUpInput(float Value);
 
-	void PlayerCameraRightInput(float Value);
+	virtual void PlayerCameraRightInput(float Value);
 
-	void JumpPressedAction();
+	virtual void JumpPressedAction();
 
-	void JumpReleasedAction();
+	virtual void JumpReleasedAction();
 
-	void SprintPressedAction();
+	virtual void SprintPressedAction();
 
-	void SprintReleasedAction();
+	virtual void SprintReleasedAction();
 
-	void AimPressedAction();
+	virtual void AimPressedAction();
 
-	void AimReleasedAction();
+	virtual void AimReleasedAction();
 
-	void CameraPressedAction();
+	virtual void CameraPressedAction();
 
-	void CameraReleasedAction();
+	virtual void CameraReleasedAction();
 
-	void OnSwitchCameraMode();
+	virtual void OnSwitchCameraMode();
 
-	void StancePressedAction();
+	virtual void StancePressedAction();
 
-	void WalkPressedAction();
+	virtual void WalkPressedAction();
 
-	void RagdollPressedAction();
+	virtual void RagdollPressedAction();
 
-	void VelocityDirectionPressedAction();
+	virtual void VelocityDirectionPressedAction();
 
-	void LookingDirectionPressedAction();
+	virtual void LookingDirectionPressedAction();
 
 	/** Replication */
 	UFUNCTION(Category = "ALS|Replication")
