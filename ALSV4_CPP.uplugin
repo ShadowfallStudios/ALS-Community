@@ -32,6 +32,10 @@
     {
       "Name": "Niagara",
       "Enabled": true
+    },
+	{
+      "Name": "EnhancedInput",
+      "Enabled": true
     }
   ]
 }

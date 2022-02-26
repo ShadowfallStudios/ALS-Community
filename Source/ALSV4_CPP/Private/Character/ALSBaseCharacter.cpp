@@ -43,31 +43,6 @@ AALSBaseCharacter::AALSBaseCharacter(const FObjectInitializer& ObjectInitializer
 	SetReplicatingMovement(true);
 }
 
-void AALSBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAxis("MoveForward/Backwards", this, &AALSBaseCharacter::PlayerForwardMovementInput);
-	PlayerInputComponent->BindAxis("MoveRight/Left", this, &AALSBaseCharacter::PlayerRightMovementInput);
-	PlayerInputComponent->BindAxis("LookUp/Down", this, &AALSBaseCharacter::PlayerCameraUpInput);
-	PlayerInputComponent->BindAxis("LookLeft/Right", this, &AALSBaseCharacter::PlayerCameraRightInput);
-	PlayerInputComponent->BindAction("JumpAction", IE_Pressed, this, &AALSBaseCharacter::JumpPressedAction);
-	PlayerInputComponent->BindAction("JumpAction", IE_Released, this, &AALSBaseCharacter::JumpReleasedAction);
-	PlayerInputComponent->BindAction("StanceAction", IE_Pressed, this, &AALSBaseCharacter::StancePressedAction);
-	PlayerInputComponent->BindAction("WalkAction", IE_Pressed, this, &AALSBaseCharacter::WalkPressedAction);
-	PlayerInputComponent->BindAction("RagdollAction", IE_Pressed, this, &AALSBaseCharacter::RagdollPressedAction);
-	PlayerInputComponent->BindAction("SelectRotationMode_1", IE_Pressed, this,
-	                                 &AALSBaseCharacter::VelocityDirectionPressedAction);
-	PlayerInputComponent->BindAction("SelectRotationMode_2", IE_Pressed, this,
-	                                 &AALSBaseCharacter::LookingDirectionPressedAction);
-	PlayerInputComponent->BindAction("SprintAction", IE_Pressed, this, &AALSBaseCharacter::SprintPressedAction);
-	PlayerInputComponent->BindAction("SprintAction", IE_Released, this, &AALSBaseCharacter::SprintReleasedAction);
-	PlayerInputComponent->BindAction("AimAction", IE_Pressed, this, &AALSBaseCharacter::AimPressedAction);
-	PlayerInputComponent->BindAction("AimAction", IE_Released, this, &AALSBaseCharacter::AimReleasedAction);
-	PlayerInputComponent->BindAction("CameraAction", IE_Pressed, this, &AALSBaseCharacter::CameraPressedAction);
-	PlayerInputComponent->BindAction("CameraAction", IE_Released, this, &AALSBaseCharacter::CameraReleasedAction);
-}
-
 void AALSBaseCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -964,7 +939,6 @@ void AALSBaseCharacter::SetEssentialValues(float DeltaTime)
 		ReplicatedControlRotation = GetControlRotation();
 		EasedMaxAcceleration = GetCharacterMovement()->GetMaxAcceleration();
 	}
-
 	else
 	{
 		EasedMaxAcceleration = GetCharacterMovement()->GetMaxAcceleration() != 0
@@ -1232,129 +1206,104 @@ FVector AALSBaseCharacter::GetPlayerMovementInput() const
 	return (Forward + Right).GetSafeNormal();
 }
 
-void AALSBaseCharacter::PlayerForwardMovementInput(float Value)
+void AALSBaseCharacter::ForwardMovementAction_Implementation(float Value)
 {
 	if (MovementState == EALSMovementState::Grounded || MovementState == EALSMovementState::InAir)
 	{
 		// Default camera relative movement behavior
-		const float Scale = UALSMathLibrary::FixDiagonalGamepadValues(Value, GetInputAxisValue("MoveRight/Left")).Key;
 		const FRotator DirRotator(0.0f, AimingRotation.Yaw, 0.0f);
-		AddMovementInput(UKismetMathLibrary::GetForwardVector(DirRotator), Scale);
+		AddMovementInput(UKismetMathLibrary::GetForwardVector(DirRotator), Value);
 	}
 }
 
-void AALSBaseCharacter::PlayerRightMovementInput(float Value)
+void AALSBaseCharacter::RightMovementAction_Implementation(float Value)
 {
 	if (MovementState == EALSMovementState::Grounded || MovementState == EALSMovementState::InAir)
 	{
 		// Default camera relative movement behavior
-		const float Scale = UALSMathLibrary::FixDiagonalGamepadValues(GetInputAxisValue("MoveForward/Backwards"), Value)
-			.Value;
 		const FRotator DirRotator(0.0f, AimingRotation.Yaw, 0.0f);
-		AddMovementInput(UKismetMathLibrary::GetRightVector(DirRotator), Scale);
+		AddMovementInput(UKismetMathLibrary::GetRightVector(DirRotator), Value);
 	}
 }
 
-void AALSBaseCharacter::PlayerCameraUpInput(float Value)
+void AALSBaseCharacter::CameraUpAction_Implementation(float Value)
 {
 	AddControllerPitchInput(LookUpDownRate * Value);
 }
 
-void AALSBaseCharacter::PlayerCameraRightInput(float Value)
+void AALSBaseCharacter::CameraRightAction_Implementation(float Value)
 {
 	AddControllerYawInput(LookLeftRightRate * Value);
 }
 
-void AALSBaseCharacter::JumpPressedAction()
+void AALSBaseCharacter::JumpAction_Implementation(bool bValue)
 {
-	// Jump Action: Press "Jump Action" to end the ragdoll if ragdolling, stand up if crouching, or jump if standing.
-
-	if (JumpPressedDelegate.IsBound())
+	if (bValue)
 	{
-		JumpPressedDelegate.Broadcast();
-	}
-
-	if (MovementAction == EALSMovementAction::None)
-	{
-		if (MovementState == EALSMovementState::Grounded)
+		// Jump Action: Press "Jump Action" to end the ragdoll if ragdolling, stand up if crouching, or jump if standing.
+		if (JumpPressedDelegate.IsBound())
 		{
-			if (Stance == EALSStance::Standing)
+			JumpPressedDelegate.Broadcast();
+		}
+
+		if (MovementAction == EALSMovementAction::None)
+		{
+			if (MovementState == EALSMovementState::Grounded)
 			{
-				Jump();
+				if (Stance == EALSStance::Standing)
+				{
+					Jump();
+				}
+				else if (Stance == EALSStance::Crouching)
+				{
+					UnCrouch();
+				}
 			}
-			else if (Stance == EALSStance::Crouching)
+			else if (MovementState == EALSMovementState::Ragdoll)
 			{
-				UnCrouch();
+				ReplicatedRagdollEnd();
 			}
 		}
-		else if (MovementState == EALSMovementState::Ragdoll)
+	}
+	else
+	{
+		StopJumping();
+	}
+}
+
+void AALSBaseCharacter::SprintAction_Implementation(bool bValue)
+{
+	if (bValue)
+	{
+		SetDesiredGait(EALSGait::Sprinting);
+	}
+	else
+	{
+		SetDesiredGait(EALSGait::Running);
+	}
+}
+
+void AALSBaseCharacter::AimAction_Implementation(bool bValue)
+{
+	if (bValue)
+	{
+		// AimAction: Hold "AimAction" to enter the aiming mode, release to revert back the desired rotation mode.
+		SetRotationMode(EALSRotationMode::Aiming);
+	}
+	else
+	{
+		if (ViewMode == EALSViewMode::ThirdPerson)
 		{
-			ReplicatedRagdollEnd();
+			SetRotationMode(DesiredRotationMode);
+		}
+		else if (ViewMode == EALSViewMode::FirstPerson)
+		{
+			SetRotationMode(EALSRotationMode::LookingDirection);
 		}
 	}
 }
 
-void AALSBaseCharacter::JumpReleasedAction()
-{
-	StopJumping();
-}
-
-void AALSBaseCharacter::SprintPressedAction()
-{
-	SetDesiredGait(EALSGait::Sprinting);
-}
-
-void AALSBaseCharacter::SprintReleasedAction()
-{
-	SetDesiredGait(EALSGait::Running);
-}
-
-void AALSBaseCharacter::AimPressedAction()
-{
-	// AimAction: Hold "AimAction" to enter the aiming mode, release to revert back the desired rotation mode.
-	SetRotationMode(EALSRotationMode::Aiming);
-}
-
-void AALSBaseCharacter::AimReleasedAction()
-{
-	if (ViewMode == EALSViewMode::ThirdPerson)
-	{
-		SetRotationMode(DesiredRotationMode);
-	}
-	else if (ViewMode == EALSViewMode::FirstPerson)
-	{
-		SetRotationMode(EALSRotationMode::LookingDirection);
-	}
-}
-
-void AALSBaseCharacter::CameraPressedAction()
-{
-	UWorld* World = GetWorld();
-	check(World);
-	CameraActionPressedTime = World->GetTimeSeconds();
-	GetWorldTimerManager().SetTimer(OnCameraModeSwapTimer, this,
-	                                &AALSBaseCharacter::OnSwitchCameraMode, ViewModeSwitchHoldTime, false);
-}
-
-void AALSBaseCharacter::CameraReleasedAction()
-{
-	if (ViewMode == EALSViewMode::FirstPerson)
-	{
-		// Don't swap shoulders on first person mode
-		return;
-	}
-
-	UWorld* World = GetWorld();
-	check(World);
-	if (World->GetTimeSeconds() - CameraActionPressedTime < ViewModeSwitchHoldTime)
-	{
-		// Switch shoulders
-		SetRightShoulder(!bRightShoulder);
-		GetWorldTimerManager().ClearTimer(OnCameraModeSwapTimer); // Prevent mode change
-	}
-}
-
-void AALSBaseCharacter::OnSwitchCameraMode()
+void AALSBaseCharacter::CameraTapAction_Implementation()
 {
 	// Switch camera mode
 	if (ViewMode == EALSViewMode::FirstPerson)
@@ -1367,8 +1316,19 @@ void AALSBaseCharacter::OnSwitchCameraMode()
 	}
 }
 
+void AALSBaseCharacter::CameraHeldAction_Implementation()
+{
+	if (ViewMode == EALSViewMode::FirstPerson)
+	{
+		// Don't swap shoulders on first person mode
+		return;
+	}
 
-void AALSBaseCharacter::StancePressedAction()
+	// Switch shoulders
+	SetRightShoulder(!bRightShoulder);
+}
+
+void AALSBaseCharacter::StanceAction_Implementation()
 {
 	// Stance Action: Press "Stance Action" to toggle Standing / Crouching, double tap to Roll.
 
@@ -1416,7 +1376,7 @@ void AALSBaseCharacter::StancePressedAction()
 	// Notice: MovementState == EALSMovementState::InAir case is removed
 }
 
-void AALSBaseCharacter::WalkPressedAction()
+void AALSBaseCharacter::WalkAction_Implementation()
 {
 	if (DesiredGait == EALSGait::Walking)
 	{
@@ -1428,7 +1388,7 @@ void AALSBaseCharacter::WalkPressedAction()
 	}
 }
 
-void AALSBaseCharacter::RagdollPressedAction()
+void AALSBaseCharacter::RagdollAction_Implementation()
 {
 	// Ragdoll Action: Press "Ragdoll Action" to toggle the ragdoll state on or off.
 
@@ -1442,7 +1402,7 @@ void AALSBaseCharacter::RagdollPressedAction()
 	}
 }
 
-void AALSBaseCharacter::VelocityDirectionPressedAction()
+void AALSBaseCharacter::VelocityDirectionAction_Implementation()
 {
 	// Select Rotation Mode: Switch the desired (default) rotation mode to Velocity or Looking Direction.
 	// This will be the mode the character reverts back to when un-aiming
@@ -1450,7 +1410,7 @@ void AALSBaseCharacter::VelocityDirectionPressedAction()
 	SetRotationMode(EALSRotationMode::VelocityDirection);
 }
 
-void AALSBaseCharacter::LookingDirectionPressedAction()
+void AALSBaseCharacter::LookingDirectionAction_Implementation()
 {
 	SetDesiredRotationMode(EALSRotationMode::LookingDirection);
 	SetRotationMode(EALSRotationMode::LookingDirection);

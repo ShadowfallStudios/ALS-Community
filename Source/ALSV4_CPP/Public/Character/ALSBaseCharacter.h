@@ -48,8 +48,6 @@ public:
 
 	virtual void BeginPlay() override;
 	
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
 	virtual void PostInitializeComponents() override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -303,6 +301,50 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	void GetControlForwardRightVector(FVector& Forward, FVector& Right) const;
 
+	/** Input */
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void ForwardMovementAction(float Value);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void RightMovementAction(float Value);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void CameraUpAction(float Value);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void CameraRightAction(float Value);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void JumpAction(bool bValue);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void SprintAction(bool bValue);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void AimAction(bool bValue);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void CameraTapAction();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void CameraHeldAction();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void StanceAction();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void WalkAction();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void RagdollAction();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void VelocityDirectionAction();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
+	void LookingDirectionAction();
+
 protected:
 	/** Ragdoll System */
 
@@ -360,44 +402,6 @@ protected:
 
 	void ForceUpdateCharacterState();
 
-	/** Input */
-
-	void PlayerForwardMovementInput(float Value);
-
-	void PlayerRightMovementInput(float Value);
-
-	void PlayerCameraUpInput(float Value);
-
-	void PlayerCameraRightInput(float Value);
-
-	void JumpPressedAction();
-
-	void JumpReleasedAction();
-
-	void SprintPressedAction();
-
-	void SprintReleasedAction();
-
-	void AimPressedAction();
-
-	void AimReleasedAction();
-
-	void CameraPressedAction();
-
-	void CameraReleasedAction();
-
-	void OnSwitchCameraMode();
-
-	void StancePressedAction();
-
-	void WalkPressedAction();
-
-	void RagdollPressedAction();
-
-	void VelocityDirectionPressedAction();
-
-	void LookingDirectionPressedAction();
-
 	/** Replication */
 	UFUNCTION(Category = "ALS|Replication")
 	void OnRep_RotationMode(EALSRotationMode PrevRotMode);
@@ -435,10 +439,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input", BlueprintReadOnly)
 	float RollDoubleTapTimeout = 0.3f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input", BlueprintReadOnly)
-	float ViewModeSwitchHoldTime = 0.2f;
-
+	
 	UPROPERTY(Category = "ALS|Input", BlueprintReadOnly)
 	int32 TimesPressedStance = 0;
 
@@ -604,13 +605,7 @@ protected:
 
 	/** Last time the 'first' crouch/roll button is pressed */
 	float LastStanceInputTime = 0.0f;
-
-	/** Last time the camera action button is pressed */
-	float CameraActionPressedTime = 0.0f;
-
-	/* Timer to manage camera mode swap action */
-	FTimerHandle OnCameraModeSwapTimer;
-
+	
 	/* Timer to manage reset of braking friction factor after on landed event */
 	FTimerHandle OnLandedFrictionResetTimer;
 
