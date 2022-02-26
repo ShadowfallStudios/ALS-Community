@@ -665,6 +665,8 @@ void AALSBaseCharacter::GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bo
 
 void AALSBaseCharacter::RagdollUpdate(float DeltaTime)
 {
+	GetMesh()->bOnlyAllowAutonomousTickPose = false;
+	
 	// Set the Last Ragdoll Velocity.
 	const FVector NewRagdollVel = GetMesh()->GetPhysicsLinearVelocity(NAME_root);
 	LastRagdollVelocity = (NewRagdollVel != FVector::ZeroVector || IsLocallyControlled())
