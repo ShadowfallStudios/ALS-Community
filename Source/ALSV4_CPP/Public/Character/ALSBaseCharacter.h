@@ -30,6 +30,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumpPressedSignature);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRagdollStateChangedSignature, bool, bRagdollState);
 
+DECLARE_MULTICAST_DELEGATE(FOnSetupPlayerInputComponent);
+
 /*
  * Base character class
  */
@@ -176,6 +178,8 @@ public:
 
 	/** Input */
 
+	FOnSetupPlayerInputComponent OnSetupPlayerInputComponent;
+	
 	UPROPERTY(BlueprintAssignable, Category = "ALS|Input")
 	FJumpPressedSignature JumpPressedDelegate;
 
@@ -326,6 +330,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	void GetControlForwardRightVector(FVector& Forward, FVector& Right) const;
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
+	float GetLookUpDownRate() const { return LookUpDownRate; }
+
+	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
+	float GetLookLeftRightRate() const { return LookLeftRightRate; }
+
 protected:
 	/** Ragdoll System */
 
@@ -382,7 +392,8 @@ protected:
 	void SetMovementModel();
 
 	void ForceUpdateCharacterState();
-
+	
+public:
 	/** Input */
 
 	void PlayerForwardMovementInput(float Value);
@@ -409,9 +420,15 @@ protected:
 
 	void CameraReleasedAction();
 
+	void SwitchCameraPositionAction();
+	
+	void SwitchCameraModeAction();
+	
 	void OnSwitchCameraMode();
 
 	void StancePressedAction();
+	
+	void RollPressedAction();
 
 	void WalkPressedAction();
 
@@ -420,7 +437,8 @@ protected:
 	void VelocityDirectionPressedAction();
 
 	void LookingDirectionPressedAction();
-
+	
+protected:
 	/** Replication */
 	UFUNCTION(Category = "ALS|Replication")
 	void OnRep_RotationMode(EALSRotationMode PrevRotMode);
@@ -450,10 +468,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "ALS|Input")
 	EALSStance DesiredStance = EALSStance::Standing;
 
-	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input", BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input")
 	float LookUpDownRate = 1.25f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input", BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input")
 	float LookLeftRightRate = 1.25f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input", BlueprintReadOnly)
@@ -640,7 +658,7 @@ protected:
 	/* Timer to manage reset of braking friction factor after on landed event */
 	FTimerHandle OnLandedFrictionResetTimer;
 
-	/* Smooth out aiming by interping control rotation*/
+	/* Smooth out aiming by interpolating control rotation*/
 	FRotator AimingRotation = FRotator::ZeroRotator;
 
 	/** We won't use curve based movement and a few other features on networked games */
