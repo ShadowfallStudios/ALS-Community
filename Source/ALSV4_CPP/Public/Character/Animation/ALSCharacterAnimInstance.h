@@ -185,7 +185,7 @@ public:
 	FALSMovementAction MovementAction = EALSMovementAction::None;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information")
-	FALSRotationMode RotationMode = EALSRotationMode::LookingDirection;
+	FALSRotationMode RotationMode = EALSRotationMode::VelocityDirection;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information")
 	FALSGait Gait = EALSGait::Walking;

@@ -70,18 +70,8 @@ void UALSCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	if (!Character)
+	if (!Character || DeltaSeconds == 0.0f)
 	{
-		// Fix character looking right on editor
-		RotationMode = EALSRotationMode::VelocityDirection;
-
-		// Don't run in editor
-		return;
-	}
-
-	if (DeltaSeconds == 0.0f)
-	{
-		// Prevent update on the first frame (potential division by zero)
 		return;
 	}
 
