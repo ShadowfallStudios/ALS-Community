@@ -1,7 +1,7 @@
 # Advanced Locomotion System Community
 ![image](https://github.com/dyanikoglu/ALS-Community/raw/main/Resources/Readme_Content_2.gif)
 
-Replicated and optimized community version of [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1) for **Unreal Engine 4.27** with additional bug fixes.
+Replicated and optimized community version of [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1) for **Unreal Engine 5.0** with additional bug fixes.
 
 <p align="center">
   <a href="https://discord.gg/wYYMHFu"><img src="https://i.imgur.com/LP9bZQj.png"></a>
@@ -30,8 +30,7 @@ Replicated and optimized community version of [Advanced Locomotion System V4](ht
 ## Setting Up The Plugin
 - **C++ project is a requirement. BP projects are currently not supported.**
 - Clone the repository inside your project's `Plugins` folder, or download the latest release and extract it into your project's `Plugins` folder.
-- Put `Config/DefaultInput.ini` from the plugin folder inside your project's config folder. If your project already have this .ini file, merge it into yours.
-- Regenerate visual studio project files and build your project.
+- Build your project from Visual Studio
 - Launch the project, and enable plugin content viewer as seen below. This will show contents of the plugin in your content browser:
 ![image](https://github.com/dyanikoglu/ALS-Community/raw/main/Resources/Readme_Content_1.png)
 
