@@ -101,13 +101,13 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 	MantleParams.AnimMontage = MantleAsset.AnimMontage;
 	MantleParams.PositionCorrectionCurve = MantleAsset.PositionCorrectionCurve;
 	MantleParams.StartingOffset = MantleAsset.StartingOffset;
-	MantleParams.StartingPosition = FMath::GetMappedRangeValueClamped({MantleAsset.LowHeight, MantleAsset.HighHeight},
+	MantleParams.StartingPosition = FMath::GetMappedRangeValueClamped<float, float>({MantleAsset.LowHeight, MantleAsset.HighHeight},
 	                                                                  {
 		                                                                  MantleAsset.LowStartPosition,
 		                                                                  MantleAsset.HighStartPosition
 	                                                                  },
 	                                                                  MantleHeight);
-	MantleParams.PlayRate = FMath::GetMappedRangeValueClamped({MantleAsset.LowHeight, MantleAsset.HighHeight},
+	MantleParams.PlayRate = FMath::GetMappedRangeValueClamped<float, float>({MantleAsset.LowHeight, MantleAsset.HighHeight},
 	                                                          {MantleAsset.LowPlayRate, MantleAsset.HighPlayRate},
 	                                                          MantleHeight);
 
@@ -143,9 +143,9 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 	MantleTimeline->PlayFromStart();
 
 	// Step 7: Play the Anim Montaget if valid.
-	if (IsValid(MantleParams.AnimMontage))
+	if (MantleParams.AnimMontage && OwnerCharacter->GetMesh()->GetAnimInstance())
 	{
-		OwnerCharacter->GetMainAnimInstance()->Montage_Play(MantleParams.AnimMontage, MantleParams.PlayRate,
+		OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Play(MantleParams.AnimMontage, MantleParams.PlayRate,
 		                                                    EMontagePlayReturnType::MontageLength,
 		                                                    MantleParams.StartingPosition, false);
 	}

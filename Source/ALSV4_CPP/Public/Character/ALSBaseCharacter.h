@@ -19,15 +19,12 @@
 
 // forward declarations
 class UALSDebugComponent;
-class UTimelineComponent;
-class UAnimInstance;
 class UAnimMontage;
-class UALSCharacterAnimInstance;
 class UALSPlayerCameraBehavior;
 enum class EVisibilityBasedAnimTickOption : uint8;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumpPressedSignature);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnJumpedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRagdollStateChangedSignature, bool, bRagdollState);
 
 /*
@@ -50,9 +47,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void BeginPlay() override;
-
-	virtual void PreInitializeComponents() override;
-
+	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	virtual void PostInitializeComponents() override;
@@ -180,6 +175,9 @@ public:
 	FJumpPressedSignature JumpPressedDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category = "ALS|Input")
+	FOnJumpedSignature OnJumpedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "ALS|Input")
 	FRagdollStateChangedSignature RagdollStateChangedDelegate;
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Input")
@@ -218,10 +216,7 @@ public:
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Movement System")
 	bool HasMovementInput() const { return bHasMovementInput; }
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
-	void SetHasMovementInput(bool bNewHasMovementInput);
-
+	
 	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
 	FALSMovementSettings GetTargetMovementSettings() const;
 
@@ -249,10 +244,7 @@ public:
 	UAnimMontage* GetRollAnimation();
 
 	/** Utility */
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Utility")
-	UALSCharacterAnimInstance* GetMainAnimInstance() { return MainAnimInstance; }
-
+	
 	UFUNCTION(BlueprintCallable, Category = "ALS|Utility")
 	float GetAnimCurveValue(FName CurveName) const;
 
@@ -290,39 +282,24 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	FVector GetAcceleration() const { return Acceleration; }
 
-	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
-	void SetAcceleration(const FVector& NewAcceleration);
-
 	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	bool IsMoving() const { return bIsMoving; }
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
-	void SetIsMoving(bool bNewIsMoving);
-
+	
 	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	FVector GetMovementInput() const;
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	float GetMovementInputAmount() const { return MovementInputAmount; }
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
-	void SetMovementInputAmount(float NewMovementInputAmount);
-
+	
 	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	float GetSpeed() const { return Speed; }
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
-	void SetSpeed(float NewSpeed);
-
+	
 	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	FRotator GetAimingRotation() const { return AimingRotation; }
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	float GetAimYawRate() const { return AimYawRate; }
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
-	void SetAimYawRate(float NewAimYawRate);
-
+	
 	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	void GetControlForwardRightVector(FVector& Forward, FVector& Right) const;
 
@@ -621,10 +598,7 @@ protected:
 	FVector PreviousVelocity = FVector::ZeroVector;
 
 	float PreviousAimYaw = 0.0f;
-
-	UPROPERTY(BlueprintReadOnly, Category = "ALS|Utility")
-	UALSCharacterAnimInstance* MainAnimInstance = nullptr;
-
+	
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Camera")
 	UALSPlayerCameraBehavior* CameraBehavior;
 
