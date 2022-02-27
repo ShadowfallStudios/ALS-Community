@@ -168,6 +168,10 @@ void AALSBaseCharacter::RagdollStart()
 	TargetRagdollLocation = GetMesh()->GetSocketLocation(NAME_Pelvis);
 	ServerRagdollPull = 0;
 
+	// Disable URO
+	bPreRagdollURO = GetMesh()->bEnableUpdateRateOptimizations;
+	GetMesh()->bEnableUpdateRateOptimizations = false;
+
 	// Step 1: Clear the Character Movement Mode and set the Movement State to Ragdoll
 	GetCharacterMovement()->SetMovementMode(MOVE_None);
 	SetMovementState(EALSMovementState::Ragdoll);
@@ -199,6 +203,8 @@ void AALSBaseCharacter::RagdollEnd()
 	{
 		GetMesh()->VisibilityBasedAnimTickOption = DefVisBasedTickOp;
 	}
+
+	GetMesh()->bEnableUpdateRateOptimizations = bPreRagdollURO;
 
 	// Revert back to default settings
 	MyCharacterMovementComponent->bIgnoreClientMovementErrorChecksAndCorrection = 0;
@@ -1191,21 +1197,6 @@ void AALSBaseCharacter::LimitRotation(float AimYawMin, float AimYawMax, float In
 	}
 }
 
-void AALSBaseCharacter::GetControlForwardRightVector(FVector& Forward, FVector& Right) const
-{
-	const FRotator ControlRot(0.0f, AimingRotation.Yaw, 0.0f);
-	Forward = GetInputAxisValue("MoveForward/Backwards") * UKismetMathLibrary::GetForwardVector(ControlRot);
-	Right = GetInputAxisValue("MoveRight/Left") * UKismetMathLibrary::GetRightVector(ControlRot);
-}
-
-FVector AALSBaseCharacter::GetPlayerMovementInput() const
-{
-	FVector Forward = FVector::ZeroVector;
-	FVector Right = FVector::ZeroVector;
-	GetControlForwardRightVector(Forward, Right);
-	return (Forward + Right).GetSafeNormal();
-}
-
 void AALSBaseCharacter::ForwardMovementAction_Implementation(float Value)
 {
 	if (MovementState == EALSMovementState::Grounded || MovementState == EALSMovementState::InAir)
@@ -1305,6 +1296,18 @@ void AALSBaseCharacter::AimAction_Implementation(bool bValue)
 
 void AALSBaseCharacter::CameraTapAction_Implementation()
 {
+	if (ViewMode == EALSViewMode::FirstPerson)
+	{
+		// Don't swap shoulders on first person mode
+		return;
+	}
+
+	// Switch shoulders
+	SetRightShoulder(!bRightShoulder);
+}
+
+void AALSBaseCharacter::CameraHeldAction_Implementation()
+{
 	// Switch camera mode
 	if (ViewMode == EALSViewMode::FirstPerson)
 	{
@@ -1314,18 +1317,6 @@ void AALSBaseCharacter::CameraTapAction_Implementation()
 	{
 		SetViewMode(EALSViewMode::FirstPerson);
 	}
-}
-
-void AALSBaseCharacter::CameraHeldAction_Implementation()
-{
-	if (ViewMode == EALSViewMode::FirstPerson)
-	{
-		// Don't swap shoulders on first person mode
-		return;
-	}
-
-	// Switch shoulders
-	SetRightShoulder(!bRightShoulder);
 }
 
 void AALSBaseCharacter::StanceAction_Implementation()

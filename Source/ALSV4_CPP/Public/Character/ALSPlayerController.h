@@ -100,13 +100,16 @@ protected:
 	void DebugToggleSlomoAction(const FInputActionValue& Value);
 
 	UFUNCTION()
-	void DebugPreviousFocusedCharacterAction(const FInputActionValue& Value);
-
-	UFUNCTION()
-	void DebugNextFocusedCharacterAction(const FInputActionValue& Value);
-
+	void DebugFocusedCharacterCycleAction(const FInputActionValue& Value);
+	
 	UFUNCTION()
 	void DebugToggleMeshAction(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void DebugOpenOverlayMenuAction(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void DebugOverlayMenuCycleAction(const FInputActionValue& Value);
 	
 public:
 	/** Main character reference */

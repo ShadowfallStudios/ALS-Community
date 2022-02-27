@@ -89,7 +89,6 @@ void AALSPlayerController::BindActions(UInputMappingContext* Context)
 			}
 			for (const UInputAction* UniqueAction : UniqueActions)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("BOUND : %s"), *UniqueAction->GetName());
 				EnhancedInputComponent->BindAction(UniqueAction, ETriggerEvent::Triggered, Cast<UObject>(this), UniqueAction->GetFName());
 			}
 		}
@@ -302,26 +301,14 @@ void AALSPlayerController::DebugToggleSlomoAction(const FInputActionValue& Value
 	}
 }
 
-void AALSPlayerController::DebugPreviousFocusedCharacterAction(const FInputActionValue& Value)
+void AALSPlayerController::DebugFocusedCharacterCycleAction(const FInputActionValue& Value)
 {
-	if (PossessedCharacter && Value.Get<bool>())
+	if (PossessedCharacter)
 	{
 		UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(PossessedCharacter->GetComponentByClass(UALSDebugComponent::StaticClass()));
 		if (DebugComp)
 		{
-			DebugComp->PreviousFocusedDebugCharacter();
-		}
-	}
-}
-
-void AALSPlayerController::DebugNextFocusedCharacterAction(const FInputActionValue& Value)
-{
-	if (PossessedCharacter && Value.Get<bool>())
-	{
-		UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(PossessedCharacter->GetComponentByClass(UALSDebugComponent::StaticClass()));
-		if (DebugComp)
-		{
-			DebugComp->NextFocusedDebugCharacter();
+			DebugComp->FocusedDebugCharacterCycle(Value.GetMagnitude() > 0);
 		}
 	}
 }
@@ -338,13 +325,26 @@ void AALSPlayerController::DebugToggleMeshAction(const FInputActionValue& Value)
 	}
 }
 
-//				InputComponent->BindKey(EKeys::Tab, EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleHud);
-// 				InputComponent->BindKey(EKeys::V, EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleDebugView);
-// 				InputComponent->BindKey(EKeys::T, EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleTraces);
-// 				InputComponent->BindKey(EKeys::Y, EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleDebugShapes);
-// 				InputComponent->BindKey(EKeys::U, EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleLayerColors);
-// 				InputComponent->BindKey(EKeys::I, EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleCharacterInfo);
-// 				InputComponent->BindKey(EKeys::Z, EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleSlomo);
-// 				InputComponent->BindKey(EKeys::Comma, EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::PreviousFocusedDebugCharacter);
-// 				InputComponent->BindKey(EKeys::Period, EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::NextFocusedDebugCharacter);
-// 				InputComponent->BindKey(EKeys::M, EInputEvent::IE_Pressed, DebugComp, &UALSDebugComponent::ToggleDebugMesh);
+void AALSPlayerController::DebugOpenOverlayMenuAction(const FInputActionValue& Value)
+{
+	if (PossessedCharacter)
+	{
+		UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(PossessedCharacter->GetComponentByClass(UALSDebugComponent::StaticClass()));
+		if (DebugComp)
+		{
+			DebugComp->OpenOverlayMenu(Value.Get<bool>());
+		}
+	}
+}
+
+void AALSPlayerController::DebugOverlayMenuCycleAction(const FInputActionValue& Value)
+{
+	if (PossessedCharacter)
+	{
+		UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(PossessedCharacter->GetComponentByClass(UALSDebugComponent::StaticClass()));
+		if (DebugComp)
+		{
+			DebugComp->OverlayMenuCycle(Value.GetMagnitude() > 0);
+		}
+	}
+}

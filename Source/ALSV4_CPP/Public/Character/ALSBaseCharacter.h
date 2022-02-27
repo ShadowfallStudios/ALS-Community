@@ -201,10 +201,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
 	void Server_SetDesiredRotationMode(EALSRotationMode NewRotMode);
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Input")
-	FVector GetPlayerMovementInput() const;
-
+	
 	/** Rotation System */
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Rotation System")
@@ -298,9 +295,6 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	float GetAimYawRate() const { return AimYawRate; }
 	
-	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
-	void GetControlForwardRightVector(FVector& Forward, FVector& Right) const;
-
 	/** Input */
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
@@ -441,9 +435,6 @@ protected:
 	float RollDoubleTapTimeout = 0.3f;
 	
 	UPROPERTY(Category = "ALS|Input", BlueprintReadOnly)
-	int32 TimesPressedStance = 0;
-
-	UPROPERTY(Category = "ALS|Input", BlueprintReadOnly)
 	bool bBreakFall = false;
 
 	UPROPERTY(Category = "ALS|Input", BlueprintReadOnly)
@@ -557,9 +548,8 @@ protected:
 	bool bBreakfallOnLand = true;
 
 	/** If player hits to the ground with an amount of velocity greater than specified value, switch to breakfall state */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Breakfall System", meta = (EditCondition =
-	        "bBreakfallOnLand"))
-	float BreakfallOnLandVelocity = 600.0f;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Breakfall System", meta = (EditCondition ="bBreakfallOnLand"))
+	float BreakfallOnLandVelocity = 700.0f;
 
 	/** Ragdoll System */
 
@@ -572,8 +562,7 @@ protected:
 	bool bRagdollOnLand = false;
 
 	/** If player hits to the ground with an amount of velocity greater than specified value, switch to ragdoll state */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Ragdoll System", meta = (EditCondition =
-	        "bRagdollOnLand"))
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ALS|Ragdoll System", meta = (EditCondition ="bRagdollOnLand"))
 	float RagdollOnLandVelocity = 1000.0f;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Ragdoll System")
@@ -593,6 +582,8 @@ protected:
 
 	/* Dedicated server mesh default visibility based anim tick option*/
 	EVisibilityBasedAnimTickOption DefVisBasedTickOp;
+
+	bool bPreRagdollURO = false;
 
 	/** Cached Variables */
 

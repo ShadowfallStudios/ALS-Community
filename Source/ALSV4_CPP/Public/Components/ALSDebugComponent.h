@@ -58,6 +58,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void ToggleDebugView();
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Debug")
+	void OpenOverlayMenu(bool bValue);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Debug")
+	void OverlayMenuCycle(bool bValue);
+
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void ToggleDebugMesh();
 
@@ -84,12 +90,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	bool GetShowLayerColors() { return bShowLayerColors; }
-
+	
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
-	void PreviousFocusedDebugCharacter();
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
-	void NextFocusedDebugCharacter();
+	void FocusedDebugCharacterCycle(bool bValue);
 
 	// utility functions to draw trace debug shapes,
 	// which are derived from Engine/Private/KismetTraceUtils.h.
@@ -129,6 +132,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	void DetectDebuggableCharactersInWorld();
 
 public:
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")

@@ -29,8 +29,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Math Utils")
 	static FTransform MantleComponentLocalToWorld(const FALSComponentAndTransform& CompAndTransform);
 
-	static TPair<float, float> FixDiagonalGamepadValues(float X, float Y);
-
 	UFUNCTION(BlueprintCallable, Category = "ALS|Math Utils")
 	static FTransform TransfromSub(const FTransform& T1, const FTransform& T2)
 	{

@@ -159,9 +159,7 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 	}
 
 	// Step 1: Trace forward to find a wall / object the character cannot walk on.
-	const FVector& TraceDirection = OwnerCharacter->HasMovementInput()
-		                                ? OwnerCharacter->GetPlayerMovementInput()
-		                                : OwnerCharacter->GetActorForwardVector();
+	const FVector& TraceDirection = OwnerCharacter->GetActorForwardVector();
 	const FVector& CapsuleBaseLocation = UALSMathLibrary::GetCapsuleBaseLocation(
 		2.0f, OwnerCharacter->GetCapsuleComponent());
 	FVector TraceStart = CapsuleBaseLocation + TraceDirection * -30.0f;
