@@ -24,6 +24,11 @@ class ALSV4_CPP_API UALSDebugComponent : public UActorComponent
 
 public:
 	UALSDebugComponent();
+	
+	void BeginPlay() override;
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void OnPlayerControllerInitialized(APlayerController* Controller);
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
@@ -58,6 +63,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void ToggleDebugView();
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Debug")
+	void OpenOverlayMenu(bool bValue);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Debug")
+	void OverlayMenuCycle(bool bValue);
+
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void ToggleDebugMesh();
 
@@ -84,12 +95,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	bool GetShowLayerColors() { return bShowLayerColors; }
-
+	
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
-	void PreviousFocusedDebugCharacter();
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
-	void NextFocusedDebugCharacter();
+	void FocusedDebugCharacterCycle(bool bValue);
 
 	// utility functions to draw trace debug shapes,
 	// which are derived from Engine/Private/KismetTraceUtils.h.
@@ -128,7 +136,7 @@ public:
 	                                       float DrawTime);
 
 protected:
-	virtual void BeginPlay() override;
+	void DetectDebuggableCharactersInWorld();
 
 public:
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")

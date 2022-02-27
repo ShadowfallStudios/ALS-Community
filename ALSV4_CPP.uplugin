@@ -1,16 +1,15 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "4.22.0",
+	"VersionName": "4.23.0",
 	"FriendlyName": "Advanced Locomotion System Community",
 	"Description": "Performance optimized community version of LongmireLocomotion's Advanced Locomotion System V4",
 	"Category": "Animation",
 	"CreatedBy": "Doga Can Yanikoglu",
 	"CreatedByURL": "https://github.com/dyanikoglu",
 	"DocsURL": "https://github.com/dyanikoglu/ALS-Community",
-	"MarketplaceURL": "https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1",
 	"SupportURL": "https://github.com/dyanikoglu/ALS-Community/issues",
-	"EngineVersion": "4.27.0",
+	"EngineVersion": "5.0",
 	"EnabledByDefault": true,
 	"CanContainContent": true,
 	"IsBetaVersion": false,
@@ -29,9 +28,13 @@
 			]
 		}
 	],
-  "Plugins": [
+   	"Plugins": [
     {
       "Name": "Niagara",
+      "Enabled": true
+    },
+	{
+      "Name": "EnhancedInput",
       "Enabled": true
     }
   ]

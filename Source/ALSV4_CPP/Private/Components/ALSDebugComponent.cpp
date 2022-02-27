@@ -82,35 +82,34 @@ void UALSDebugComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
 	bShowLayerColors = false;
 }
 
-void UALSDebugComponent::PreviousFocusedDebugCharacter()
+void UALSDebugComponent::FocusedDebugCharacterCycle(bool bValue)
 {
+	// Refresh list, so we can also debug runtime spawned characters & remove despawned characters back
+	DetectDebuggableCharactersInWorld();
+	
 	if (FocusedDebugCharacterIndex == INDEX_NONE)
-	{ // Return here as no AALSBaseCharacter where found during call of BeginPlay.
-		// Moreover, for savety set also no focused debug character.
+	{
+		// Return here as no AALSBaseCharacter where found during call of BeginPlay.
+		// Moreover, for safety set also no focused debug character.
 		DebugFocusCharacter = nullptr;
 		return;
 	}
 
-	FocusedDebugCharacterIndex++;
-	if (FocusedDebugCharacterIndex >= AvailableDebugCharacters.Num()) {
-		FocusedDebugCharacterIndex = 0;
+	if (bValue)
+	{
+		FocusedDebugCharacterIndex++;
+		if (FocusedDebugCharacterIndex >= AvailableDebugCharacters.Num())
+		{
+			FocusedDebugCharacterIndex = 0;
+		}
 	}
-
-	DebugFocusCharacter = AvailableDebugCharacters[FocusedDebugCharacterIndex];
-}
-
-void UALSDebugComponent::NextFocusedDebugCharacter()
-{
-	if (FocusedDebugCharacterIndex == INDEX_NONE)
-	{ // Return here as no AALSBaseCharacter where found during call of BeginPlay.
-		// Moreover, for savety set also no focused debug character.
-		DebugFocusCharacter = nullptr;
-		return;
-	}
-
-	FocusedDebugCharacterIndex--;
-	if (FocusedDebugCharacterIndex < 0) {
-		FocusedDebugCharacterIndex = AvailableDebugCharacters.Num() - 1;
+	else
+	{
+		FocusedDebugCharacterIndex--;
+		if (FocusedDebugCharacterIndex < 0)
+		{
+			FocusedDebugCharacterIndex = AvailableDebugCharacters.Num() - 1;
+		}
 	}
 
 	DebugFocusCharacter = AvailableDebugCharacters[FocusedDebugCharacterIndex];
@@ -127,7 +126,10 @@ void UALSDebugComponent::BeginPlay()
 		SetDynamicMaterials();
 		SetResetColors();
 	}
+}
 
+void UALSDebugComponent::DetectDebuggableCharactersInWorld()
+{
 	// Get all ALSBaseCharacter's, which are currently present to show them later in the ALS HUD for debugging purposes.
 	TArray<AActor*> AlsBaseCharacters;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AALSBaseCharacter::StaticClass(), AlsBaseCharacters);
@@ -182,6 +184,14 @@ void UALSDebugComponent::ToggleDebugView()
 			CameraBehavior->bDebugView = bDebugView;
 		}
 	}
+}
+
+void UALSDebugComponent::OpenOverlayMenu_Implementation(bool bValue)
+{
+}
+
+void UALSDebugComponent::OverlayMenuCycle_Implementation(bool bValue)
+{
 }
 
 void UALSDebugComponent::ToggleDebugMesh()
