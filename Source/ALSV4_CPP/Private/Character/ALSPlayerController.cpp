@@ -27,22 +27,12 @@ void AALSPlayerController::OnPossess(APawn* NewPawn)
 		SetupCamera();
 	}
 
-	if (PossessedCharacter)
+	SetupInputs();
+	
+	UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(PossessedCharacter->GetComponentByClass(UALSDebugComponent::StaticClass()));
+	if (DebugComp)
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultInputMappingContext, 1);
-			
-			UActorComponent* Comp = PossessedCharacter->GetComponentByClass(UALSDebugComponent::StaticClass());
-			if (Comp)
-			{
-				UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(Comp);
-				if (InputComponent && DebugComp)
-				{
-					Subsystem->AddMappingContext(DebugInputMappingContext, 0);
-				}
-			}
-		}
+		DebugComp->OnPlayerControllerInitialized(this);
 	}
 }
 
@@ -51,6 +41,13 @@ void AALSPlayerController::OnRep_Pawn()
 	Super::OnRep_Pawn();
 	PossessedCharacter = Cast<AALSBaseCharacter>(GetPawn());
 	SetupCamera();
+	SetupInputs();
+	
+	UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(PossessedCharacter->GetComponentByClass(UALSDebugComponent::StaticClass()));
+	if (DebugComp)
+	{
+		DebugComp->OnPlayerControllerInitialized(this);
+	}
 }
 
 void AALSPlayerController::SetupInputComponent()
@@ -90,6 +87,25 @@ void AALSPlayerController::BindActions(UInputMappingContext* Context)
 			for (const UInputAction* UniqueAction : UniqueActions)
 			{
 				EnhancedInputComponent->BindAction(UniqueAction, ETriggerEvent::Triggered, Cast<UObject>(this), UniqueAction->GetFName());
+			}
+		}
+	}
+}
+
+void AALSPlayerController::SetupInputs()
+{
+	if (PossessedCharacter)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+		{
+			FModifyContextOptions Options;
+			Options.bForceImmediately = 1;
+			Subsystem->AddMappingContext(DefaultInputMappingContext, 1, Options);
+			UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(PossessedCharacter->GetComponentByClass(UALSDebugComponent::StaticClass()));
+			if (DebugComp)
+			{
+				// Do only if we have debug component
+				Subsystem->AddMappingContext(DebugInputMappingContext, 0, Options);
 			}
 		}
 	}

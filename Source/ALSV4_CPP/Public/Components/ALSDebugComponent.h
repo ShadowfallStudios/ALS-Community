@@ -24,6 +24,11 @@ class ALSV4_CPP_API UALSDebugComponent : public UActorComponent
 
 public:
 	UALSDebugComponent();
+	
+	void BeginPlay() override;
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void OnPlayerControllerInitialized(APlayerController* Controller);
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
@@ -131,8 +136,6 @@ public:
 	                                       float DrawTime);
 
 protected:
-	virtual void BeginPlay() override;
-
 	void DetectDebuggableCharactersInWorld();
 
 public:

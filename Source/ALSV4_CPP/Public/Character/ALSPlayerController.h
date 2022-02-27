@@ -33,6 +33,8 @@ public:
 	virtual void BindActions(UInputMappingContext* Context);
 
 protected:
+	void SetupInputs();
+	
 	void SetupCamera();
 
 	UFUNCTION()
