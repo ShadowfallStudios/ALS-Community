@@ -88,13 +88,14 @@ void UALSCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	CharacterInformation.CharacterActorRotation = Character->GetActorRotation();
 	CharacterInformation.ViewMode = Character->GetViewMode();
 	CharacterInformation.PrevMovementState = Character->GetPrevMovementState();
-
+	LayerBlendingValues.OverlayOverrideState = Character->GetOverlayOverrideState();
 	MovementState = Character->GetMovementState();
 	MovementAction = Character->GetMovementAction();
 	Stance = Character->GetStance();
 	RotationMode = Character->GetRotationMode();
 	Gait = Character->GetGait();
 	OverlayState = Character->GetOverlayState();
+	GroundedEntryState = Character->GetGroundedEntryState();
 
 	UpdateAimingValues(DeltaSeconds);
 	UpdateLayerValues();

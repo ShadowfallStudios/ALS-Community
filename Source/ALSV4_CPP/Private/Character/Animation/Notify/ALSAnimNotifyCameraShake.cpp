@@ -9,8 +9,10 @@
 #include "Character/Animation/Notify/ALSAnimNotifyCameraShake.h"
 
 
-void UALSAnimNotifyCameraShake::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+void UALSAnimNotifyCameraShake::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
+	Super::Notify(MeshComp, Animation, EventReference);
+	
 	APawn* OwnerPawn = Cast<APawn>(MeshComp->GetOwner());
 	if (OwnerPawn)
 	{

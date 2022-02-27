@@ -51,25 +51,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Event")
 	void OnPivot();
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
-	void SetGroundedEntryState(EALSGroundedEntryState NewGroundedEntryState)
-	{
-		GroundedEntryState = NewGroundedEntryState;
-	}
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
-	void SetOverlayOverrideState(int32 OverlayOverrideState)
-	{
-		LayerBlendingValues.OverlayOverrideState = OverlayOverrideState;
-	}
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
-	void SetTrackedHipsDirection(EALSHipsDirection HipsDirection)
-	{
-		Grounded.TrackedHipsDirection = HipsDirection;
-	}
-
+	
 	/** Enable Movement Animations if IsMoving and HasMovementInput, or if the Speed is greater than 150. */
 	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
 	bool ShouldMoveCheck() const;

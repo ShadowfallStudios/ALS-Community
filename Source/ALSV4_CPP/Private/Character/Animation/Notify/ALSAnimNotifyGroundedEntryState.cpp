@@ -8,14 +8,17 @@
 
 #include "Character/Animation/Notify/ALSAnimNotifyGroundedEntryState.h"
 
+#include "Character/ALSBaseCharacter.h"
 #include "Character/Animation/ALSCharacterAnimInstance.h"
 
-void UALSAnimNotifyGroundedEntryState::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+void UALSAnimNotifyGroundedEntryState::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-	UALSCharacterAnimInstance* AnimIns = Cast<UALSCharacterAnimInstance>(MeshComp->GetAnimInstance());
-	if (AnimIns)
+	Super::Notify(MeshComp, Animation, EventReference);
+	
+	AALSBaseCharacter* Character = Cast<AALSBaseCharacter>(MeshComp->GetOwner());
+	if (Character)
 	{
-		AnimIns->SetGroundedEntryState(GroundedEntryState);
+		Character->SetGroundedEntryState(GroundedEntryState);
 	}
 }
 

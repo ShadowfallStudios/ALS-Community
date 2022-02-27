@@ -11,8 +11,10 @@
 #include "Character/ALSBaseCharacter.h"
 
 void UALSNotifyStateEarlyBlendOut::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-                                              float FrameDeltaTime)
+                                              float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
 {
+	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
+	
 	if (!MeshComp || !MeshComp->GetAnimInstance())
 	{
 		return;
@@ -20,7 +22,7 @@ void UALSNotifyStateEarlyBlendOut::NotifyTick(USkeletalMeshComponent* MeshComp, 
 
 	UAnimInstance* AnimInstance = MeshComp->GetAnimInstance();
 	AALSBaseCharacter* OwnerCharacter = Cast<AALSBaseCharacter>(MeshComp->GetOwner());
-	if (!OwnerCharacter)
+	if (!OwnerCharacter || !AnimInstance)
 	{
 		return;
 	}

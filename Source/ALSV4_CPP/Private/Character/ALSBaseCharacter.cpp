@@ -280,6 +280,11 @@ void AALSBaseCharacter::SetStance(const EALSStance NewStance, bool bForce)
 	}
 }
 
+void AALSBaseCharacter::SetOverlayOverrideState(int32 NewState)
+{
+	OverlayOverrideState = NewState;
+}
+
 void AALSBaseCharacter::SetGait(const EALSGait NewGait, bool bForce)
 {
 	if (bForce || Gait != NewGait)
@@ -387,6 +392,11 @@ void AALSBaseCharacter::SetOverlayState(const EALSOverlayState NewState, bool bF
 			Server_SetOverlayState(NewState, bForce);
 		}
 	}
+}
+
+void AALSBaseCharacter::SetGroundedEntryState(EALSGroundedEntryState NewState)
+{
+	GroundedEntryState = NewState;
 }
 
 

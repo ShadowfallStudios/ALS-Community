@@ -22,8 +22,8 @@ class ALSV4_CPP_API UALSNotifyStateEarlyBlendOut : public UAnimNotifyState
 {
 	GENERATED_BODY()
 
-	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-	                        float FrameDeltaTime) override;
+	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime,
+	                        const FAnimNotifyEventReference& EventReference) override;
 
 	virtual FString GetNotifyName_Implementation() const override;
 

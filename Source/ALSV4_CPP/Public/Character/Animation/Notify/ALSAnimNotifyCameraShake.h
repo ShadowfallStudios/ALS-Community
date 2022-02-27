@@ -23,7 +23,7 @@ class ALSV4_CPP_API UALSAnimNotifyCameraShake : public UAnimNotify
 {
 	GENERATED_BODY()
 
-	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AnimNotify)
