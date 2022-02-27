@@ -51,6 +51,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Event")
 	void OnPivot();
+
+protected:
+	
+	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
+	void SetTrackedHipsDirection(EALSHipsDirection HipsDirection)
+	{
+		Grounded.TrackedHipsDirection = HipsDirection;
+	}
 	
 	/** Enable Movement Animations if IsMoving and HasMovementInput, or if the Speed is greater than 150. */
 	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
