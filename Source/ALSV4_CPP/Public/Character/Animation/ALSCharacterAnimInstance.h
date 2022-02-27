@@ -54,6 +54,12 @@ protected:
 	{
 		Grounded.TrackedHipsDirection = HipsDirection;
 	}
+
+	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
+	void SetGroundedEntryState(EALSGroundedEntryState NewState)
+	{
+		GroundedEntryState = NewState;
+	}
 	
 	/** Enable Movement Animations if IsMoving and HasMovementInput, or if the Speed is greater than 150. */
 	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
