@@ -18,26 +18,19 @@ Replicated and optimized community version of [Advanced Locomotion System V4](ht
 - Fully implemented in C++
 - Full replication support with low bandwidth usage (Ragdoll replication is in experimental state)
 - Plugin structure
+- Animation Blueprint is optimized with new property binding feature
+- Inputs are handled with Enhanced Input System
 - Highly optimized for production
-- Mantling and debugging features are implemented as a separate plug-in/plug-out type actor component to reduce total overhead on base character class
-- Improved footstep behavior with Niagara particle & decal support.
+- Mantling and debugging features are implemented as a separate actor components to reduce total overhead on base character class
+- Improved footstep behavior with Niagara particle & decal support
 - Lots of bug fixes additional to marketplace version
 
 ## Known Issues & Discussion
 - See [Issues](https://github.com/dyanikoglu/ALS-Community/issues) section for list of known issues
 - See [Discussions](https://github.com/dyanikoglu/ALS-Community/discussions) section to discuss anything about the plugin, and ask questions. Please do not open an issue for questions.
 
-## Setting Up The Plugin
-- **C++ project is a requirement. BP projects are currently not supported.**
-- Clone the repository inside your project's `Plugins` folder, or download the latest release and extract it into your project's `Plugins` folder.
-- Build your project from Visual Studio
-- Launch the project, and enable plugin content viewer as seen below. This will show contents of the plugin in your content browser:
-![image](https://github.com/dyanikoglu/ALS-Community/raw/main/Resources/Readme_Content_1.png)
-
-## Functions To Override In Blueprints
-- There are a few functions you will need to override in blueprints. You will also need to update these functions for every new overlay state you add. These are commented in the C++ code, but are listed here for quick reference as well.
-- In your player character blueprint: **GetGetUpAnimation** & **GetRollAnimation**
-- In the MantleComponent: **GetMantleAsset**
+## Documentation
+Instructions for setting up the plugin can be found on [Wiki](https://github.com/dyanikoglu/ALS-Community/wiki/Setting-Up-The-Plugin) section.
 
 ## License & Contribution
 **Source code** of the plugin is licensed under MIT license, and other developers are encouraged to fork the repository, open issues & pull requests to help the development.
