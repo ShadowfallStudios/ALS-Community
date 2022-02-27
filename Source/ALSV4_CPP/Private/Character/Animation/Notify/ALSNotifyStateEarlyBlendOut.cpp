@@ -1,9 +1,5 @@
-// Project:         Advanced Locomotion System V4 on C++
-// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
-// License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
-// Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
-// Original Author: Doğa Can Yanıkoğlu
-// Contributors:    
+// Copyright:       Copyright (C) 2022 Doğa Can Yanıkoğlu
+// Source Code:     https://github.com/dyanikoglu/ALS-Community
 
 
 #include "Character/Animation/Notify/ALSNotifyStateEarlyBlendOut.h"
@@ -11,8 +7,10 @@
 #include "Character/ALSBaseCharacter.h"
 
 void UALSNotifyStateEarlyBlendOut::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-                                              float FrameDeltaTime)
+                                              float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
 {
+	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
+	
 	if (!MeshComp || !MeshComp->GetAnimInstance())
 	{
 		return;
@@ -20,7 +18,7 @@ void UALSNotifyStateEarlyBlendOut::NotifyTick(USkeletalMeshComponent* MeshComp, 
 
 	UAnimInstance* AnimInstance = MeshComp->GetAnimInstance();
 	AALSBaseCharacter* OwnerCharacter = Cast<AALSBaseCharacter>(MeshComp->GetOwner());
-	if (!OwnerCharacter)
+	if (!OwnerCharacter || !AnimInstance)
 	{
 		return;
 	}

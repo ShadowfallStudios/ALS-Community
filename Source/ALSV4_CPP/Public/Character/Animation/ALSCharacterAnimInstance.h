@@ -1,10 +1,5 @@
-// Project:         Advanced Locomotion System V4 on C++
-// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
-// License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
-// Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
-// Original Author: Doğa Can Yanıkoğlu
-// Contributors:    
-
+// Copyright:       Copyright (C) 2022 Doğa Can Yanıkoğlu
+// Source Code:     https://github.com/dyanikoglu/ALS-Community
 
 #pragma once
 
@@ -52,24 +47,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Event")
 	void OnPivot();
 
-	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
-	void SetGroundedEntryState(EALSGroundedEntryState NewGroundedEntryState)
-	{
-		GroundedEntryState = NewGroundedEntryState;
-	}
-
-	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
-	void SetOverlayOverrideState(int32 OverlayOverrideState)
-	{
-		LayerBlendingValues.OverlayOverrideState = OverlayOverrideState;
-	}
-
+protected:
+	
 	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
 	void SetTrackedHipsDirection(EALSHipsDirection HipsDirection)
 	{
 		Grounded.TrackedHipsDirection = HipsDirection;
 	}
 
+	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
+	void SetGroundedEntryState(EALSGroundedEntryState NewState)
+	{
+		GroundedEntryState = NewState;
+	}
+	
 	/** Enable Movement Animations if IsMoving and HasMovementInput, or if the Speed is greater than 150. */
 	UFUNCTION(BlueprintCallable, Category = "ALS|Grounded")
 	bool ShouldMoveCheck() const;

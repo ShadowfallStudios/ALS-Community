@@ -1,9 +1,5 @@
-// Project:         Advanced Locomotion System V4 on C++
-// Copyright:       Copyright (C) 2021 Doğa Can Yanıkoğlu
-// License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
-// Source Code:     https://github.com/dyanikoglu/ALSV4_CPP
-// Original Author: Doğa Can Yanıkoğlu
-// Contributors:    Haziq Fadhil, Jens Bjarne Myhre
+// Copyright:       Copyright (C) 2022 Doğa Can Yanıkoğlu
+// Source Code:     https://github.com/dyanikoglu/ALS-Community
 
 
 #include "Character/Animation/ALSCharacterAnimInstance.h"
@@ -88,13 +84,14 @@ void UALSCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	CharacterInformation.CharacterActorRotation = Character->GetActorRotation();
 	CharacterInformation.ViewMode = Character->GetViewMode();
 	CharacterInformation.PrevMovementState = Character->GetPrevMovementState();
-
+	LayerBlendingValues.OverlayOverrideState = Character->GetOverlayOverrideState();
 	MovementState = Character->GetMovementState();
 	MovementAction = Character->GetMovementAction();
 	Stance = Character->GetStance();
 	RotationMode = Character->GetRotationMode();
 	Gait = Character->GetGait();
 	OverlayState = Character->GetOverlayState();
+	GroundedEntryState = Character->GetGroundedEntryState();
 
 	UpdateAimingValues(DeltaSeconds);
 	UpdateLayerValues();
