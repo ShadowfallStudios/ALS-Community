@@ -14,6 +14,7 @@
 #include "Library/ALSCharacterStructLibrary.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/Character.h"
+#include "Character/ALSCharacterMovementComponent.h"
 
 #include "ALSBaseCharacter.generated.h"
 
@@ -38,11 +39,7 @@ class ALSV4_CPP_API AALSBaseCharacter : public ACharacter
 public:
 	AALSBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(BlueprintCallable, Category = "ALS|Movement")
-	FORCEINLINE class UALSCharacterMovementComponent* GetMyMovementComponent() const
-	{
-		return MyCharacterMovementComponent;
-	}
+	virtual UALSCharacterMovementComponent* GetMovementComponent() const override;
 
 	virtual void Tick(float DeltaTime) override;
 

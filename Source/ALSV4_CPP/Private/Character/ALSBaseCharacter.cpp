@@ -16,7 +16,6 @@
 
 #include "Components/CapsuleComponent.h"
 #include "Curves/CurveFloat.h"
-#include "Character/ALSCharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -41,6 +40,11 @@ AALSBaseCharacter::AALSBaseCharacter(const FObjectInitializer& ObjectInitializer
 	bUseControllerRotationYaw = 0;
 	bReplicates = true;
 	SetReplicatingMovement(true);
+}
+
+UALSCharacterMovementComponent* AALSBaseCharacter::GetMovementComponent() const
+{
+	return MyCharacterMovementComponent;
 }
 
 void AALSBaseCharacter::PostInitializeComponents()
