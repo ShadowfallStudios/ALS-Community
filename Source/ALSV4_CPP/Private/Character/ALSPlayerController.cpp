@@ -62,7 +62,7 @@ void AALSPlayerController::SetupInputComponent()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("ALS Community requires Enhanced Input System to be activated in project settings to function properly"));
+		UE_LOG(LogTemp, Fatal, TEXT("ALS Community requires Enhanced Input System to be activated in project settings to function properly"));
 	}
 }
 
