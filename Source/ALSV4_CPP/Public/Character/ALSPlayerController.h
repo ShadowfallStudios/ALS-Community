@@ -111,7 +111,7 @@ protected:
 	
 public:
 	/** Main character reference */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "ALS")
 	AALSBaseCharacter* PossessedCharacter = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Input")

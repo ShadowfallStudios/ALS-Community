@@ -22,7 +22,7 @@ public:
 	
 	void BeginPlay() override;
 
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|Debug")
 	void OnPlayerControllerInitialized(APlayerController* Controller);
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
