@@ -420,7 +420,7 @@ protected:
 protected:
 	/* Custom movement component*/
 	UPROPERTY()
-	UALSCharacterMovementComponent* MyCharacterMovementComponent;
+	TObjectPtr<UALSCharacterMovementComponent> MyCharacterMovementComponent;
 
 	/** Input */
 
@@ -503,7 +503,7 @@ protected:
 
 	/** Replicated Skeletal Mesh Information*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Skeletal Mesh", ReplicatedUsing = OnRep_VisibleMesh)
-	USkeletalMesh* VisibleMesh = nullptr;
+	TObjectPtr<USkeletalMesh> VisibleMesh = nullptr;
 
 	/** State Values */
 
@@ -604,7 +604,7 @@ protected:
 	float PreviousAimYaw = 0.0f;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Camera")
-	UALSPlayerCameraBehavior* CameraBehavior;
+	TObjectPtr<UALSPlayerCameraBehavior> CameraBehavior;
 
 	/** Last time the 'first' crouch/roll button is pressed */
 	float LastStanceInputTime = 0.0f;
@@ -620,5 +620,5 @@ protected:
 
 private:
 	UPROPERTY()
-	UALSDebugComponent* ALSDebugComponent = nullptr;
+	TObjectPtr<UALSDebugComponent> ALSDebugComponent = nullptr;
 };
