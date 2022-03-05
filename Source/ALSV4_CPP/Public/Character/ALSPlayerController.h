@@ -111,12 +111,12 @@ protected:
 	
 public:
 	/** Main character reference */
-	UPROPERTY(BlueprintReadOnly)
-	AALSBaseCharacter* PossessedCharacter = nullptr;
+	UPROPERTY(BlueprintReadOnly, Category = "ALS")
+	TObjectPtr<AALSBaseCharacter> PossessedCharacter = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Input")
-	UInputMappingContext* DefaultInputMappingContext = nullptr;
+	TObjectPtr<UInputMappingContext> DefaultInputMappingContext = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Input")
-	UInputMappingContext* DebugInputMappingContext = nullptr;
+	TObjectPtr<UInputMappingContext> DebugInputMappingContext = nullptr;
 };

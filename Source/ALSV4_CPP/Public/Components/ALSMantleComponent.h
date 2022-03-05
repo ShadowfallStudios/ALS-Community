@@ -65,7 +65,7 @@ protected:
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Mantle System")
-	UTimelineComponent* MantleTimeline = nullptr;
+	TObjectPtr<UTimelineComponent> MantleTimeline = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
 	FALSMantleTraceSettings GroundedTraceSettings;
@@ -77,7 +77,7 @@ protected:
 	FALSMantleTraceSettings FallingTraceSettings;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
-	UCurveFloat* MantleTimelineCurve;
+	TObjectPtr<UCurveFloat> MantleTimelineCurve;
 
 	static FName NAME_IgnoreOnlyPawn;
 	/** Profile to use to detect objects we allow mantling */
@@ -108,8 +108,8 @@ protected:
 
 private:
 	UPROPERTY()
-	AALSBaseCharacter* OwnerCharacter;
+	TObjectPtr<AALSBaseCharacter> OwnerCharacter;
 
 	UPROPERTY()
-	UALSDebugComponent* ALSDebugComponent = nullptr;
+	TObjectPtr<UALSDebugComponent> ALSDebugComponent = nullptr;
 };

@@ -30,7 +30,7 @@ struct FALSComponentAndTransform
 	FTransform Transform;
 
 	UPROPERTY(EditAnywhere, Category = "Character Struct Library")
-	UPrimitiveComponent* Component = nullptr;
+	TObjectPtr<UPrimitiveComponent> Component = nullptr;
 };
 
 USTRUCT(BlueprintType)
@@ -93,10 +93,10 @@ struct FALSMantleAsset
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category = "Mantle System")
-	UAnimMontage* AnimMontage = nullptr;
+	TObjectPtr<UAnimMontage> AnimMontage = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Mantle System")
-	UCurveVector* PositionCorrectionCurve = nullptr;
+	TObjectPtr<UCurveVector> PositionCorrectionCurve = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	FVector StartingOffset;
@@ -126,10 +126,10 @@ struct FALSMantleParams
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category = "Mantle System")
-	UAnimMontage* AnimMontage = nullptr;
+	TObjectPtr<UAnimMontage> AnimMontage = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Mantle System")
-	UCurveVector* PositionCorrectionCurve = nullptr;
+	TObjectPtr<UCurveVector> PositionCorrectionCurve = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Mantle System")
 	float StartingPosition = 0.0f;
@@ -177,10 +177,10 @@ struct FALSMovementSettings
 	float SprintSpeed = 0.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement Settings")
-	UCurveVector* MovementCurve = nullptr;
+	TObjectPtr<UCurveVector> MovementCurve = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Movement Settings")
-	UCurveFloat* RotationRateCurve = nullptr;
+	TObjectPtr<UCurveFloat> RotationRateCurve = nullptr;
 
 	float GetSpeedForGait(const EALSGait Gait) const
 	{
@@ -231,7 +231,7 @@ struct FALSRotateInPlaceAsset
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category = "Rotation System")
-	UAnimSequenceBase* Animation = nullptr;
+	TObjectPtr<UAnimSequenceBase> Animation = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Rotation System")
 	FName SlotName;
