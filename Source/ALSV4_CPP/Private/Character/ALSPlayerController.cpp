@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "Engine/LocalPlayer.h"
 #include "AI/ALSAIController.h"
 #include "Character/ALSCharacter.h"
 #include "Character/ALSPlayerCameraManager.h"
@@ -62,7 +63,7 @@ void AALSPlayerController::SetupInputComponent()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("ALS Community requires Enhanced Input System to be activated in project settings to function properly"));
+		UE_LOG(LogTemp, Fatal, TEXT("ALS Community requires Enhanced Input System to be activated in project settings to function properly"));
 	}
 }
 

@@ -27,7 +27,7 @@ class ALSV4_CPP_API UALSAnimNotifyFootstep : public UAnimNotify
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
-	UDataTable* HitDataTable;
+	TObjectPtr<UDataTable> HitDataTable;
 
 	static FName NAME_Foot_R;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")

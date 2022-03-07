@@ -21,7 +21,7 @@ public:
 	AALSAIController();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
-	UBehaviorTree* Behaviour = nullptr;
+	TObjectPtr<UBehaviorTree> Behaviour = nullptr;
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
