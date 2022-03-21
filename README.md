@@ -14,7 +14,7 @@ Replicated and optimized version of [Advanced Locomotion System V4](https://www.
 *Mac, Android, IOS, and console builds are not tested and supported at the moment. Use the plugin on those platforms with your own risk.*
 
 ## Features
-- Fully implemented and optimized in C++, and implementation is based on latest marketplace release (V4) of ALS
+- Fully implemented and optimized in C++. Implementation is based on latest marketplace release (V4) of ALS
 - Complete replication support with low bandwidth usage (Ragdoll replication is in experimental state)
 - Redesigned as plugin
 - Animation blueprint is optimized with new property binding feature
