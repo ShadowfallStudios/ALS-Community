@@ -30,7 +30,7 @@ public:
 
 protected:
 	void SetupInputs();
-	
+
 	void SetupCamera();
 
 	UFUNCTION()
@@ -99,7 +99,7 @@ protected:
 
 	UFUNCTION()
 	void DebugFocusedCharacterCycleAction(const FInputActionValue& Value);
-	
+
 	UFUNCTION()
 	void DebugToggleMeshAction(const FInputActionValue& Value);
 
@@ -108,7 +108,7 @@ protected:
 
 	UFUNCTION()
 	void DebugOverlayMenuCycleAction(const FInputActionValue& Value);
-	
+
 public:
 	/** Main character reference */
 	UPROPERTY(BlueprintReadOnly, Category = "ALS")

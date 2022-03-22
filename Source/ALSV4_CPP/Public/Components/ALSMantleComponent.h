@@ -48,7 +48,7 @@ public:
 	FALSMantleAsset GetMantleAsset(EALSMantleType MantleType, EALSOverlayState CurrentOverlayState);
 
 protected:
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Called when the game starts

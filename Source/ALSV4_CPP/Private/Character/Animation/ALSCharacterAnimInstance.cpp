@@ -784,7 +784,7 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 {
 	// Calculate the land prediction weight by tracing in the velocity direction to find a walkable surface the character
 	// is falling toward, and getting the 'Time' (range of 0-1, 1 being maximum, 0 being about to land) till impact.
-	// The Land Prediction Curve is used to control how the time affects the final weight for a smooth blend. 
+	// The Land Prediction Curve is used to control how the time affects the final weight for a smooth blend.
 	if (InAir.FallSpeed >= -200.0f)
 	{
 		return 0.0f;
@@ -872,7 +872,7 @@ void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayR
 	FRotator Delta = TargetRotation - CharacterInformation.CharacterActorRotation;
 	Delta.Normalize();
 	const float TurnAngle = Delta.Yaw;
-	
+
 	// Step 2: Choose Turn Asset based on the Turn Angle and Stance
 	FALSTurnInPlaceAsset TargetTurnAsset;
 	if (Stance.Standing())

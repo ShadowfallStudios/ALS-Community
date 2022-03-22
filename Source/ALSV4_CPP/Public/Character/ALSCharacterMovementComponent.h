@@ -62,7 +62,7 @@ class ALSV4_CPP_API UALSCharacterMovementComponent : public UCharacterMovementCo
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Movement System")
 	FALSMovementSettings CurrentMovementSettings;
-	
+
 	// Set Movement Curve (Called in every instance)
 	float GetMappedSpeed() const;
 

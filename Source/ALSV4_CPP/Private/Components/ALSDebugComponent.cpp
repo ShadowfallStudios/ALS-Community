@@ -82,7 +82,7 @@ void UALSDebugComponent::FocusedDebugCharacterCycle(bool bValue)
 {
 	// Refresh list, so we can also debug runtime spawned characters & remove despawned characters back
 	DetectDebuggableCharactersInWorld();
-	
+
 	if (FocusedDebugCharacterIndex == INDEX_NONE)
 	{
 		// Return here as no AALSBaseCharacter where found during call of BeginPlay.
@@ -114,7 +114,7 @@ void UALSDebugComponent::FocusedDebugCharacterCycle(bool bValue)
 void UALSDebugComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	OwnerCharacter = Cast<AALSBaseCharacter>(GetOwner());
 	DebugFocusCharacter = OwnerCharacter;
 	if (OwnerCharacter)
@@ -323,4 +323,3 @@ void UALSDebugComponent::DrawDebugSphereTraceSingle(const UWorld* World,
 		}
 	}
 }
-

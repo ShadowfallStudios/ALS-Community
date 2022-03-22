@@ -22,12 +22,12 @@ FName UALSAnimNotifyFootstep::NAME_Foot_R(TEXT("Foot_R"));
 void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
-	
+
 	if (!MeshComp)
 	{
 		return;
 	}
-	
+
 	AActor* MeshOwner = MeshComp->GetOwner();
 	if (!MeshOwner)
 	{

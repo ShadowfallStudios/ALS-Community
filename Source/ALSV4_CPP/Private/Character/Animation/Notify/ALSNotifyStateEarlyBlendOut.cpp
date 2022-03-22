@@ -10,7 +10,7 @@ void UALSNotifyStateEarlyBlendOut::NotifyTick(USkeletalMeshComponent* MeshComp, 
                                               float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
-	
+
 	if (!MeshComp || !MeshComp->GetAnimInstance())
 	{
 		return;
