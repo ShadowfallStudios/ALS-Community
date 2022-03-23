@@ -307,7 +307,7 @@ void UALSMantleComponent::Multicast_MantleStart_Implementation(float MantleHeigh
 	}
 }
 
-// This function is called by "MantleTimeline" using BindUFunction in the AALSBaseCharacter::BeginPlay during the default settings initialization.
+// This function is called by "MantleTimeline" using BindUFunction in UALSMantleComponent::BeginPlay during the default settings initialization.
 void UALSMantleComponent::MantleUpdate(float BlendIn)
 {
 	if (!OwnerCharacter)
