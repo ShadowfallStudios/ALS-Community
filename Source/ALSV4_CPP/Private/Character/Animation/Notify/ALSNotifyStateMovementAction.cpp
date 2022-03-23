@@ -10,7 +10,7 @@ void UALSNotifyStateMovementAction::NotifyBegin(USkeletalMeshComponent* MeshComp
                                                 float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
-	
+
 	AALSBaseCharacter* BaseCharacter = Cast<AALSBaseCharacter>(MeshComp->GetOwner());
 	if (BaseCharacter)
 	{
@@ -22,7 +22,7 @@ void UALSNotifyStateMovementAction::NotifyEnd(USkeletalMeshComponent* MeshComp, 
                                               const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
-	
+
 	AALSBaseCharacter* BaseCharacter = Cast<AALSBaseCharacter>(MeshComp->GetOwner());
 	if (BaseCharacter && BaseCharacter->GetMovementAction() == MovementAction)
 	{

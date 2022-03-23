@@ -19,8 +19,8 @@ class ALSV4_CPP_API UALSDebugComponent : public UActorComponent
 
 public:
 	UALSDebugComponent();
-	
-	void BeginPlay() override;
+
+	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "ALS|Debug")
 	void OnPlayerControllerInitialized(APlayerController* Controller);
@@ -90,7 +90,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	bool GetShowLayerColors() { return bShowLayerColors; }
-	
+
 	UFUNCTION(BlueprintCallable, Category = "ALS|Debug")
 	void FocusedDebugCharacterCycle(bool bValue);
 
@@ -148,7 +148,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
 	TObjectPtr<USkeletalMesh> DebugSkeletalMesh = nullptr;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
 	TArray<TObjectPtr<AALSBaseCharacter>> AvailableDebugCharacters;
 
@@ -169,9 +169,8 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<USkeletalMesh> DefaultSkeletalMesh = nullptr;
-	
+
 	/// Stores the index, which is used to select the next focused debug ALSBaseCharacter.
 	/// If no characters where found during BeginPlay the value should be set to INDEX_NONE.
 	int32 FocusedDebugCharacterIndex = INDEX_NONE;
 };
-

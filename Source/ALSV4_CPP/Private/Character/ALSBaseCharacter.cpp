@@ -75,7 +75,7 @@ void AALSBaseCharacter::Replicated_PlayMontage_Implementation(UAnimMontage* Mont
 	{
 		GetMesh()->GetAnimInstance()->Montage_Play(Montage, PlayRate);
 	}
-	
+
 	Server_PlayMontage(Montage, PlayRate);
 }
 
@@ -186,7 +186,7 @@ void AALSBaseCharacter::RagdollStart()
 
 	// Fixes character mesh is showing default A pose for a split-second just before ragdoll ends in listen server games
 	GetMesh()->bOnlyAllowAutonomousTickPose = true;
-	
+
 	SetReplicateMovement(false);
 }
 
@@ -653,7 +653,7 @@ void AALSBaseCharacter::GetCameraParameters(float& TPFOVOut, float& FPFOVOut, bo
 void AALSBaseCharacter::RagdollUpdate(float DeltaTime)
 {
 	GetMesh()->bOnlyAllowAutonomousTickPose = false;
-	
+
 	// Set the Last Ragdoll Velocity.
 	const FVector NewRagdollVel = GetMesh()->GetPhysicsLinearVelocity(NAME_root);
 	LastRagdollVelocity = (NewRagdollVel != FVector::ZeroVector || IsLocallyControlled())
@@ -686,7 +686,7 @@ void AALSBaseCharacter::SetActorLocationDuringRagdoll(float DeltaTime)
 		}
 	}
 
-	// Determine wether the ragdoll is facing up or down and set the target rotation accordingly.
+	// Determine whether the ragdoll is facing up or down and set the target rotation accordingly.
 	const FRotator PelvisRot = GetMesh()->GetSocketRotation(NAME_Pelvis);
 
 	if (bReversedPelvis) {
@@ -1143,7 +1143,7 @@ EALSGait AALSBaseCharacter::GetActualGait(EALSGait AllowedGait) const
 {
 	// Get the Actual Gait. This is calculated by the actual movement of the character,  and so it can be different
 	// from the desired gait or allowed gait. For instance, if the Allowed Gait becomes walking,
-	// the Actual gait will still be running untill the character decelerates to the walking speed.
+	// the Actual gait will still be running until the character decelerates to the walking speed.
 
 	const float LocWalkSpeed = MyCharacterMovementComponent->CurrentMovementSettings.WalkSpeed;
 	const float LocRunSpeed = MyCharacterMovementComponent->CurrentMovementSettings.RunSpeed;
