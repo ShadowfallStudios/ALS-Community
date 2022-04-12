@@ -7,9 +7,9 @@
 #include "Character/ALSBaseCharacter.h"
 
 void UALSNotifyStateEarlyBlendOut::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-                                              float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
+                                              float FrameDeltaTime)
 {
-	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
+	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime);
 
 	if (!MeshComp || !MeshComp->GetAnimInstance())
 	{

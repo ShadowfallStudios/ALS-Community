@@ -8,9 +8,9 @@
 #include "Character/Animation/ALSCharacterAnimInstance.h"
 
 void UALSNotifyStateOverlayOverride::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-                                                 float TotalDuration, const FAnimNotifyEventReference& EventReference)
+                                                 float TotalDuration)
 {
-	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
+	Super::NotifyBegin(MeshComp, Animation, TotalDuration);
 
 	AALSBaseCharacter* Character = Cast<AALSBaseCharacter>(MeshComp->GetOwner());
 	if (Character)
@@ -19,9 +19,9 @@ void UALSNotifyStateOverlayOverride::NotifyBegin(USkeletalMeshComponent* MeshCom
 	}
 }
 
-void UALSNotifyStateOverlayOverride::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
+void UALSNotifyStateOverlayOverride::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	Super::NotifyEnd(MeshComp, Animation, EventReference);
+	Super::NotifyEnd(MeshComp, Animation);
 
 	AALSBaseCharacter* Character = Cast<AALSBaseCharacter>(MeshComp->GetOwner());
 	if (Character)

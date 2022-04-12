@@ -95,14 +95,12 @@ void AALSPlayerController::SetupInputs()
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 		{
-			FModifyContextOptions Options;
-			Options.bForceImmediately = 1;
-			Subsystem->AddMappingContext(DefaultInputMappingContext, 1, Options);
+			Subsystem->AddMappingContext(DefaultInputMappingContext, 1);
 			UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(PossessedCharacter->GetComponentByClass(UALSDebugComponent::StaticClass()));
 			if (DebugComp)
 			{
 				// Do only if we have debug component
-				Subsystem->AddMappingContext(DebugInputMappingContext, 0, Options);
+				Subsystem->AddMappingContext(DebugInputMappingContext, 0);
 			}
 		}
 	}

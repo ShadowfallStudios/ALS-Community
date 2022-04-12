@@ -7,9 +7,9 @@
 #include "Character/ALSBaseCharacter.h"
 
 void UALSNotifyStateMovementAction::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-                                                float TotalDuration, const FAnimNotifyEventReference& EventReference)
+                                                float TotalDuration)
 {
-	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
+	Super::NotifyBegin(MeshComp, Animation, TotalDuration);
 
 	AALSBaseCharacter* BaseCharacter = Cast<AALSBaseCharacter>(MeshComp->GetOwner());
 	if (BaseCharacter)
@@ -18,10 +18,9 @@ void UALSNotifyStateMovementAction::NotifyBegin(USkeletalMeshComponent* MeshComp
 	}
 }
 
-void UALSNotifyStateMovementAction::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-                                              const FAnimNotifyEventReference& EventReference)
+void UALSNotifyStateMovementAction::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	Super::NotifyEnd(MeshComp, Animation, EventReference);
+	Super::NotifyEnd(MeshComp, Animation);
 
 	AALSBaseCharacter* BaseCharacter = Cast<AALSBaseCharacter>(MeshComp->GetOwner());
 	if (BaseCharacter && BaseCharacter->GetMovementAction() == MovementAction)

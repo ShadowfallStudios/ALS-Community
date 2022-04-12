@@ -162,7 +162,7 @@ private:
 public:
 	/** References */
 	UPROPERTY(BlueprintReadOnly, Category = "Read Only Data|Character Information")
-	TObjectPtr<AALSBaseCharacter> Character = nullptr;
+	AALSBaseCharacter* Character = nullptr;
 
 	/** Character Information */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Read Only Data|Character Information", Meta = (
@@ -252,34 +252,34 @@ public:
 	/** Blend Curves */
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	TObjectPtr<UCurveFloat> DiagonalScaleAmountCurve = nullptr;
+	UCurveFloat* DiagonalScaleAmountCurve = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	TObjectPtr<UCurveFloat> StrideBlend_N_Walk = nullptr;
+	UCurveFloat* StrideBlend_N_Walk = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	TObjectPtr<UCurveFloat> StrideBlend_N_Run = nullptr;
+	UCurveFloat* StrideBlend_N_Run = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	TObjectPtr<UCurveFloat> StrideBlend_C_Walk = nullptr;
+	UCurveFloat* StrideBlend_C_Walk = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	TObjectPtr<UCurveFloat> LandPredictionCurve = nullptr;
+	UCurveFloat* LandPredictionCurve = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	TObjectPtr<UCurveFloat> LeanInAirCurve = nullptr;
+	UCurveFloat* LeanInAirCurve = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	TObjectPtr<UCurveVector> YawOffset_FB = nullptr;
+	UCurveVector* YawOffset_FB = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Blend Curves")
-	TObjectPtr<UCurveVector> YawOffset_LR = nullptr;
+	UCurveVector* YawOffset_LR = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Dynamic Transition")
-	TObjectPtr<UAnimSequenceBase> TransitionAnim_R = nullptr;
+	UAnimSequenceBase* TransitionAnim_R = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Dynamic Transition")
-	TObjectPtr<UAnimSequenceBase> TransitionAnim_L = nullptr;
+	UAnimSequenceBase* TransitionAnim_L = nullptr;
 
 	/** IK Bone Names */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Anim Graph - Foot IK")
@@ -298,5 +298,5 @@ private:
 	bool bCanPlayDynamicTransition = true;
 
 	UPROPERTY()
-	TObjectPtr<UALSDebugComponent> ALSDebugComponent = nullptr;
+	UALSDebugComponent* ALSDebugComponent = nullptr;
 };

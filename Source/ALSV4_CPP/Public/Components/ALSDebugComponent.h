@@ -135,7 +135,7 @@ protected:
 
 public:
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
-	TObjectPtr<AALSBaseCharacter> OwnerCharacter;
+	AALSBaseCharacter* OwnerCharacter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
 	bool bSlomo = false;
@@ -147,13 +147,13 @@ public:
 	bool bShowCharacterInfo = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Debug")
-	TObjectPtr<USkeletalMesh> DebugSkeletalMesh = nullptr;
+	USkeletalMesh* DebugSkeletalMesh = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
-	TArray<TObjectPtr<AALSBaseCharacter>> AvailableDebugCharacters;
+	TArray<AALSBaseCharacter*> AvailableDebugCharacters;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Debug")
-	TObjectPtr<AALSBaseCharacter> DebugFocusCharacter = nullptr;
+	AALSBaseCharacter* DebugFocusCharacter = nullptr;
 private:
 	static bool bDebugView;
 
@@ -168,7 +168,7 @@ private:
 	bool bDebugMeshVisible = false;
 
 	UPROPERTY()
-	TObjectPtr<USkeletalMesh> DefaultSkeletalMesh = nullptr;
+	USkeletalMesh* DefaultSkeletalMesh = nullptr;
 
 	/// Stores the index, which is used to select the next focused debug ALSBaseCharacter.
 	/// If no characters where found during BeginPlay the value should be set to INDEX_NONE.

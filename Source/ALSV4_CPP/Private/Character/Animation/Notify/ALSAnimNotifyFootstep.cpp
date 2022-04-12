@@ -19,9 +19,9 @@ FName UALSAnimNotifyFootstep::NAME_FootstepType(TEXT("FootstepType"));
 FName UALSAnimNotifyFootstep::NAME_Foot_R(TEXT("Foot_R"));
 
 
-void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
+void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	Super::Notify(MeshComp, Animation, EventReference);
+	Super::Notify(MeshComp, Animation);
 
 	if (!MeshComp)
 	{

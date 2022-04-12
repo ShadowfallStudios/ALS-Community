@@ -53,13 +53,13 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Component")
-	TObjectPtr<USceneComponent> HeldObjectRoot = nullptr;
+	USceneComponent* HeldObjectRoot = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Component")
-	TObjectPtr<USkeletalMeshComponent> SkeletalMesh = nullptr;
+	USkeletalMeshComponent* SkeletalMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Component")
-	TObjectPtr<UStaticMeshComponent> StaticMesh = nullptr;
+	UStaticMeshComponent* StaticMesh = nullptr;
 
 private:
 	bool bNeedsColorReset = false;

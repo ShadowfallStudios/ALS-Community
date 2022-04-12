@@ -18,7 +18,7 @@ struct FALSDynamicMontageParams
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Dynamic Transition")
-	TObjectPtr<UAnimSequenceBase> Animation = nullptr;
+	UAnimSequenceBase* Animation = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS|Dynamic Transition")
 	float BlendInTime = 0.0f;
@@ -69,7 +69,7 @@ struct FALSTurnInPlaceAsset
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Turn In Place")
-	TObjectPtr<UAnimSequenceBase> Animation = nullptr;
+	UAnimSequenceBase* Animation = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ALS|Turn In Place")
 	float AnimatedAngle = 0.0f;

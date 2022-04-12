@@ -21,13 +21,13 @@ class ALSV4_CPP_API UALSAnimNotifyFootstep : public UAnimNotify
 {
 	GENERATED_BODY()
 
-	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 
 	virtual FString GetNotifyName_Implementation() const override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
-	TObjectPtr<UDataTable> HitDataTable;
+	UDataTable* HitDataTable;
 
 	static FName NAME_Foot_R;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")

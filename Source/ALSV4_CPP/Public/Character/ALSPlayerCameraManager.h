@@ -44,10 +44,10 @@ protected:
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS|Camera")
-	TObjectPtr<AALSBaseCharacter> ControlledCharacter = nullptr;
+	AALSBaseCharacter* ControlledCharacter = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS|Camera")
-	TObjectPtr<USkeletalMeshComponent> CameraBehavior = nullptr;
+	USkeletalMeshComponent* CameraBehavior = nullptr;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ALS|Camera")
@@ -73,5 +73,5 @@ protected:
 
 private:
 	UPROPERTY()
-	TObjectPtr<UALSDebugComponent> ALSDebugComponent = nullptr;
+	UALSDebugComponent* ALSDebugComponent = nullptr;
 };
