@@ -47,7 +47,7 @@ void UALSCharacterAnimInstance::NativeInitializeAnimation()
 	Character = Cast<AALSBaseCharacter>(TryGetPawnOwner());
 	if (Character)
 	{
-		Character->OnJumpedDelegate.AddDynamic(this, &UALSCharacterAnimInstance::OnJumped);
+		Character->OnJumpedDelegate.AddDynamicUnique(this, &UALSCharacterAnimInstance::OnJumped);
 	}
 }
 
