@@ -47,7 +47,7 @@ void UALSCharacterAnimInstance::NativeInitializeAnimation()
 	Character = Cast<AALSBaseCharacter>(TryGetPawnOwner());
 	if (Character)
 	{
-		Character->OnJumpedDelegate.AddDynamic(this, &UALSCharacterAnimInstance::OnJumped);
+		Character->OnJumpedDelegate.AddUniqueDynamic(this, &UALSCharacterAnimInstance::OnJumped);
 	}
 }
 
@@ -509,7 +509,7 @@ void UALSCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableF
 		FVector ImpactNormal = HitResult.ImpactNormal;
 
 		// Step 1.1: Find the difference in location from the Impact point and the expected (flat) floor location.
-		// These values are offset by the nomrmal multiplied by the
+		// These values are offset by the normal multiplied by the
 		// foot height to get better behavior on angled surfaces.
 		CurLocationTarget = (ImpactPoint + ImpactNormal * Config.FootHeight) -
 			(IKFootFloorLoc + FVector(0, 0, Config.FootHeight));
@@ -549,7 +549,7 @@ void UALSCharacterAnimInstance::TurnInPlaceCheck(float DeltaSeconds)
 {
 	// Step 1: Check if Aiming angle is outside of the Turn Check Min Angle, and if the Aim Yaw Rate is below the Aim Yaw Rate Limit.
 	// If so, begin counting the Elapsed Delay Time. If not, reset the Elapsed Delay Time.
-	// This ensures the conditions remain true for a sustained peroid of time before turning in place.
+	// This ensures the conditions remain true for a sustained period of time before turning in place.
 	if (FMath::Abs(AimingValues.AimingAngle.X) <= TurnInPlaceValues.TurnCheckMinAngle ||
 		CharacterInformation.AimYawRate >= TurnInPlaceValues.AimYawRateLimit)
 	{
@@ -646,7 +646,7 @@ void UALSCharacterAnimInstance::UpdateRotationValues()
 	// Set the Movement Direction
 	MovementDirection = CalculateMovementDirection();
 
-	// Set the Yaw Offsets. These values influence the "YawOffset" curve in the animgraph and are used to offset
+	// Set the Yaw Offsets. These values influence the "YawOffset" curve in the AnimGraph and are used to offset
 	// the characters rotation for more natural movement. The curves allow for fine control over how the offset
 	// behaves for each movement direction.
 	FRotator Delta = CharacterInformation.Velocity.ToOrientationRotator() - CharacterInformation.AimingRotation;
@@ -764,7 +764,7 @@ float UALSCharacterAnimInstance::CalculateStandingPlayRate() const
 
 float UALSCharacterAnimInstance::CalculateDiagonalScaleAmount() const
 {
-	// Calculate the Diagnal Scale Amount. This value is used to scale the Foot IK Root bone to make the Foot IK bones
+	// Calculate the Diagonal Scale Amount. This value is used to scale the Foot IK Root bone to make the Foot IK bones
 	// cover more distance on the diagonal blends. Without scaling, the feet would not move far enough on the diagonal
 	// direction due to the linear translational blending of the IK bones. The curve is used to easily map the value.
 	return DiagonalScaleAmountCurve->GetFloatValue(FMath::Abs(VelocityBlend.F + VelocityBlend.B));
@@ -773,7 +773,7 @@ float UALSCharacterAnimInstance::CalculateDiagonalScaleAmount() const
 float UALSCharacterAnimInstance::CalculateCrouchingPlayRate() const
 {
 	// Calculate the Crouching Play Rate by dividing the Character's speed by the Animated Speed.
-	// This value needs to be separate from the standing play rate to improve the blend from crocuh to stand while in motion.
+	// This value needs to be separate from the standing play rate to improve the blend from crouch to stand while in motion.
 	return FMath::Clamp(
 		CharacterInformation.Speed / Config.AnimatedCrouchSpeed / Grounded.StrideBlend / GetOwningComponent()->
 		GetComponentScale().Z,
@@ -784,7 +784,7 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 {
 	// Calculate the land prediction weight by tracing in the velocity direction to find a walkable surface the character
 	// is falling toward, and getting the 'Time' (range of 0-1, 1 being maximum, 0 being about to land) till impact.
-	// The Land Prediction Curve is used to control how the time affects the final weight for a smooth blend. 
+	// The Land Prediction Curve is used to control how the time affects the final weight for a smooth blend.
 	if (InAir.FallSpeed >= -200.0f)
 	{
 		return 0.0f;
@@ -853,7 +853,7 @@ FALSLeanAmount UALSCharacterAnimInstance::CalculateAirLeanAmount() const
 EALSMovementDirection UALSCharacterAnimInstance::CalculateMovementDirection() const
 {
 	// Calculate the Movement Direction. This value represents the direction the character is moving relative to the camera
-	// during the Looking Cirection / Aiming rotation modes, and is used in the Cycle Blending Anim Layers to blend to the
+	// during the Looking Direction / Aiming rotation modes, and is used in the Cycle Blending Anim Layers to blend to the
 	// appropriate directional states.
 	if (Gait.Sprinting() || RotationMode.VelocityDirection())
 	{
@@ -872,7 +872,7 @@ void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayR
 	FRotator Delta = TargetRotation - CharacterInformation.CharacterActorRotation;
 	Delta.Normalize();
 	const float TurnAngle = Delta.Yaw;
-	
+
 	// Step 2: Choose Turn Asset based on the Turn Angle and Stance
 	FALSTurnInPlaceAsset TargetTurnAsset;
 	if (Stance.Standing())
@@ -914,7 +914,7 @@ void UALSCharacterAnimInstance::TurnInPlace(FRotator TargetRotation, float PlayR
 	PlaySlotAnimationAsDynamicMontage(TargetTurnAsset.Animation, TargetTurnAsset.SlotName, 0.2f, 0.2f,
 	                                  TargetTurnAsset.PlayRate * PlayRateScale, 1, 0.0f, StartTime);
 
-	// Step 4: Scale the rotation amount (gets scaled in animgraph) to compensate for turn angle (If Allowed) and play rate.
+	// Step 4: Scale the rotation amount (gets scaled in AnimGraph) to compensate for turn angle (If Allowed) and play rate.
 	if (TargetTurnAsset.ScaleTurnAngle)
 	{
 		Grounded.RotationScale = (TurnAngle / TargetTurnAsset.AnimatedAngle) * TargetTurnAsset.PlayRate * PlayRateScale;

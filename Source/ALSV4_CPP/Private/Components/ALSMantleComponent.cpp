@@ -115,7 +115,7 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 	// Step 3: Set the Mantle Target and calculate the Starting Offset
 	// (offset amount between the actor and target transform).
 	MantleTarget = MantleLedgeWS.Transform;
-	MantleActualStartOffset = UALSMathLibrary::TransfromSub(OwnerCharacter->GetActorTransform(), MantleTarget);
+	MantleActualStartOffset = UALSMathLibrary::TransformSub(OwnerCharacter->GetActorTransform(), MantleTarget);
 
 	// Step 4: Calculate the Animated Start Offset from the Target Location.
 	// This would be the location the actual animation starts at relative to the Target Transform.
@@ -123,7 +123,7 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 	RotatedVector.Z = MantleParams.StartingOffset.Z;
 	const FTransform StartOffset(MantleTarget.Rotator(), MantleTarget.GetLocation() - RotatedVector,
 	                             FVector::OneVector);
-	MantleAnimatedStartOffset = UALSMathLibrary::TransfromSub(StartOffset, MantleTarget);
+	MantleAnimatedStartOffset = UALSMathLibrary::TransformSub(StartOffset, MantleTarget);
 
 	// Step 5: Clear the Character Movement Mode and set the Movement State to Mantling
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_None);
@@ -139,7 +139,7 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 	MantleTimeline->SetPlayRate(MantleParams.PlayRate);
 	MantleTimeline->PlayFromStart();
 
-	// Step 7: Play the Anim Montaget if valid.
+	// Step 7: Play the Anim Montage if valid.
 	if (MantleParams.AnimMontage && OwnerCharacter->GetMesh()->GetAnimInstance())
 	{
 		OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Play(MantleParams.AnimMontage, MantleParams.PlayRate,
@@ -307,7 +307,7 @@ void UALSMantleComponent::Multicast_MantleStart_Implementation(float MantleHeigh
 	}
 }
 
-// This function is called by "MantleTimeline" using BindUFunction in the AALSBaseCharacter::BeginPlay during the default settings initalization.
+// This function is called by "MantleTimeline" using BindUFunction in UALSMantleComponent::BeginPlay during the default settings initialization.
 void UALSMantleComponent::MantleUpdate(float BlendIn)
 {
 	if (!OwnerCharacter)
@@ -361,13 +361,13 @@ void UALSMantleComponent::MantleUpdate(float BlendIn)
 	// Blend from the currently blending transforms into the final mantle target using the X
 	// value of the Position/Correction Curve.
 	const FTransform& ResultLerp = UKismetMathLibrary::TLerp(
-		UALSMathLibrary::TransfromAdd(MantleTarget, ResultTransform), MantleTarget,
+		UALSMathLibrary::TransformAdd(MantleTarget, ResultTransform), MantleTarget,
 		PositionAlpha);
 
 	// Initial Blend In (controlled in the timeline curve) to allow the actor to blend into the Position/Correction
-	// curve at the midoint. This prevents pops when mantling an object lower than the animated mantle.
+	// curve at the midpoint. This prevents pops when mantling an object lower than the animated mantle.
 	const FTransform& LerpedTarget =
-		UKismetMathLibrary::TLerp(UALSMathLibrary::TransfromAdd(MantleTarget, MantleActualStartOffset), ResultLerp,
+		UKismetMathLibrary::TLerp(UALSMathLibrary::TransformAdd(MantleTarget, MantleActualStartOffset), ResultLerp,
 		                          BlendIn);
 
 	// Step 4: Set the actors location and rotation to the Lerped Target.

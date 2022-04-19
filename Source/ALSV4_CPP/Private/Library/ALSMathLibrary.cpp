@@ -88,19 +88,19 @@ EALSMovementDirection UALSMathLibrary::CalculateQuadrant(EALSMovementDirection C
 	// Take the input angle and determine its quadrant (direction). Use the current Movement Direction to increase or
 	// decrease the buffers on the angle ranges for each quadrant.
 	if (AngleInRange(Angle, FLThreshold, FRThreshold, Buffer,
-	                 Current != EALSMovementDirection::Forward || Current != EALSMovementDirection::Backward))
+	                 Current != EALSMovementDirection::Forward && Current != EALSMovementDirection::Backward))
 	{
 		return EALSMovementDirection::Forward;
 	}
 
 	if (AngleInRange(Angle, FRThreshold, BRThreshold, Buffer,
-	                 Current != EALSMovementDirection::Right || Current != EALSMovementDirection::Left))
+	                 Current != EALSMovementDirection::Right && Current != EALSMovementDirection::Left))
 	{
 		return EALSMovementDirection::Right;
 	}
 
 	if (AngleInRange(Angle, BLThreshold, FLThreshold, Buffer,
-	                 Current != EALSMovementDirection::Right || Current != EALSMovementDirection::Left))
+	                 Current != EALSMovementDirection::Right && Current != EALSMovementDirection::Left))
 	{
 		return EALSMovementDirection::Left;
 	}

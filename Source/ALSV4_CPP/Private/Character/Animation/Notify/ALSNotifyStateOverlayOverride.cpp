@@ -11,7 +11,7 @@ void UALSNotifyStateOverlayOverride::NotifyBegin(USkeletalMeshComponent* MeshCom
                                                  float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
-	
+
 	AALSBaseCharacter* Character = Cast<AALSBaseCharacter>(MeshComp->GetOwner());
 	if (Character)
 	{
@@ -22,7 +22,7 @@ void UALSNotifyStateOverlayOverride::NotifyBegin(USkeletalMeshComponent* MeshCom
 void UALSNotifyStateOverlayOverride::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
-	
+
 	AALSBaseCharacter* Character = Cast<AALSBaseCharacter>(MeshComp->GetOwner());
 	if (Character)
 	{

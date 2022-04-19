@@ -10,7 +10,7 @@
 void UALSAnimNotifyGroundedEntryState::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
-	
+
 	AALSBaseCharacter* Character = Cast<AALSBaseCharacter>(MeshComp->GetOwner());
 	if (Character)
 	{

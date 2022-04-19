@@ -43,7 +43,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void BeginPlay() override;
-	
+
 	virtual void PostInitializeComponents() override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -209,7 +209,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "ALS|Character States")
 	void Server_SetDesiredRotationMode(EALSRotationMode NewRotMode);
-	
+
 	/** Rotation System */
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Rotation System")
@@ -219,7 +219,7 @@ public:
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Movement System")
 	bool HasMovementInput() const { return bHasMovementInput; }
-	
+
 	UFUNCTION(BlueprintCallable, Category = "ALS|Movement System")
 	FALSMovementSettings GetTargetMovementSettings() const;
 
@@ -247,7 +247,7 @@ public:
 	UAnimMontage* GetRollAnimation();
 
 	/** Utility */
-	
+
 	UFUNCTION(BlueprintCallable, Category = "ALS|Utility")
 	float GetAnimCurveValue(FName CurveName) const;
 
@@ -287,22 +287,22 @@ public:
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	bool IsMoving() const { return bIsMoving; }
-	
+
 	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	FVector GetMovementInput() const;
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	float GetMovementInputAmount() const { return MovementInputAmount; }
-	
+
 	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	float GetSpeed() const { return Speed; }
-	
+
 	UFUNCTION(BlueprintCallable, Category = "ALS|Essential Information")
 	FRotator GetAimingRotation() const { return AimingRotation; }
 
 	UFUNCTION(BlueprintGetter, Category = "ALS|Essential Information")
 	float GetAimYawRate() const { return AimYawRate; }
-	
+
 	/** Input */
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ALS|Input")
@@ -441,7 +441,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "ALS|Input", BlueprintReadOnly)
 	float RollDoubleTapTimeout = 0.3f;
-	
+
 	UPROPERTY(Category = "ALS|Input", BlueprintReadOnly)
 	bool bBreakFall = false;
 
@@ -602,13 +602,13 @@ protected:
 	FVector PreviousVelocity = FVector::ZeroVector;
 
 	float PreviousAimYaw = 0.0f;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "ALS|Camera")
 	TObjectPtr<UALSPlayerCameraBehavior> CameraBehavior;
 
 	/** Last time the 'first' crouch/roll button is pressed */
 	float LastStanceInputTime = 0.0f;
-	
+
 	/* Timer to manage reset of braking friction factor after on landed event */
 	FTimerHandle OnLandedFrictionResetTimer;
 
