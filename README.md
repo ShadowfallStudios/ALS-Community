@@ -10,8 +10,9 @@ Replicated and optimized version of [Advanced Locomotion System V4](https://www.
 ## Supported Platforms
 - Windows
 - Linux
+- Console
 
-*Mac, Android, IOS, and console builds are not tested and supported at the moment. Use the plugin on those platforms with your own risk.*
+*Mac and mobile platforms are not tested and supported at the moment. Use the plugin on those platforms with your own risk.*
 
 ## Features
 - Fully implemented and optimized in C++. Implementation is based on latest marketplace release (V4) of ALS
