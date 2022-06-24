@@ -26,6 +26,8 @@ void AALSPlayerController::OnPossess(APawn* NewPawn)
 
 	SetupInputs();
 
+	if (!IsValid(PossessedCharacter)) return;
+	
 	UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(PossessedCharacter->GetComponentByClass(UALSDebugComponent::StaticClass()));
 	if (DebugComp)
 	{
