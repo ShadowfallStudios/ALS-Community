@@ -41,6 +41,8 @@ void AALSPlayerController::OnRep_Pawn()
 	PossessedCharacter = Cast<AALSBaseCharacter>(GetPawn());
 	SetupCamera();
 	SetupInputs();
+	
+	if (!PossessedCharacter) return;
 
 	UALSDebugComponent* DebugComp = Cast<UALSDebugComponent>(PossessedCharacter->GetComponentByClass(UALSDebugComponent::StaticClass()));
 	if (DebugComp)
