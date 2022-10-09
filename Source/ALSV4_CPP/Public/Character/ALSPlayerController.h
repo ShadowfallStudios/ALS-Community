@@ -33,6 +33,9 @@ protected:
 
 	void SetupCamera();
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetGlobalTimeDilationLocal(float Dilation);
+
 	UFUNCTION()
 	void ForwardMovementAction(const FInputActionValue& Value);
 
