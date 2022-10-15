@@ -89,6 +89,18 @@ void AALSPlayerController::BindActions(UInputMappingContext* Context)
 	}
 }
 
+void AALSPlayerController::SetGlobalTimeDilationLocal(float Dilation)
+{
+	
+	if (IsNetMode(NM_Standalone))
+	{
+
+		UGameplayStatics::SetGlobalTimeDilation(this, Dilation);
+
+	}
+
+}
+
 void AALSPlayerController::SetupInputs()
 {
 	if (PossessedCharacter)
