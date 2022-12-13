@@ -1452,7 +1452,7 @@ void AALSBaseCharacter::OnRep_OverlayState(EALSOverlayState PrevOverlayState)
 	OnOverlayStateChanged(PrevOverlayState);
 }
 
-void AALSBaseCharacter::OnRep_VisibleMesh(USkeletalMesh* NewVisibleMesh)
+void AALSBaseCharacter::OnRep_VisibleMesh(const USkeletalMesh* PreviousSkeletalMesh)
 {
-	OnVisibleMeshChanged(NewVisibleMesh);
+	OnVisibleMeshChanged(PreviousSkeletalMesh);
 }
