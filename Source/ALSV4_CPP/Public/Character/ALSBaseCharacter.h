@@ -415,7 +415,7 @@ protected:
 	void OnRep_OverlayState(EALSOverlayState PrevOverlayState);
 
 	UFUNCTION(Category = "ALS|Replication")
-	void OnRep_VisibleMesh(USkeletalMesh* NewVisibleMesh);
+	void OnRep_VisibleMesh(const USkeletalMesh* PreviousSkeletalMesh);
 
 protected:
 	/* Custom movement component*/
