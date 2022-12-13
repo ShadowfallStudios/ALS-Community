@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "4.23.3",
+	"VersionName": "4.24.0",
 	"FriendlyName": "Advanced Locomotion System Community",
 	"Description": "Performance optimized community version of LongmireLocomotion's Advanced Locomotion System V4",
 	"Category": "Animation",
@@ -9,7 +9,7 @@
 	"CreatedByURL": "https://github.com/dyanikoglu",
 	"DocsURL": "https://github.com/dyanikoglu/ALS-Community",
 	"SupportURL": "https://github.com/dyanikoglu/ALS-Community/issues",
-	"EngineVersion": "5.0",
+	"EngineVersion": "5.1",
 	"EnabledByDefault": true,
 	"CanContainContent": true,
 	"IsBetaVersion": false,
