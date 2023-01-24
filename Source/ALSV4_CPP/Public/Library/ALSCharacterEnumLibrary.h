@@ -61,7 +61,7 @@ enum class EALSMovementState : uint8
 /**
  * Character overlay state. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
  */
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "EALSOverlayState"))
 enum class EALSOverlayState : uint8
 {
 	Default,
