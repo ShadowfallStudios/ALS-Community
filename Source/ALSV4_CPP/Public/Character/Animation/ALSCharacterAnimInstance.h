@@ -288,6 +288,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Configuration|Anim Graph - Foot IK")
 	FName IkFootR_BoneName = FName(TEXT("ik_foot_r"));
 
+	/** Left Hand IK transform values **/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration|Anim Graph - Hand IK")
+		bool bUseTwoHands = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Configuration|Anim Graph - Hand IK")
+		FTransform LeftHandIKTransform;
+
 private:
 	FTimerHandle OnPivotTimer;
 
