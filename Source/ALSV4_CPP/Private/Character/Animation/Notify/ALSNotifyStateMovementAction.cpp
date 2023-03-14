@@ -6,6 +6,8 @@
 
 #include "Character/ALSBaseCharacter.h"
 
+#include "Components/SkeletalMeshComponent.h"
+
 void UALSNotifyStateMovementAction::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
                                                 float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {

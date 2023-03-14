@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 
 #include "Kismet/KismetSystemLibrary.h"
+#include "CollisionShape.h"
 #include "Components/ActorComponent.h"
 #include "ALSDebugComponent.generated.h"
 

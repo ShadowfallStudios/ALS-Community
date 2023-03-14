@@ -7,7 +7,11 @@
 #include "Library/ALSMathLibrary.h"
 #include "Components/ALSDebugComponent.h"
 
+#include "Curves/CurveFloat.h"
 #include "Curves/CurveVector.h"
+
+#include "TimerManager.h"
+
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
