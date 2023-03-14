@@ -4,6 +4,7 @@
 
 #include "Character/ALSCharacter.h"
 
+#include "Components/SkeletalMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "AI/ALSAIController.h"
 #include "Kismet/GameplayStatics.h"
