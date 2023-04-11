@@ -330,7 +330,7 @@ void AALSPlayerController::DebugFocusedCharacterCycleAction(const FInputActionVa
 	}
 }
 
-void AALSPlayerController::DebugToggleMeshAction(const FInputActionValue& Value)
+void AALSPlayerController::DebugToggleDebugMeshAction(const FInputActionValue& Value)
 {
 	if (PossessedCharacter && Value.Get<bool>())
 	{

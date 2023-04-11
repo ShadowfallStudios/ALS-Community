@@ -101,7 +101,7 @@ protected:
 	void DebugFocusedCharacterCycleAction(const FInputActionValue& Value);
 
 	UFUNCTION()
-	void DebugToggleMeshAction(const FInputActionValue& Value);
+	void DebugToggleDebugMeshAction(const FInputActionValue& Value);
 
 	UFUNCTION()
 	void DebugOpenOverlayMenuAction(const FInputActionValue& Value);
