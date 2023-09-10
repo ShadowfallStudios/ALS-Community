@@ -8,6 +8,7 @@
 #include "Character/ALSCharacter.h"
 #include "Character/Animation/ALSCharacterAnimInstance.h"
 #include "Components/ALSDebugComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Curves/CurveVector.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -278,6 +279,24 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 	else
 	{
 		MantleType = MantleHeight > 125.0f ? EALSMantleType::HighMantle : EALSMantleType::LowMantle;
+	}
+	
+	// Step 4.1: Fix FallingCatch Mantle on low walls or objects
+	if (MantleType == EALSMantleType::FallingCatch)
+	{
+		FVector GroundTraceStart = CapsuleBaseLocation;
+		GroundTraceStart.Z = DownTraceLocation.Z;
+		FVector GroundTraceEnd = GroundTraceStart;
+		GroundTraceEnd.Z -= 70.0f;
+		
+		const float CapsuleRadius = OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius();
+		const FCollisionShape CapsuleCollisionShape = FCollisionShape::MakeCapsule(CapsuleRadius, CapsuleRadius);
+		const bool bHitGround = World->SweepSingleByProfile(HitResult, GroundTraceStart, GroundTraceEnd, FQuat::Identity, MantleObjectDetectionProfile, CapsuleCollisionShape, Params);
+
+		if (bHitGround)
+		{
+			return false;
+		}
 	}
 
 	// Step 5: If everything checks out, start the Mantle
