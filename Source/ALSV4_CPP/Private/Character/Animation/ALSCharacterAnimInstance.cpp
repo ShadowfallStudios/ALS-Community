@@ -484,10 +484,10 @@ void UALSCharacterAnimInstance::SetFootOffsets(float DeltaSeconds, FName EnableF
 	const FVector TraceEnd = IKFootFloorLoc - FVector(0.0, 0.0, Config.IK_TraceDistanceBelowFoot);
 
 	FHitResult HitResult;
-	const bool bHit = World->LineTraceSingleByChannel(HitResult,
-	                                                  TraceStart,
-	                                                  TraceEnd,
-	                                                  ECC_Visibility, Params);
+	const bool bHit(World->LineTraceSingleByChannel(HitResult,
+	                                                TraceStart,
+	                                                TraceEnd,
+	                                                ECC_Visibility, Params));
 
 	if (ALSDebugComponent && ALSDebugComponent->GetShowTraces())
 	{
@@ -733,9 +733,8 @@ float UALSCharacterAnimInstance::CalculateStrideBlend() const
 	// The curves are used to map the stride amount to the speed for maximum control.
 	const float CurveTime = CharacterInformation.Speed / GetOwningComponent()->GetComponentScale().Z;
 	const float ClampedGait = GetAnimCurveClamped(NAME_W_Gait, -1.0, 0.0f, 1.0f);
-	const float LerpedStrideBlend =
-		FMath::Lerp(StrideBlend_N_Walk->GetFloatValue(CurveTime), StrideBlend_N_Run->GetFloatValue(CurveTime),
-		            ClampedGait);
+	const float LerpedStrideBlend(FMath::Lerp(StrideBlend_N_Walk->GetFloatValue(CurveTime), StrideBlend_N_Run->GetFloatValue(CurveTime), 
+								  ClampedGait));
 	return FMath::Lerp(LerpedStrideBlend, StrideBlend_C_Walk->GetFloatValue(CharacterInformation.Speed),
 	                   GetCurveValue(NAME_BasePose_CLF));
 }
@@ -810,8 +809,8 @@ float UALSCharacterAnimInstance::CalculateLandPrediction() const
 	FHitResult HitResult;
 	const FCollisionShape CapsuleCollisionShape = FCollisionShape::MakeCapsule(CapsuleComp->GetUnscaledCapsuleRadius(),
 	                                                                           CapsuleComp->GetUnscaledCapsuleHalfHeight());
-	const bool bHit = World->SweepSingleByChannel(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity,
-	                                              ECC_Visibility, CapsuleCollisionShape, Params);
+	const bool bHit(World->SweepSingleByChannel(HitResult, CapsuleWorldLoc, CapsuleWorldLoc + TraceLength, FQuat::Identity,
+	                                            ECC_Visibility, CapsuleCollisionShape, Params));
 
 	if (ALSDebugComponent && ALSDebugComponent->GetShowTraces())
 	{

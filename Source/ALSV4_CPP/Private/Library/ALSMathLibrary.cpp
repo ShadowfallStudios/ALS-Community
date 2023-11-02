@@ -51,8 +51,8 @@ bool UALSMathLibrary::CapsuleHasRoomCheck(UCapsuleComponent* Capsule, FVector Ta
 
 	FHitResult HitResult;
 	const FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(Radius);
-	const bool bHit = World->SweepSingleByChannel(HitResult, TraceStart, TraceEnd, FQuat::Identity,
-	                                              ECC_Visibility, FCollisionShape::MakeSphere(Radius), Params);
+	const bool bHit(World->SweepSingleByChannel(HitResult, TraceStart, TraceEnd, FQuat::Identity,
+	                                              ECC_Visibility, FCollisionShape::MakeSphere(Radius), Params));
 
 	if (DrawDebugTrace)
 	{

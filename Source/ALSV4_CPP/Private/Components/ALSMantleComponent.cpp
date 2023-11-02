@@ -173,8 +173,8 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 	FHitResult HitResult;
 	{
 		const FCollisionShape CapsuleCollisionShape = FCollisionShape::MakeCapsule(TraceSettings.ForwardTraceRadius, HalfHeight);
-		const bool bHit = World->SweepSingleByProfile(HitResult, TraceStart, TraceEnd, FQuat::Identity, MantleObjectDetectionProfile,
-	                                                  CapsuleCollisionShape, Params);
+		const bool bHit(World->SweepSingleByProfile(HitResult, TraceStart, TraceEnd, FQuat::Identity, MantleObjectDetectionProfile,
+	                                                  CapsuleCollisionShape, Params));
 
 		if (ALSDebugComponent && ALSDebugComponent->GetShowTraces())
 		{
@@ -219,9 +219,9 @@ bool UALSMantleComponent::MantleCheck(const FALSMantleTraceSettings& TraceSettin
 
 	{
 		const FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(TraceSettings.DownwardTraceRadius);
-		const bool bHit = World->SweepSingleByChannel(HitResult, DownwardTraceStart, DownwardTraceEnd, FQuat::Identity,
+		const bool bHit(World->SweepSingleByChannel(HitResult, DownwardTraceStart, DownwardTraceEnd, FQuat::Identity,
 	                                                  WalkableSurfaceDetectionChannel, SphereCollisionShape,
-	                                                  Params);
+	                                                  Params));
 
 		if (ALSDebugComponent && ALSDebugComponent->GetShowTraces())
 		{
