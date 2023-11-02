@@ -3,7 +3,7 @@
 
 
 #include "Character/Animation/Notify/ALSAnimNotifyCameraShake.h"
-
+#include "Components/AudioComponent.h"
 
 void UALSAnimNotifyCameraShake::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {

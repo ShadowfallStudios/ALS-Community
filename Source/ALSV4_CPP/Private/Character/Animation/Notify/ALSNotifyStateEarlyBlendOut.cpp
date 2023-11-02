@@ -3,7 +3,7 @@
 
 
 #include "Character/Animation/Notify/ALSNotifyStateEarlyBlendOut.h"
-
+#include "Components/SkeletalMeshComponent.h"
 #include "Character/ALSBaseCharacter.h"
 
 void UALSNotifyStateEarlyBlendOut::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,

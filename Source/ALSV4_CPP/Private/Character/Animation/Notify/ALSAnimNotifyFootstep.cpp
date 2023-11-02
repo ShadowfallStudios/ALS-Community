@@ -4,6 +4,7 @@
 
 #include "Character/Animation/Notify/ALSAnimNotifyFootstep.h"
 
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/AudioComponent.h"
 #include "Engine/DataTable.h"
 #include "Kismet/KismetSystemLibrary.h"

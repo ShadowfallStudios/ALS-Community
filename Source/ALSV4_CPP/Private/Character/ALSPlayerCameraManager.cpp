@@ -9,6 +9,7 @@
 #include "Character/ALSPlayerController.h"
 #include "Character/Animation/ALSPlayerCameraBehavior.h"
 #include "Components/ALSDebugComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 #include "Kismet/KismetMathLibrary.h"
 
