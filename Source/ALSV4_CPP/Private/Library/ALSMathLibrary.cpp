@@ -4,6 +4,7 @@
 
 #include "Library/ALSMathLibrary.h"
 
+#include "Engine/World.h"
 
 #include "Library/ALSCharacterStructLibrary.h"
 #include "Components/ALSDebugComponent.h"

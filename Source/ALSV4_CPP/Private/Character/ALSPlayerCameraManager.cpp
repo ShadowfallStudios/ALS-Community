@@ -4,6 +4,7 @@
 
 #include "Character/ALSPlayerCameraManager.h"
 
+#include "Engine/World.h"
 
 #include "Character/ALSBaseCharacter.h"
 #include "Character/ALSPlayerController.h"

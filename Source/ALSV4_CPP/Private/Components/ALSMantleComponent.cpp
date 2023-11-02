@@ -4,6 +4,7 @@
 
 #include "Components/ALSMantleComponent.h"
 
+#include "Engine/World.h"
 
 #include "Character/ALSCharacter.h"
 #include "Character/Animation/ALSCharacterAnimInstance.h"

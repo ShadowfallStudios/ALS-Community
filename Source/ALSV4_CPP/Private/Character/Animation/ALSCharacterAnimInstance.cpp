@@ -9,9 +9,12 @@
 #include "Components/SkeletalMeshComponent.h"
 
 #include "Curves/CurveVector.h"
+#include "Curves/CurveFloat.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "TimerManager.h"
 
+#include "Engine/World.h"
 
 static const FName NAME_BasePose_CLF(TEXT("BasePose_CLF"));
 static const FName NAME_BasePose_N(TEXT("BasePose_N"));
