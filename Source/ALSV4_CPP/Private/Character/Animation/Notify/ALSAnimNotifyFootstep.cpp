@@ -4,7 +4,10 @@
 
 #include "Character/Animation/Notify/ALSAnimNotifyFootstep.h"
 
+#include "Animation/AnimInstance.h"
 #include "Components/AudioComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+
 #include "Engine/DataTable.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Library/ALSCharacterStructLibrary.h"

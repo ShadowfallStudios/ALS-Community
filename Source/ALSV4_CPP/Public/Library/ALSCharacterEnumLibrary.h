@@ -24,7 +24,7 @@ static FORCEINLINE FString GetEnumerationToString(const Enumeration InValue)
 /**
  * Character gait state. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
  */
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_Gait"))
 enum class EALSGait : uint8
 {
 	Walking,
@@ -35,7 +35,7 @@ enum class EALSGait : uint8
 /**
  * Character movement action state. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
  */
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_MovementAction"))
 enum class EALSMovementAction : uint8
 {
 	None,
@@ -48,7 +48,7 @@ enum class EALSMovementAction : uint8
 /**
  * Character movement state. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
  */
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_MovementState"))
 enum class EALSMovementState : uint8
 {
 	None,
@@ -61,7 +61,7 @@ enum class EALSMovementState : uint8
 /**
  * Character overlay state. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
  */
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_OverlayState"))
 enum class EALSOverlayState : uint8
 {
 	Default,
@@ -82,7 +82,7 @@ enum class EALSOverlayState : uint8
 /**
  * Character rotation mode. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
  */
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName="ALS_RotationMode"))
 enum class EALSRotationMode : uint8
 {
 	VelocityDirection,
@@ -93,7 +93,7 @@ enum class EALSRotationMode : uint8
 /**
  * Character stance. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
  */
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_Stance"))
 enum class EALSStance : uint8
 {
 	Standing,
@@ -103,14 +103,14 @@ enum class EALSStance : uint8
 /**
  * Character view mode. Note: Also edit related struct in ALSStructEnumLibrary if you add new enums
  */
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_ViewMode"))
 enum class EALSViewMode : uint8
 {
 	ThirdPerson,
 	FirstPerson
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_AnimFeatureExample"))
 enum class EALSAnimFeatureExample : uint8
 {
 	StrideBlending,
@@ -118,7 +118,7 @@ enum class EALSAnimFeatureExample : uint8
 	SprintImpulse
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_FootstepType"))
 enum class EALSFootstepType : uint8
 {
 	Step,
@@ -127,14 +127,14 @@ enum class EALSFootstepType : uint8
 	Land
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_GroundedEntryState"))
 enum class EALSGroundedEntryState : uint8
 {
 	None,
 	Roll
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_HipsDirection"))
 enum class EALSHipsDirection : uint8
 {
 	F,
@@ -145,7 +145,7 @@ enum class EALSHipsDirection : uint8
 	LB
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_MantleType"))
 enum class EALSMantleType : uint8
 {
 	HighMantle,
@@ -153,7 +153,7 @@ enum class EALSMantleType : uint8
 	FallingCatch
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_MovementDirection"))
 enum class EALSMovementDirection : uint8
 {
 	Forward,
@@ -162,7 +162,7 @@ enum class EALSMovementDirection : uint8
 	Backward
 };
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, meta = (ScriptName = "ALS_SpawnType"))
 enum class EALSSpawnType : uint8
 {
 	Location,
