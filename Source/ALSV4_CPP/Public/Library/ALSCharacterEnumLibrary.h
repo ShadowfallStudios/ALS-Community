@@ -145,7 +145,7 @@ enum class EALSHipsDirection : uint8
 	LB
 };
 
-UENUM(BlueprintType, meta = (ScriptName = "ALS_Stance"))
+UENUM(BlueprintType, meta = (ScriptName = "ALS_MantleType"))
 enum class EALSMantleType : uint8
 {
 	HighMantle,

@@ -210,13 +210,13 @@ struct FALSAnimGraphAimingValues
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "ALS|Anim Graph - Aiming Values")
-	FRotator SmoothedAimingRotation;
+	FRotator SmoothedAimingRotation = FRotator::ZeroRotator;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "ALS|Anim Graph - Aiming Values")
-	FRotator SpineRotation;
+	FRotator SpineRotation = FRotator::ZeroRotator;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "ALS|Anim Graph - Aiming Values")
-	FVector2D AimingAngle;
+	FVector2D AimingAngle = FVector2D::ZeroVector;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "ALS|Anim Graph - Aiming Values")
 	float AimSweepTime = 0.5f;
