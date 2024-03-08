@@ -129,6 +129,17 @@ void UALSMantleComponent::MantleStart(float MantleHeight, const FALSComponentAnd
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_None);
 	OwnerCharacter->SetMovementState(EALSMovementState::Mantling);
 
+
+	//Check Physics for security
+	if (MantleLedgeLS.Component.Get()->IsSimulatingPhysics()) {
+		PhysicActor = true;
+		MantleLedgeLS.Component.Get()->SetSimulatePhysics(false);
+	}
+	else {
+		PhysicActor = false;
+	}
+
+
 	// Step 6: Configure the Mantle Timeline so that it is the same length as the
 	// Lerp/Correction curve minus the starting position, and plays at the same speed as the animation.
 	// Then start the timeline.
@@ -384,6 +395,10 @@ void UALSMantleComponent::MantleEnd()
 		if (OwnerCharacter->IsA(AALSCharacter::StaticClass()))
 		{
 			Cast<AALSCharacter>(OwnerCharacter)->UpdateHeldObject();
+		}
+
+		if (PhysicActor) {
+			MantleLedgeLS.Component.Get()->SetSimulatePhysics(true);
 		}
 	}
 
