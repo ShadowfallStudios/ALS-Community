@@ -3,6 +3,7 @@
 
 #include "AI/ALS_BTTask_GetRandomLocation.h"
 #include "AIController.h"
+#include "NavFilters/NavigationQueryFilter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
 
