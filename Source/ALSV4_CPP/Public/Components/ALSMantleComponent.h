@@ -106,6 +106,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ALS|Mantle System")
 	float AcceptableVelocityWhileMantling = 10.0f;
 
+	UPROPERTY()
+	bool PhysicActor;
+
 private:
 	UPROPERTY()
 	TObjectPtr<AALSBaseCharacter> OwnerCharacter;
