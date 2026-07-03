@@ -1,5 +1,4 @@
-// Copyright:       Copyright (C) 2022 Doğa Can Yanıkoğlu
-// Source Code:     https://github.com/dyanikoglu/ALS-Community
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -7,12 +6,27 @@ public class ALSV4_CPP : ModuleRules
 {
 	public ALSV4_CPP(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new[]
-			{"Core", "CoreUObject", "Engine", "InputCore", "NavigationSystem", "AIModule", "GameplayTasks","PhysicsCore", "Niagara", "EnhancedInput"
-			});
+		PublicIncludePaths.AddRange(
+			new string[] {
+				"ALSV4_CPP/Public",
+				"ALSV4_CPP/Public/Character",
+				"ALSV4_CPP/Public/Weapon",
+				"ALSV4_CPP/Public/Components",
+				"ALSV4_CPP/Public/AI",
+				"ALSV4_CPP/Public/Library"
+			}
+		);
 
-		PrivateDependencyModuleNames.AddRange(new[] {"Slate", "SlateCore"});
+		PublicDependencyModuleNames.AddRange(
+			new string[] {
+				"Core",
+				"CoreUObject",
+				"Engine",
+				"InputCore",
+				"EnhancedInput"
+			}
+		);
 	}
 }
