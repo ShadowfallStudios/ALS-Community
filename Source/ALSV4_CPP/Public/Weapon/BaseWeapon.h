@@ -8,7 +8,7 @@
 #include "WeaponDataStruct.h"
 #include "BaseWeapon.generated.h"
 
-class AWeaponCharacter;
+class AALSBaseCharacter;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponFiredSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponReloadedSignature);
@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAmmoChangedSignature, int32, Curre
 /**
  * Base weapon class for all firearms
  */
-AUCLASS()
+UCLASS()
 class ALSV4_CPP_API ABaseWeapon : public AActor
 {
 	GENERATED_BODY()
@@ -31,7 +31,7 @@ public:
 
 	// Weapon initialization
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void InitializeWeapon(class AALSBaseCharacter* OwnerCharacter, FWeaponData InWeaponData);
+	void InitializeWeapon(AALSBaseCharacter* OwnerCharacter, FWeaponData InWeaponData);
 
 	// Firing
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
@@ -40,20 +40,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void StopFiring();
 
-	UFUNCTION(Server, Reliable, Category = "Weapon")
+	UFUNCTION(Server, Reliable)
 	void Server_Fire();
 
-	UFUNCTION(NetMulticast, Reliable, Category = "Weapon")
+	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Fire(FVector FireLocation, FRotator FireRotation);
 
 	// Reloading
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void Reload();
 
-	UFUNCTION(Server, Reliable, Category = "Weapon")
+	UFUNCTION(Server, Reliable)
 	void Server_Reload();
 
-	UFUNCTION(NetMulticast, Reliable, Category = "Weapon")
+	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Reload();
 
 	// Ammunition
@@ -90,7 +90,7 @@ protected:
 
 	// Owner character
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Weapon")
-	class AALSBaseCharacter* OwnerCharacter;
+	AALSBaseCharacter* OwnerCharacter;
 
 	// Weapon data
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Weapon")
@@ -105,17 +105,17 @@ protected:
 
 	// Firing state
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
-	bool bIsFiring = false;
+	bool bIsFiring;
 
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Weapon")
-	bool bIsReloading = false;
+	bool bIsReloading;
 
-	float LastFireTime = 0.0f;
-	float ReloadEndTime = 0.0f;
+	float LastFireTime;
+	float ReloadEndTime;
 
 	// Weapon socket names for attachment
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FName WeaponSocketName = FName("weapon_r");
+	FName WeaponSocketName;
 
 	// Fire trace parameters
 	void PerformLineTrace(FVector& OutHitLocation, AActor*& OutHitActor);

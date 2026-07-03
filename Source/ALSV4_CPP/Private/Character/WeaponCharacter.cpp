@@ -12,9 +12,12 @@
 AWeaponCharacter::AWeaponCharacter()
 {
 	PrimaryActorTick.TickInterval = 0.016f;
+	PrimaryActorTick.bCanEverTick = true;
 
 	// Create health component
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
+	WeaponAttachSocket = FName("weapon_r");
+	bIsInCombat = false;
 }
 
 void AWeaponCharacter::BeginPlay()
@@ -30,12 +33,6 @@ void AWeaponCharacter::Tick(float DeltaTime)
 void AWeaponCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	// Fire input
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		// TODO: Bind fire input actions here if using Enhanced Input System
-	}
 }
 
 void AWeaponCharacter::EquipWeapon(ABaseWeapon* NewWeapon)
@@ -73,7 +70,7 @@ void AWeaponCharacter::UnequipWeapon()
 
 void AWeaponCharacter::FireWeapon()
 {
-	if (CurrentWeapon && !bIsDead)
+	if (CurrentWeapon && HealthComponent && HealthComponent->IsAlive())
 	{
 		CurrentWeapon->StartFiring();
 	}

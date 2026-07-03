@@ -28,17 +28,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void TakeDamage(float DamageAmount, AActor* DamageInstigator = nullptr);
 
-	UFUNCTION(Server, Reliable, Category = "Health")
+	UFUNCTION(Server, Reliable)
 	void Server_TakeDamage(float DamageAmount, AActor* DamageInstigator);
 
-	UFUNCTION(NetMulticast, Reliable, Category = "Health")
+	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_OnDamaged(float DamageAmount, FVector DamageLocation);
 
 	// Healing
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void Heal(float HealAmount);
 
-	UFUNCTION(Server, Reliable, Category = "Health")
+	UFUNCTION(Server, Reliable)
 	void Server_Heal(float HealAmount);
 
 	// Health queries
@@ -58,10 +58,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void Die(AActor* KillerActor = nullptr);
 
-	UFUNCTION(Server, Reliable, Category = "Health")
+	UFUNCTION(Server, Reliable)
 	void Server_Die(AActor* KillerActor);
 
-	UFUNCTION(NetMulticast, Reliable, Category = "Health")
+	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Die(AActor* KillerActor);
 
 	// Delegates
@@ -73,17 +73,17 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	float MaxHealth = 100.0f;
+	float MaxHealth;
 
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Health")
 	float CurrentHealth;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Health")
-	bool bIsDead = false;
+	bool bIsDead;
 
 	// Damage effects
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health|Effects")
-	float BloodEffectRadius = 100.0f;
+	float BloodEffectRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health|Effects")
 	class UParticleSystem* BloodFX;

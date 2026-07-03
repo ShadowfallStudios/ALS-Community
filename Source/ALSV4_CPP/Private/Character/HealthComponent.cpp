@@ -12,6 +12,11 @@ UHealthComponent::UHealthComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 	bReplicateUsingRegisteredSubObjectList = true;
 	SetIsReplicatedEnabled(true);
+
+	MaxHealth = 100.0f;
+	CurrentHealth = 100.0f;
+	bIsDead = false;
+	BloodEffectRadius = 100.0f;
 }
 
 void UHealthComponent::BeginPlay()

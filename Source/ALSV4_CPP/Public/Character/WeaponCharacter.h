@@ -14,7 +14,7 @@ class UHealthComponent;
 /**
  * Character class with weapon and combat capabilities
  */
-AUCLASS()
+UCLASS()
 class ALSV4_CPP_API AWeaponCharacter : public AALSCharacter
 {
 	GENERATED_BODY()
@@ -61,11 +61,11 @@ protected:
 
 	// Weapon attachment socket
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Combat")
-	FName WeaponAttachSocket = FName("weapon_r");
+	FName WeaponAttachSocket;
 
 	// Combat state
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
-	bool bIsInCombat = false;
+	bool bIsInCombat;
 
 	// Take damage override
 	virtual float TakeDamage(float Damage, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;

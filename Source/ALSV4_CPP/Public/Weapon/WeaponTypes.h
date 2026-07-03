@@ -10,7 +10,7 @@
 /**
  * M9 Pistol
  */
-AUCLASS()
+UCLASS()
 class ALSV4_CPP_API AM9Pistol : public ABaseWeapon
 {
 	GENERATED_BODY()
@@ -24,7 +24,7 @@ public:
 /**
  * M4A1 Assault Rifle
  */
-AUCLASS()
+UCLASS()
 class ALSV4_CPP_API AM4A1Rifle : public ABaseWeapon
 {
 	GENERATED_BODY()

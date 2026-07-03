@@ -13,6 +13,7 @@
 ABaseWeapon::ABaseWeapon()
 {
 	PrimaryActorTick.TickInterval = 0.016f;
+	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	bReplicateMovement = true;
 
@@ -20,13 +21,24 @@ ABaseWeapon::ABaseWeapon()
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	WeaponMesh->SetCollisionEnabled(ECC_QueryOnly);
 	RootComponent = WeaponMesh;
+
+	WeaponSocketName = FName("weapon_r");
+	CurrentAmmo = 0;
+	StoredAmmo = 0;
+	bIsFiring = false;
+	bIsReloading = false;
+	LastFireTime = 0.0f;
+	ReloadEndTime = 0.0f;
 }
 
 void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	CurrentAmmo = WeaponData.AmmoCapacity;
-	StoredAmmo = WeaponData.MaxAmmo - WeaponData.AmmoCapacity;
+	if (GetOwnerRole() == ROLE_Authority)
+	{
+		CurrentAmmo = WeaponData.AmmoCapacity;
+		StoredAmmo = WeaponData.MaxAmmo - WeaponData.AmmoCapacity;
+	}
 }
 
 void ABaseWeapon::Tick(float DeltaTime)
@@ -35,7 +47,6 @@ void ABaseWeapon::Tick(float DeltaTime)
 
 	if (GetOwnerRole() == ROLE_Authority)
 	{
-		// Check if reload is complete
 		if (bIsReloading && GetWorld()->TimeSeconds >= ReloadEndTime)
 		{
 			OnReloadComplete();
@@ -89,19 +100,16 @@ void ABaseWeapon::Server_Fire_Implementation()
 		return;
 	}
 
-	// Check fire rate
 	if (GetWorld()->TimeSeconds - LastFireTime < WeaponData.FireRate)
 	{
 		return;
 	}
 
-	// Check ammo
 	if (CurrentAmmo <= 0)
 	{
 		return;
 	}
 
-	// Check if reloading
 	if (bIsReloading)
 	{
 		return;
@@ -124,10 +132,6 @@ void ABaseWeapon::Multicast_Fire_Implementation(FVector FireLocation, FRotator F
 
 	for (int32 i = 0; i < WeaponData.BulletsPerShot; ++i)
 	{
-		FVector HitLocation;
-		AActor* HitActor;
-
-		// Add spread to fire direction
 		FRotator SpreadRotation = FireRotation;
 		if (WeaponData.Spread > 0.0f)
 		{
@@ -145,20 +149,11 @@ void ABaseWeapon::Multicast_Fire_Implementation(FVector FireLocation, FRotator F
 
 		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Pawn, QueryParams);
 
-		if (bHit)
+		if (bHit && HitResult.GetActor())
 		{
-			HitLocation = HitResult.ImpactPoint;
-			HitActor = HitResult.GetActor();
-
-			if (GetOwnerRole() == ROLE_Authority && HitActor)
+			if (GetOwnerRole() == ROLE_Authority)
 			{
-				ApplyDamage(HitActor, HitLocation, SpreadRotation.Vector());
-			}
-
-			// Draw debug line
-			if (false) // Set to true for debugging
-			{
-				DrawDebugLine(GetWorld(), TraceStart, HitLocation, FColor::Green, false, 1.0f);
+				ApplyDamage(HitResult.GetActor(), HitResult.ImpactPoint, SpreadRotation.Vector());
 			}
 		}
 	}
@@ -224,7 +219,6 @@ void ABaseWeapon::ApplyDamage(AActor* HitActor, FVector HitLocation, FVector Fir
 	}
 	else
 	{
-		// Fallback to standard damage system
 		FDamageEvent DamageEvent;
 		HitActor->TakeDamage(WeaponData.Damage, DamageEvent, OwnerCharacter->GetController(), OwnerCharacter);
 	}
